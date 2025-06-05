@@ -1,0 +1,113 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: "Arial";
+}
+.syllabease_navbar{
+    background-color: #E9E7F6;
+    padding: 12px;
+}
+.logout{
+    margin: auto;
+}
+.logout_btn{
+    margin: auto;
+    float: right;
+    padding-top: 1rem;
+    margin-right: 20px;
+    text-decoration: none;
+    letter-spacing: 1px;
+
+}
+.logout_btn:hover{
+    border-bottom: 1px solid;
+}
+.container{
+    margin: auto;
+}
+.custom_file{
+    margin: auto;
+    text-align: right;
+    padding-top: 1rem;
+    padding-right: 2rem;
+}
+.all_users{
+    padding: 1rem;
+    margin-right: 44%;
+    margin: auto;
+    text-align: center;
+    background-color:#3c2f91 ;
+    color: white;
+    width: 56%;
+}
+.table{
+    margin: auto;
+    padding-top: 6px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+th{
+    padding: 2rem;
+}
+td{
+    padding: 8px;
+}
+.btns{
+    padding-bottom: 5px;
+}
+.group_filter{
+    text-align: center;
+    padding-bottom:15px;
+    margin-right: 46%;
+}
+.import_btn{
+    float: right;
+    margin-right: 1.4%;
+    margin-top: 9px;
+    width: 6%;
+    height: 5%;
+    padding: 7px;
+    background-color: #3c2f91;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+.import_btn:hover{
+    cursor: pointer;
+}
+.export_btn{
+    float: right;
+    margin-top: 8.5px;
+    margin-right: 2%;
+    width: 6%;
+    height: 5%;
+    padding: 5.1px;
+    text-align: center;
+    background-color: #3c2f91;
+
+    border: none;
+    border-radius: 10px;
+}
+.export_text{
+    color: white;
+    font-size: 15px;
+    text-decoration: none;
+}
+button{
+    width: 80%;
+    margin: 4px;
+    border: none;
+    background-color: #3c2f91;
+    padding: 3px;
+    border-radius: 4px;
+    color: #ffffff;
+
+    cursor: pointer;
+    font-weight: 700;
+}
+button.delete_btn:hover{
+    color: #E9E7F6;
+    background-color: rgb(240, 44, 44);
+}

@@ -1,0 +1,124 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    background-image: url('../assets/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0%;
+    background-attachment: fixed;
+    overflow: hidden;
+
+}
+
+.login_container{
+    margin: 12%;
+}
+.bayanihanLeader_loginPage{
+    margin: auto;
+    width: 470px;
+    height: 420px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-sizing: border-box;
+}
+.syllab_logo{
+    width: 260px;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    display: block;
+    padding: 40px 0 0 0;
+}
+.email_ni{
+    margin: auto;
+    padding-top: 6%;
+    text-align: center;
+}
+.pass_ni{
+    margin: auto;
+    padding-top: 4%;
+    text-align: center;
+}
+.email_input{
+    margin: auto;
+    padding: 10px;
+    width: 300px;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+}
+.pass_input{
+    margin: auto;
+    padding: 10px;
+    width: 300px;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+}
+.forgot_pass{
+    color: #2468d2;
+    float: right;
+    padding: 10px;
+    margin-right: 31%;
+    font-size: 15px;
+    text-decoration: none;
+}
+.forgot_pass:hover{
+    text-decoration: underline;
+}
+.login_btn{
+    text-align: center;
+    width: 300px;
+    padding: 10px;
+    border-radius: 15px;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+
+    margin: auto;
+    justify-content: center;
+    margin-top: 30px;
+
+    background-color:#2468d2 ;
+    color: #ffffff;
+    cursor: pointer;
+}
+.create_account{
+    margin: auto;
+    margin-top: 5%;
+    text-align: center;
+}
+.remember_container{
+    margin: auto;
+    justify-content: center;
+    margin-top: 20px;
+    text-align: right;
+    margin-right: 18%;
+}
+.login{
+    margin: auto;
+    align-items: center;
+    text-align: center;
+
+}
+.register_container{
+    margin: auto;
+    text-align: center;
+    padding-top: 2%;
+}
+.no_account{
+    text-decoration: none;
+    color: #2468d2;
+}
+.no_account:hover{
+    text-decoration: underline;
+}
+.message_alert{
+    font-size: 12px;
+    color: red;
+    font-weight: 100;
+}

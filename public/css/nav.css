@@ -1,0 +1,41 @@
+*{
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+    font-family: 'Arial';
+}
+.syllabease_navbar{
+    background-color: #150f4d;
+    padding: 15px;
+}
+.syllab_logo{
+    max-width: 10%;
+    height: auto;
+    margin-left: 15px;
+    margin-top: 5px;
+}
+.logout_btn{
+    float: right;
+    margin-right: 20px;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.logout_btn:hover{
+    border-bottom: 1px solid;
+    color: #ffc745;
+}
+a{
+    color: rgb(25, 25, 25);
+}
+.navlinks{
+    color: rgb(255, 255, 255);
+}
+.logoutbtn{
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+.logoutbtn:hover{
+    border-bottom: 1px solid;
+    color: #ffc745;
+}

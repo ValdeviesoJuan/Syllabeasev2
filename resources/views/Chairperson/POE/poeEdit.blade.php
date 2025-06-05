@@ -1,0 +1,60 @@
+@extends('layouts.chairSidebar')
+
+@section('content')
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabease</title>
+    @vite('resources/css/app.css')
+
+    <style>
+        .bg svg {
+            transform: scaleY(-1);
+            min-width: '1880'
+        }
+
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+    </style>
+</head>
+
+<body class="">
+    <div class="p-4 mt-14 m-auto mt-10 w-11/12 bg-gradient-to-r from-[#FFF] to-[#dbeafe] shadow-lg rounded-lg">
+       <div>    
+            <img class="edit_user_img text-center p-6 mt-4 w-[550px] m-auto mb-6" src="/assets/Edit Program Educational Objectives.png" alt="SyllabEase Logo">
+                <div class="mb-10 pb-10">
+                    <div class="ml-20 items-center">
+                        <form action="{{ route('chairperson.updatePoe', $department_id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="">
+                                <div id="input-container" class="">
+                                    @foreach ($poes as $poe)
+                                        <input placeholder="" type="text" name="poe_code[]" id="poe_code" class="text-center w-14 border-2 border-solid border-sePrimary" value="{{ $poe->poe_code }}" required> : </input>
+                                        <input placeholder="" type="text" name="poe_description[]" id="poe_description" class="w-5/6 border-2 border-solid border-seSecondary mb-5" value="{{ $poe->poe_description }}" required></input>
+                                        <br>
+                                    @endforeach
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary text-white font-semibold px-6 py-2 rounded-lg m-2 mt-30 mb-4 bg-blue">Update</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>
+@endsection

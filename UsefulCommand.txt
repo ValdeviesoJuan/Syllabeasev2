@@ -1,0 +1,8 @@
+php artisan db:seed --class=RoleSeeder
+php artisan db:seed --class=CollegeSeeder
+php artisan db:seed --class=DepartmentSeeder
+
+enable prettier >>>>> shift + alt + f 
+
+
+to migrate:refresh specific migration >>> php artisan migrate:refresh --path=database/migrations/<migration_name.php>

@@ -1,0 +1,161 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    background-image: url('../assets/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0%;
+    background-attachment: fixed;
+}
+.syllab_logo{
+    width: 260px;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    display: block;
+}
+#title{
+    color: #2468d2;
+}
+form{
+    background-color: white;
+}
+.registercon{
+    margin: auto;
+    max-width: 450px;
+    height: auto;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-sizing: border-box;
+    margin-top: 50px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3%;
+    
+}
+.regbtn{
+    text-align: center;
+    width: 300px;
+    padding: 10px;
+    border-radius: 15px;
+    border: none;
+    font-weight: 700;
+    font-size: 18px;
+
+    margin: auto;
+    margin-left: 13%;
+    justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+    background-color:#2468d2 ;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.regbtn:active {
+    background-color: #1c4aa8;
+    transform: translate(0, 2px);
+}
+.regtext{
+    margin-top: 5px;
+    margin-bottom: 5%;
+
+}
+.form-control{
+    /* margin: auto;
+    width: 80%;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    border-style: none;
+    background-color: #F5F5F5;
+    margin-left: 40px;
+    
+    align-content: center; */
+    margin: auto;
+    padding: 10px;
+    width: 300px;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-left: 13%;
+    margin-bottom: 4%;
+
+}
+.form-control1{
+    margin: auto;
+    width: 35%;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 4%;
+    margin-left: 55px;
+    margin-top: 5px;
+    align-content: center;
+
+
+
+}
+.form-control2{
+    margin: auto;
+    width: 35%;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-top: 5px;
+    align-content: center;
+
+
+}
+.pos{
+    flex-direction: column;
+}
+.login{
+    margin-left: 35px;
+}
+#haveAcc{
+    color: #2468d2;
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 25%;
+}
+#haveAcc:hover{
+    text-decoration: underline;
+}
+.errormessage{
+    color: red;
+    font-size: 12px;
+    margin-left: 80px;
+    margin-bottom: 5px;
+}
+
+#loading-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 1000;
+}
+
+#loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#loading-spinner img {
+    width: 120px; 
+}

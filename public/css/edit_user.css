@@ -1,0 +1,80 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+body{
+    background-image: url('../assets/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0%;
+    background-attachment: fixed;
+}
+.container{
+    margin: 10%;
+}
+.card{
+    background-color: #FFF;
+    width: 28rem;
+    height: 30rem;
+    border-radius: 15px;
+
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+}
+.edit_user_img{
+    margin-left: 25%;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+/* h1{
+    margin: auto;
+    text-align: center;
+    padding: 15px;
+    padding-top: 30px;
+} */
+input{
+    float: right;
+    padding: 10px;
+    font-size: 15px;
+    margin-right:43px;
+    border-radius: 11px;
+    width: 55%;
+    border: none;
+    background-color: #e0e0e0;
+}
+label{
+    margin-left: 30px;
+    margin-bottom: 50px;
+    position: inherit;
+}
+.labelinput{
+    margin-top: 12px;
+}
+.form-group{
+    margin-top: 18px;
+    margin-bottom: 9%;
+    display:block;
+}
+.btn{
+    width: 60%;
+    padding: 10px;
+    margin: auto;
+    justify-content: center;
+    display: block;
+    margin-top: 4rem;
+
+    background-color: #201B50;
+    border-radius: 12px;
+    color: #FFF;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+.back_btn{
+    margin: auto;
+    text-align: center;
+    margin-top: 1rem;
+}

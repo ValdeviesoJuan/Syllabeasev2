@@ -1,0 +1,28 @@
+*{
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+    font-family: 'Arial';
+}
+.syllabease_navbar{
+    background-color: #E9E7F6;
+    padding: 12px;
+}
+.syllab_logo{
+    max-width: 10%;
+    height: auto;
+    margin-left: 15px;
+    margin-top: 5px;
+}
+.logout_btn{
+    float: right;
+    padding-top: 1rem;
+    margin-right: 20px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    margin-top: -10px;
+
+}
+.logout_btn:hover{
+    border-bottom: 1px solid;
+}

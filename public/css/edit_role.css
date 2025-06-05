@@ -1,0 +1,108 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+body{
+    margin: auto;
+}
+.container{
+    margin: auto;
+}
+div.cards{
+    text-align: center;
+    justify-content: center;
+    padding-top: 3rem;
+}
+h1{
+    margin: auto;
+    text-align: center;
+    padding: 3rem;
+}
+div.cards{
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    margin-left: 12px;
+}
+form.role_form{
+    background-color: #201B50;
+    color: #eeee;
+    display:inline-block;
+    width: 600px;
+    height: 200px;
+    padding: 20px;
+    border: 1px solid blue;    
+    border: none;
+    border-radius: 15px;
+
+    margin: 2rem;
+
+    text-align: center;
+}
+h1.heads{
+    margin: auto;
+    display: inline;
+    color: #000000;
+    margin-right: 32%;
+}
+button{
+    margin: auto;
+    display: inline-block;
+    margin: 7px;
+    padding: 4px;
+    width: 100px;
+    border: none;
+    border-radius: 6px;
+}
+div.mb-3{
+    padding: 1rem;
+}
+a.assign_role{
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    background-color: #ffc745;
+    padding: 1rem;
+    margin-right: 2%;
+    border-radius: 6px;
+    position: static;
+}
+/* div.headsbackground{
+    background-color:#ebebeb;
+} */
+select{
+    width: 180px;
+    padding: 3px;
+    border: none;
+    border-radius: 5px;
+}
+form.role_form{
+    font-size: 18px;
+}
+div.rolename{
+    font-size: 22px;
+}
+label.role_text{
+    float: left;
+}
+.options{
+    padding:8px ;
+    width: 80%;
+    font-size: 16px;
+}
+div.mb-3{
+    margin: auto;
+}
+.role_text{
+    margin-top: 8px;
+}
+button{
+    cursor: pointer;
+    width: 20%;
+    height: 20%;
+}
+button:hover{
+
+}

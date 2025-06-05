@@ -1,0 +1,42 @@
+#review_form_table table,
+th,
+td,
+tr {
+    border: 1px solid;
+}
+
+.part td {
+    border: 0px solid;
+}
+
+#review_form_table td {
+    padding: 10px;
+}
+
+#review_form_table .ones {
+    padding-left: 80px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgba(128, 128, 128, 0.75);
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    top: 110%;
+    left: 0%;
+    margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

@@ -1,0 +1,124 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    background-image: url('../assets/bg.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0%;
+    background-attachment: fixed;
+}
+.emailcon{
+    margin: auto;
+    max-width: 400px;
+    height: auto;
+    background-color: white;
+    border-radius: 15px;
+    box-sizing: border-box;
+    margin-top: 5%;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+.container_card{
+    background-color: white;
+    width: 25%;
+    margin: auto;
+    border-radius: 15px;
+}
+.emailver_logo{
+    margin: auto;
+    width: 250px;
+    margin-left: 39px;
+    margin-top: 25px;
+    margin-bottom: 5%;
+}
+.header{
+    font-size: large;
+    margin-top: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    color: #2468d2;
+    font-weight: 700;
+}
+#alert{
+    margin: auto;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 18px;
+    color: #2468d2;
+}
+#submit{
+    margin: auto;
+    width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    border-style: none;
+    background-color: #2468d2;
+    color: white;
+}
+.syllabease_navbar{
+    background-color: #C5D8FD;
+    padding: 12px;
+}
+.syllab_logo{
+    max-width: 11%;
+    height: auto;
+    margin-left: 15px;
+    margin-top: 5px;
+}
+.logout{
+    margin: auto;
+    width: 7%;
+    border-radius: 10px;
+    background-color: #2468d2;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    float: right;
+    padding : 10px;
+    margin-bottom: 5px;
+    margin-right: 30px;
+    text-align: center;
+}
+.logout a{
+    text-decoration: none;
+    color: white;
+}
+.logout:hover{
+    background-color: #f3a71a;
+    color: wheat;
+}
+.logout:active{
+    background-color: f3a71a;
+    transform: translate(0, 2px);
+}
+.clickbtn{
+    text-align: center;
+    width: 300px;
+    padding: 10px;
+    border-radius: 15px;
+    border: none;
+    font-weight: 600;
+    font-size: 18px;
+
+    margin: auto;
+    justify-content: center;
+    margin-top: 30px;
+
+    background-color:#2468d2 ;
+    color: #ffffff;
+    cursor: pointer;
+}
+.btncontainer{
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
