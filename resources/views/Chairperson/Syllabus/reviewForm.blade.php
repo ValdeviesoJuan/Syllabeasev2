@@ -47,7 +47,6 @@
                     </tr>
                     <!-- 2nd Header -->
                     <tr class="">            
-
                         <td colspan="2" class="w-[10/12] align-top">
                             <table class="my-4 mx-2 ">
                                 <tr class="">
@@ -344,10 +343,7 @@
                     </div>
                 </div>
                 </td>
-
-
                 </table>
-
             </div>
         </div>
 
@@ -362,8 +358,8 @@
                             <span class="font-semibold ">Directions:</span> Check the column <span class="font-semibold">YES</span> if an indicator is observed in the syllabus and check column NO if otherwise. Provide clear and constructive remarks that would help improve the content and alignment of the syllabus.
                         </p>
                     </div>
-                    <table id="review_form_table">
-                        <form action="{{ route('chairperson.returnSyllabus', $syll_id) }}" method="POST">
+                    <form action="{{ route('chairperson.returnSyllabus', $syll_id) }}" method="POST">
+                        <table id="review_form_table">
                             @csrf
                             <thead class="bg-red-500">
                                 <tr class="">
@@ -377,89 +373,89 @@
                                 <tr colspan-3 class="part">
                                     <td class="font-bold">PART I. BASIC SYLLABUS INFORMATION</td>
                                 </tr>
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value='1'>
                                     <td>1. The syllabus follows the prescribed OBE syllabus format of the University and include the following:</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.1  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value='2'>
                                     <td class="ones">• Name of the College/Campus is indicated below the University name/brand.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.2  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value='3'>
                                     <td class="ones">• Program, Course Title, Course Code and Unit Credits are specified in the syllabus.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.3  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value='4'>
                                     <td class="ones">• Pre-requisites and co-requisites are indicated.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.4  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="5">
                                     <td class="ones">• Semester, Academic Year, Schedule of Course, Building and Room Number are stipulated in the syllabus.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.5  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="6">
                                     <td class="ones">• Contact details of the instructor such as the instructor’s name, email address OR mobile number (optional) are specified in the syllabus.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.6  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="7">
                                     <td class="ones">• Instructor’s consultation schedules, oﬃce or consultation venue, oﬃce phone number is indicated in the syllabus.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 1.7  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="8">
                                     <td class="ones">• The University’s Vision and Mission are indicated in the syllabus.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
 
                                 <!-- 2  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="9">
                                     <td class="">2. The course description stipulates its relevance to the curriculum in general and provides an overview of the course content.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
 
                                 <tr class="part">
                                     <td colspan="4" class="font-bold">PART II. PROGRAM EDUCATIONAL OBJECTIVES (or General Outcomes for Gen Ed courses)</td>
                                 </tr>
                                 <!-- 3  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="10">
                                     <td class="">3. The Approved Program Educational Objectives (PEO) and Program Outcomes (PO) are listed with alphabets in the syllabus (which will be referred to in the mapping of the course outcomes).</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
 
 
@@ -467,80 +463,80 @@
                                     <td class="font-bold">PART III. COURSE OUTCOMES</td>
                                 </tr>
                                 <!-- 4  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="11">
                                     <td class="">4. The course outcomes are measurable and aligned with the course description and program outcomes.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 5  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="12">
                                     <td class="">5. The course outcomes are mapped accordingly to the program outcomes/GELOs using the markers: i - introductory, e - enabling, and d - demonstrative.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
 
                                 <tr colspan-3 class="part">
                                     <td class="font-bold">PART IV. COURSE OUTLINE</td>
                                 </tr>
                                 <!-- 6  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="13">
                                     <td class="">6. The course outline indicates the number of hours.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 7  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="14">
                                     <td class="">7. Topics are assigned to intended learning outcomes (ILO).</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 8  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="15">
                                     <td class="">8. Suggested readings are provided.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 9  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="16">
                                     <td class="">9. The Teaching-Learning Activities (TLAs) are indicated in the outline.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 10  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="17">
                                     <td class="">10. Assessment tools are indicated.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 11  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="18">
                                     <td class="">11. Rubrics are attached for all outputs/requirements.</td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                                 <!-- 12  -->
-                                <tr class="">
+                                <tr class="review-row">
                                     <input type="hidden" name="srf_no[]" value="19">
                                     <td class="">12. The grading criteria are clearly stated in the syllabus.</td>
                                     <td class="checkbox-cell"><input name="srf_yes_no[]" class="yes h-6 w-6" type="checkbox" value="1"></td>
                                     <td class="checkbox-cell"> <input name="srf_yes_no[]" class="no h-6 w-6" type="checkbox" value="0"></td>
-                                    <td class=""><textarea name="srf_remarks[]" id="" cols="30" rows="3"></textarea></td>
+                                    <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                             </tbody>
                     </table>
@@ -602,7 +598,6 @@
             });
         });
         $(document).ready(function() {
-
             function checkAllYesCheckboxes() {
                 $('.yes').prop('checked', true);
             }
@@ -612,14 +607,10 @@
                 checkAllYesCheckboxes();
                 checkCheckbox();
             });
-
-
-
         });
         $('.yes, .no').on('change', function() {
             checkCheckbox();
         });
-
         function checkCheckbox() {
             // Check if all checkboxes with class 'yes' are checked
             var allYesChecked = $('.yes:checked').length === $('.yes').length;
@@ -641,6 +632,32 @@
                     row.find('input.no').prop('checked', false);
                 } else if ($(this).hasClass('no') && $(this).prop('checked')) {
                     row.find('input.yes').prop('checked', false);
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            var form = $('form');
+            var rows = $('.review-row');
+
+            form.on('submit', function (e) {
+                var isValid = true;
+
+                rows.each(function () {
+                    var no = $(this).find('.no');
+                    var remarks = $(this).find('.remarks');
+
+                    if (no.prop('checked') && $.trim(remarks.val()) === '') {
+                        isValid = false;
+                        remarks.addClass('border-solid border-2 border-red placeholder-red').attr('placeholder', 'Please input remarks here');
+                    } else {
+                        remarks.removeClass('border-solid border-2 border-red placeholder-red').removeAttr('placeholder');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please provide remarks for all items marked as "No".');
                 }
             });
         });
