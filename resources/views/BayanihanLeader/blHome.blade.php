@@ -209,22 +209,48 @@
             <div class="mt-2 text-blue text-2xl font-semibold">
                 Syllabi
             </div>
-            <div class="mb-5 mt-2 pt-2 w-[200px] hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded hover:bg-blue">
-                <form action="{{ route('bayanihanleader.createSyllabus') }}" method="GET">
-                    @csrf
-                    <button type="submit" class="flex m-auto text-ml">
-                        <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
-                            <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
-                        </svg>
-                        <div class="px-2">
-                            <div class="flex m-auto">
-                                Create Syllabus
-                            </div>
-                        </div>
-                    </button>
-                </form>
-            </div>
+            <div class="flex gap-4"> <!-- FLEX CONTAINER -->
+
+    <!-- Create Syllabus button (left) -->
+    <div class="mb-5 mt-2 pt-2 w-[200px] hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded hover:bg-blue">
+        <form action="{{ route('bayanihanleader.createSyllabus') }}" method="GET">
+            @csrf
+            <button type="submit" class="flex m-auto text-ml">
+                <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                </svg>
+                <div class="px-2">
+                    <div class="flex m-auto">
+                        Create Syllabus
+                    </div>
+                </div>
+            </button>
+        </form>
+    </div>
+
+    <!-- Create Template button (right) -->
+    <div class="mb-5 mt-2 pt-2 w-[200px] hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded hover:bg-blue">
+        <form action="{{ route('bayanihanleader.createTemplate') }}" method="GET">
+            @csrf
+            <button type="submit" class="flex m-auto text-ml">
+                <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                </svg>
+                <div class="px-2">
+                    <div class="flex m-auto">
+                        Create Template
+                    </div>
+                </div>
+            </button>
+        </form>
+    </div>
+
+</div>
+
+                
+
             <livewire:b-l-syllabus-table />
 
             <!-- Syllabus Cards                                
