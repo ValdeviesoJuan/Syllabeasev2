@@ -240,7 +240,7 @@
                 </svg>
                 <div class="px-2">
                     <div class="flex m-auto">
-                        Create Template
+                        Select Template
                     </div>
                 </div>
             </button>
