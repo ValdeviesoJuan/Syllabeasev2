@@ -268,7 +268,7 @@
                     </div>
                 </a>
                 <div class="rounded-b-lg ">
-                    <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full right-0 md:w-52 bg-white shadow-2xl md:rounded-b-lg shadow-gray rounded-b-lg">
+                    <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full right-0 md:w-52 bg-white md:rounded-b-lg shadow-gray rounded-b-lg">
                         <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
                             <div class="">
                                 <form action="{{ route('bayanihanleader.createCo', $syll_id) }}" method="GET">
@@ -489,7 +489,45 @@
                             <path d="M14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5C13.3807 9.5 14.5 10.6193 14.5 12Z" fill="#ffffff" />
                             <path d="M12 22.5C13.3807 22.5 14.5 21.3807 14.5 20C14.5 18.6193 13.3807 17.5 12 17.5C10.6193 17.5 9.5 18.6193 9.5 20C9.5 21.3807 10.6193 22.5 12 22.5Z" fill="#ffffff" />
                         </svg>
-                    </div>
+                    </div>                    @php
+                        $totalHours = 0;
+                        foreach($courseOutlines as $cot) {
+                            $totalHours += floatval($cot->syll_allotted_hour);
+                        }
+                        foreach($courseOutlinesFinals as $cotf) {
+                            $totalHours += floatval($cotf->syll_allotted_hour);
+                        }
+                    @endphp
+                    
+                    @if($totalHours > 35 && $totalHours < 40)
+                        <div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-10/12 mx-auto mb-4" role="alert">
+                            <div class="flex">
+                                <div class="py-1">
+                                    <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-bold">Warning: High Total Hours</p>
+                                    <p class="text-sm">Total allotted hours ({{ $totalHours }}) are above 35. Please review your entries.</p>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($totalHours >= 40)
+                        <div class="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-md w-10/12 mx-auto mb-4" role="alert">
+                            <div class="flex">
+                                <div class="py-1">
+                                    <svg class="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-bold">Alert: Maximum Hours Reached</p>
+                                    <p class="text-sm">Total allotted hours ({{ $totalHours }}) have reached or exceeded the 40-hour threshold!</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </a>
                 <div class="rounded">
                     <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full md:w-[120px] bg-white shadow-2xl shadow-gray rounded">
@@ -515,7 +553,7 @@
             <!-- <div class="relative parent py-2 px-3 text-white rounded">
                 <a class="text-blue space-x-2 ">
                     <div class="flex items-center space-x-2">
-                        <svg width="25px" height="25pxpx" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <svg width="25px" height="25px" viewBox="0 0 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                 <g id="Dribbble-Light-Preview" transform="translate(-99.000000, -520.000000)" fill="#e65a45">
                                     <g id="icons" transform="translate(56.000000, 160.000000)">
@@ -739,6 +777,45 @@
                         <td colspan=2 class=" border-2 border-solid font-medium px-4">
                             <span class="text-left font-bold">
                                 III. Course Outline:</span><br>
+                                {{-- <<! Na add ni gelski --}}
+                                @php
+                                    $totalHours = 0;
+                                    foreach($courseOutlines as $cot) {
+                                        $totalHours += floatval($cot->syll_allotted_hour);
+                                    }
+                                    foreach($courseOutlinesFinals as $cotf) {
+                                        $totalHours += floatval($cotf->syll_allotted_hour);
+                                    }
+                                @endphp
+
+                                @if($totalHours > 35 && $totalHours < 40)
+                                    <div id="hoursAlert" class="fixed top-6 right-6 z-50 bg-white border-t-4 border-orange-500 rounded-b text-black px-8 py-8 shadow-md min-w-[320px] flex items-start" role="alert">
+                                        <div class="py-1">
+                                            <svg class="h-6 w-6 text-orange-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-lg">Warning: High Total Hours</p>
+                                            <p class="text-base">Total allotted Time ({{ $totalHours }}) are nearing the 40-hour limit. Please review your entries.</p>
+                                        </div>
+                                        <button onclick="document.getElementById('hoursAlert').style.display='none'" class="ml-4 text-black hover:text-orange-500 font-bold text-lg">&times;</button>
+                                    </div>
+                                @elseif($totalHours >= 40)
+                                    <div id="hoursAlert" class="fixed top-6 right-6 z-50 bg-white border-t-4 border-[#ef4444] rounded-b text-red-900 px-8 py-8 shadow-md min-w-[320px] flex items-start" role="alert">
+                                        <div class="py-1">
+                                            <svg class="h-6 w-6 text-red-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-lg">Alert: Maximum Hours Reached</p>
+                                            <p class="text-base">Total allotted Time ({{ $totalHours }}) have reached or exceeded the 40-hour threshold!</p>
+                                        </div>
+                                        <button onclick="document.getElementById('hoursAlert').style.display='none'" class="ml-4 text-black hover:text-red-500 font-bold text-lg">&times;</button>
+                                    </div>
+                                @endif
+
                             <table class="m-5 mx-auto border-2 border-solid w-">
                                 <tr class="border-2 border-solid">
                                     <th class="border-2 border-solid">
@@ -1010,6 +1087,16 @@
             });
         });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var alertBox = document.getElementById('hoursAlert');
+        if(alertBox){
+            setTimeout(function(){
+                if(alertBox) alertBox.style.display = 'none';
+            }, 7000); // 7 seconds
+        }
+    });
+</script>
 </body>
 
 </html>
