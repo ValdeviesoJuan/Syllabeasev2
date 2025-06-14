@@ -93,6 +93,25 @@ class ChairSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
+        $reviewForm = null;
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = null;
+        }
+
+        if ($syll->status === 'Returned by Chair') {
+            $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+                ->where('syllabus_review_forms.syll_id', $syll_id)
+                ->select('srf_checklists.*', 'syllabus_review_forms.*')
+                ->first();
+
+            for ($i = 1; $i <= 19; $i++) {
+                ${"srf{$i}"} = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
+                    ->where('syll_id', $syll_id)
+                    ->where('srf_no', $i)
+                    ->first();
+            }
+        }
+
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -174,8 +193,27 @@ class ChairSyllabusController extends Controller
             'bLeaders',
             'bMembers',
             'poes',
-            'feedback'
-
+            'feedback',
+            'reviewForm',
+            'srf1',
+            'srf2',
+            'srf3',
+            'srf4',
+            'srf5',
+            'srf6',
+            'srf7',
+            'srf8',
+            'srf9',
+            'srf10',
+            'srf11',
+            'srf12',
+            'srf13',
+            'srf14',
+            'srf15',
+            'srf16',
+            'srf18',
+            'srf17',
+            'srf19'
         ));
     }
     public function approveSyllabus($syll_id)
@@ -364,7 +402,6 @@ class ChairSyllabusController extends Controller
     }
     public function returnSyllabus(Request $request, $syll_id)
     {
-
 
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
