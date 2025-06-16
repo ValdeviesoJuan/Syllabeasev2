@@ -56,7 +56,6 @@
 
 <body>
     <div class="m-auto bg-slate-100 mt-[120px] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-11/12">
-        {{-- <div class="max-w-md  w-[560px] p-6 px-8 rounded-lg shadow-lg"> --}}
         <img class="edit_user_img text-center mt-12 w-[370px] m-auto mb-12" src="/assets/Midterm Course Outline.png" alt="SyllabEase Logo">
         <form action="{{ route('bayanihanleader.storeCot', $syll_id) }}" method="POST">
             @csrf

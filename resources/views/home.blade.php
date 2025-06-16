@@ -11,7 +11,6 @@
     <title>User Home Page</title>
     <link rel="stylesheet" href="/css/home_user.css">
     @vite('resources/css/app.css')
-    <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         body {
@@ -106,7 +105,7 @@
         <div class="login-title">Login as</div>
 
         @php
-            // Add Auditor role for testing (move this here)
+         
             $myRoles[] = (object)[
                 'role_id' => 6,
                 'role_name' => 'Auditor'
@@ -146,14 +145,14 @@
                             default => '#',
                         };
 
-                        // Font Awesome icon classes
+                        
                         $icons = [
-                            1 => 'fa-solid fa-user-shield',      // Admin
-                            2 => 'fa-solid fa-user-graduate',    // Dean
-                            3 => 'fa-solid fa-briefcase',        // Chairperson
-                            4 => 'fa-solid fa-people-group',     // Bayanihan Leader
-                            5 => 'fa-solid fa-chalkboard-user',  // Bayanihan Teacher
-                            6 => 'fa-solid fa-user-check',       // Auditor
+                            1 => 'fa-solid fa-user-shield',      
+                            2 => 'fa-solid fa-user-graduate',    
+                            3 => 'fa-solid fa-briefcase',        
+                            4 => 'fa-solid fa-people-group',     
+                            5 => 'fa-solid fa-chalkboard-user', 
+                            6 => 'fa-solid fa-user-check',       
                         ];
                         $icon = $icons[$myRole->role_id] ?? 'fa-solid fa-key';
                     @endphp

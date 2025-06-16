@@ -33,17 +33,17 @@
 
 <body class="bg-white font-sans overflow-hidden">
     <div class="flex h-screen">
-        <!-- Left Panel (40%) -->
+        <!-- Left Panel -->
         <div class="relative w-[40%] flex items-center justify-center px-6 bg-white overflow-hidden">
 
-            <!-- Top Right Smooth Side Blob (bigger and overlapping right edge) -->
+            <!-- Top Right fuckiign Smooth Side Blob -->
             <svg class="absolute top-0 right-0 z-0 pointer-events-none" width="360" height="260" viewBox="0 0 360 260"
                 fill="none" xmlns="http://www.w3.org/2000/svg" style="right:-60px; top:-40px;">
                 <path fill="#1769aa"
                     d="M360,0 Q330,90 270,120 Q210,150 180,90 Q150,30 90,60 Q30,90 0,0 L360,0Z" />
             </svg>
 
-            <!-- Bottom Left Smooth Side Blob (much more overlap to the left side) -->
+            <!-- Bottom Left fuckiign Smooth Side Blob -->
             <svg class="absolute bottom-0 left-0 z-0 pointer-events-none" width="420" height="300" viewBox="0 0 420 300"
                 fill="none" xmlns="http://www.w3.org/2000/svg" style="left:-120px; bottom:-60px;">
                 <path fill="#1769aa"
@@ -121,7 +121,7 @@
             </div>
         </div>
 
-        <!-- Right Panel (60%) -->
+        <!-- Right Panel -->
         <div class="hidden lg:block w-[60%] relative">
             <img src="{{ asset('assets/ustp_pic.jpg') }}" alt="USTP Campus" class="w-full h-full object-cover" />
             <div class="absolute inset-0" style="background: #dfaa0c; opacity: 0.15;"></div>

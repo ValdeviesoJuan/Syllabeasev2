@@ -124,7 +124,7 @@
         <script>
 document.addEventListener('DOMContentLoaded', function() {
     let totalHours = {{ $totalHours }};
-    const maxHours = 40;
+    const maxHours = 39;
 
     const hourInput = document.querySelector('input[name="syll_allotted_hour"]');
     const submitBtn = document.querySelector('button[type="submit"]');
