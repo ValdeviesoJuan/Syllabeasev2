@@ -8,147 +8,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/css/home_user.css">
     <title>User Home Page</title>
+    <link rel="stylesheet" href="/css/home_user.css">
     @vite('resources/css/app.css')
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        .bg svg {
-            transform: scaleY(-1);
-            min-width: '1880'
-        }
-
         body {
-            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-image: url("{{ asset('assets/ustp_pic.jpg') }}");
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
-            background-position: top;
             background-attachment: fixed;
-            background-size: contain;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            image-rendering: auto; 
+            position: relative;
         }
 
-        /* Example CSS for your login role selection */
-        
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(248, 189, 12, 0.18);
+            z-index: 0;
+            pointer-events: none; 
+        }
 
         .login-container {
+            position: relative;
             background: #faf6e8;
             border-radius: 16px;
             padding: 32px 24px;
-            max-width: 400px;
-            margin: 40px auto;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            max-width: 460px;
+            margin: 60px auto;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             text-align: center;
+            z-index: 1;
         }
 
         .login-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 28px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #333;
         }
 
         .role-buttons {
             display: flex;
             flex-direction: column;
-            gap: 16px;
             align-items: center;
         }
 
-        .role-row {
-            display: flex;
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(4, auto);
             gap: 16px;
             width: 100%;
-            justify-content: center;
+            max-width: 400px;
         }
 
         .role-btn {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #e3f1fa;
+            background: #d7ecf9;
             border: none;
-            border-radius: 12px;
-            padding: 14px 32px;
-            font-size: 1.1rem;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 1rem;
             color: #1a3557;
+            font-weight: 500;
+            min-width: 0;
+            justify-content: center;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
             cursor: pointer;
-            transition: background 0.2s;
-            min-width: 170px;
+            transition: background 0.3s ease;
+            text-decoration: none;
         }
 
         .role-btn:hover {
-            background: #d0e7f5;
+            background: #c3dff3;
         }
 
-        .role-btn .icon {
-            font-size: 1.6em;
+        .role-icon {
+            font-size: 1.4rem;
         }
     </style>
 </head>
 
 <body>
-    <div class="flex items-center justify-center">
-        <div class="bg-white h-content m-auto justify-center mt-[6%] w-[400px] rounded-lg shadow-xl pb-5">
-            <div class="flex justify-center mt-5 w-full shadow">
-                <img class="w-[280px] text-lg font-bold md:py-0 py-4" src="/assets/Sample/syllabease.png" alt="SyllabEase">
-            </div>
-            <div class="flex justify-center font-semibold text-lg text-gray2">
-                Login as
-            </div>
-            @php
+    <div class="login-container">
+        <img class="mx-auto mb-4 w-[240px]" src="/assets/Sample/syllabease.png" alt="SyllabEase">
+        
+        <div class="login-title">Login as</div>
+
+        @php
+            // Add Auditor role for testing (move this here)
+            $myRoles[] = (object)[
+                'role_id' => 6,
+                'role_name' => 'Auditor'
+            ];
+
             $href = '';
             $roleCount = count($myRoles);
 
             if ($roleCount == 1) {
-            $myRole = $myRoles[0];
+                $myRole = $myRoles[0];
 
-            if ($myRole->role_id == 1) {
-            $href = route('admin.home');
-            } elseif ($myRole->role_id == 2) {
-            $href = route('dean.home');
-            } elseif ($myRole->role_id == 3) {
-            $href = route('chairperson.home');
-            } elseif ($myRole->role_id == 4) {
-            $href = route('bayanihanleader.home');
-            } elseif ($myRole->role_id == 5) {
-            $href = route('bayanihanteacher.home');
-            } else {
-            $href = '#';
+                switch ($myRole->role_id) {
+                    case 1: $href = route('admin.home'); break;
+                    case 2: $href = route('dean.home'); break;
+                    case 3: $href = route('chairperson.home'); break;
+                    case 4: $href = route('bayanihanleader.home'); break;
+                    case 5: $href = route('bayanihanteacher.home'); break;
+                    case 6: $href = route('auditor.home'); break;
+                    default: $href = '#'; break;
+                }
+
+                echo "<script>window.location.href = '{$href}';</script>";
             }
+        @endphp
 
-            echo "<script>
-                window.location.href = '{$href}';
-            </script>";
-            }
-            @endphp
+        <div class="role-buttons">
+            <div class="role-grid">
+                @foreach($myRoles as $myRole)
+                    @php
+                        $href = match($myRole->role_id) {
+                            1 => route('admin.home'),
+                            2 => route('dean.home'),
+                            3 => route('chairperson.home'),
+                            4 => route('bayanihanleader.home'),
+                            5 => route('bayanihanteacher.home'),
+                            6 => route('auditor.home'),
+                            default => '#',
+                        };
 
-            @foreach($myRoles as $myRole)
-            @php
-            if ($myRole->role_id == 1) {
-            $href = route('admin.home');
-            } elseif ($myRole->role_id == 2) {
-            $href = route('dean.home');
-            } elseif ($myRole->role_id == 3) {
-            $href = route('chairperson.home');
-            } elseif ($myRole->role_id == 4) {
-            $href = route('bayanihanleader.home');
-            } elseif ($myRole->role_id == 5) {
-            $href = route('bayanihanteacher.home');
-            } else {
-            $href = '#';
-            }
-            @endphp
+                        // Font Awesome icon classes
+                        $icons = [
+                            1 => 'fa-solid fa-user-shield',      // Admin
+                            2 => 'fa-solid fa-user-graduate',    // Dean
+                            3 => 'fa-solid fa-briefcase',        // Chairperson
+                            4 => 'fa-solid fa-people-group',     // Bayanihan Leader
+                            5 => 'fa-solid fa-chalkboard-user',  // Bayanihan Teacher
+                            6 => 'fa-solid fa-user-check',       // Auditor
+                        ];
+                        $icon = $icons[$myRole->role_id] ?? 'fa-solid fa-key';
+                    @endphp
 
-            <a class="" href="{{ $href }}">
-                <div class="hover:bg-blue hover:text-white text-gray2 mt-2 bg-blue2 h-[50px] mx-5 rounded-md flex justify-center items-center mb-3">
-                    <div class="font-semibold text-lg">
+                    <a href="{{ $href }}" class="role-btn">
+                        <span class="role-icon"><i class="{{ $icon }}"></i></span>
                         {{ $myRole->role_name }}
-                    </div>
-                </div>
-            </a>
-            @endforeach
-
+                    </a>
+                @endforeach
+            </div>
         </div>
+
     </div>
 </body>
-
 </html>
 @endsection
