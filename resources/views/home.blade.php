@@ -24,6 +24,63 @@
             background-attachment: fixed;
             background-size: contain;
         }
+
+        /* Example CSS for your login role selection */
+        
+
+        .login-container {
+            background: #faf6e8;
+            border-radius: 16px;
+            padding: 32px 24px;
+            max-width: 400px;
+            margin: 40px auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 28px;
+        }
+
+        .role-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .role-row {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .role-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #e3f1fa;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            color: #1a3557;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 170px;
+        }
+
+        .role-btn:hover {
+            background: #d0e7f5;
+        }
+
+        .role-btn .icon {
+            font-size: 1.6em;
+        }
     </style>
 </head>
 
