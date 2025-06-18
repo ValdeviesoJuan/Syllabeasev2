@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer(['layouts.deanSidebar', 'layouts.chairSidebar'], function ($view) {
+        View::composer(['layouts.deanSidebar', 'layouts.chairSidebar', 'layouts.blSidebar', 'layouts.btSidebar'], function ($view) {
             $user = Auth::user();
             $notifications = $user ? $user->notifications : collect();
             $view->with('notifications', $notifications);
