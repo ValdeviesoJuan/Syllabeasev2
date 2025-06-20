@@ -8,9 +8,14 @@ use App\Models\Memo;
 
 class BTMemoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $memos = Memo::latest()->get();
+        $search = $request->input('search');
+
+         $memos = Memo::when($search, function ($query, $search) {
+            return $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+        })->latest()->get();
         return view('BayanihanTeacher.Memo.btMemo', compact('memos'));
     }
 }

@@ -12,17 +12,22 @@ use Illuminate\Support\Facades\Storage;
 
 class DeanMemoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $notifications = $user->notifications;
 
-        $memos = Memo::latest()->get();
-        $users = \App\Models\User::select('email')->get(); // Add this line
+        $search = $request->input('search');
+
+        $memos = Memo::when($search, function ($query, $search) {
+            return $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+        })->latest()->get();
+
+        $users = \App\Models\User::select('email')->get();
 
         return view('Dean.Memo.memos', compact('notifications', 'memos', 'users'));
     }
-
 
     public function store(Request $request)
     {

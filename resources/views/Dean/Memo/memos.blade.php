@@ -9,55 +9,77 @@
 <div class="mt-16 p-4 shadow bg-white border-dashed rounded-lg dark:border-gray-700">
 
     {{-- Header --}}
-    <div class="mb-6 flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Dean Memos</h1>
-            <p class="text-gray-600 dark:text-gray-300">Issued memos and documents. Click download to access.</p>
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">Memorandum</h1>
         </div>
-        <button onclick="openMemoModal()" 
-            class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-            Create Memo
-        </button>
-    </div>
 
-    {{-- Memo Table --}}
-    <div class="overflow-x-auto">
-        <table class="w-full table-auto border-collapse text-left">
-            <thead class="bg-gray-100 dark:bg-gray-800">
-                <tr>
-                    <th class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-white">Title</th>
-                    <th class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-white">Description</th>
-                    <th class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-white">Date</th>
-                    <th class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-white">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($memos as $memo)
-                <tr class="border-b dark:border-gray-600">
-                    <td class="px-4 py-2">{{ $memo->title }}</td>
-                    <td class="px-4 py-2 line-clamp-2">{{ Str::limit($memo->description, 60) }}</td>
-                    <td class="px-4 py-2">
-                        {{ $memo->date ? \Carbon\Carbon::parse($memo->date)->format('F d, Y') : 'No date' }}
-                    </td>
-                    <td class="px-4 py-2 flex gap-2">
-                        <a href="{{ route('dean.memo.download', $memo->id) }}"
-                            class="text-blue-600 hover:underline text-sm">Download</a>
-                        <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
-                            class="text-blue-600 hover:underline">Edit</button>
-                        <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
-                            onsubmit="return confirm('Are you sure?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="text-center text-gray-500 py-4">No memos available at the moment.</td>
-                </tr>
-                @endforelse
-            </tbody>
+        <form method="GET" action="{{ route('dean.memo') }}" class="mb-4 flex justify-between items-center">
+            <div class="relative w-64">
+                <input type="text" name="search" placeholder="Search.."
+                    value="{{ request('search') }}"
+                    class="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                </svg>
+            </div>
+
+            <button type="button" onclick="openMemoModal()" class="bg-blue text-white px-4 py-2 rounded">
+                Create Memo
+            </button>
+        </form>
+
+        {{-- Memo Table --}}
+        <div class="overflow-x-auto">
+            <table class="w-full table-fixed border-separate border-spacing-y-2">
+                <thead>
+                    <tr class="bg-blue text-white text-sm">
+                        <th class="p-3 rounded-l-lg w-[3%]">Title</th>
+                        <th class="p-3 w-[8%]">Description</th>
+                        <th class="p-3 w-[3%]">Date</th>
+                        <th class="p-3 rounded-r-lg w-[2%]">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm text-gray-700">
+                    @forelse($memos as $memo)
+                    <tr class="bg-white rounded shadow-sm">
+                        <td class="p-3">{{ $memo->title }}</td>
+                        <td class="p-3">{{ Str::limit($memo->description, 80) }}</td>
+                        <td class="p-3">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
+                        <td class="p-3">
+                            <div class="flex gap-2">
+                                {{-- Download --}}
+                                <a href="{{ route('dean.memo.download', $memo->id) }}" title="Download"
+                                class="border-[2px] border-black rounded-full px-3 py-2 inline-flex items-center justify-center">
+                                    <iconify-icon icon="mdi:download" width="18" height="18" class="text-black"></iconify-icon>
+                                </a>
+
+                                {{-- Edit --}}
+                                <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
+                                        title="Edit"
+                                        class="border-[2px] border-green rounded-full px-3 py-2 inline-flex items-center justify-center">
+                                    <iconify-icon icon="mdi:pencil" width="18" height="18" class="text-green"></iconify-icon>
+                                </button>
+
+                                {{-- Delete --}}
+                                <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure?')" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" title="Delete"
+                                            class="border-[2px] border-red rounded-full px-3 py-2 inline-flex items-center justify-center">
+                                        <iconify-icon icon="mdi:trash-can" width="18" height="18" class="text-red"></iconify-icon>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </table>
     </div>
 </div>
@@ -151,6 +173,7 @@
 <!-- jQuery & Select2 JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 
 <!-- Init Select2 -->
 <script>

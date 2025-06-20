@@ -8,9 +8,14 @@ use App\Models\Memo;
 
 class BLMemoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $memos = Memo::latest()->get(); // Same as Chair view
+        $search = $request->input('search');
+
+         $memos = Memo::when($search, function ($query, $search) {
+            return $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+        })->latest()->get();
         return view('BayanihanLeader.Memo.blLeader', compact('memos'));
     }
 }

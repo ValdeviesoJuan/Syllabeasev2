@@ -10,6 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/Sample/se.png') }}">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 
 <script>
