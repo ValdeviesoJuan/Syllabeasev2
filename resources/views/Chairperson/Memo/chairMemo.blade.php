@@ -10,7 +10,7 @@
         <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">Memorandum Issued by the Dean</h1>
     </div>
 
-    {{-- Search Bar --}}
+    {{-- Search Bar + View Toggle Buttons --}}
     <form method="GET" action="{{ route('chair.memo') }}" class="mb-4 flex justify-between items-center">
         <div class="relative w-64">
             <input type="text" name="search" placeholder="Search..."
@@ -20,10 +20,25 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
             </svg>
         </div>
+
+        {{-- View Toggle Buttons --}}
+        <div class="flex gap-2">
+            <button type="button" id="tableBtn" onclick="setView('table')"
+                class="p-2 border rounded-lg hover:bg-gray-100 bg-gray-300"
+                title="Table View">
+                <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
+            </button>
+            <button type="button" id="tilesBtn" onclick="setView('tiles')"
+                class="p-2 border rounded-lg hover:bg-gray-100"
+                title="Tile View">
+                <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
+            </button>
+        </div>
+
     </form>
 
-    {{-- Memo Table --}}
-    <div class="overflow-x-auto">
+    {{-- Memo Views --}}
+    <div id="tableView" class="overflow-x-auto">
         <table class="w-full table-fixed border-separate border-spacing-y-2">
             <thead>
                 <tr class="bg-blue text-white text-sm">
@@ -42,10 +57,9 @@
                         {{ $memo->date ? \Carbon\Carbon::parse($memo->date)->format('F d, Y') : 'No date' }}
                     </td>
                     <td class="p-3">
-                        {{-- Download --}}
                         <a href="{{ route('dean.memo.download', $memo->id) }}" title="Download"
-                           class="border-[2px] border-black rounded-full px-3 py-2 inline-flex items-center justify-center">
-                            <iconify-icon icon="mdi:download" width="18" height="18" class="text-black"></iconify-icon>
+                           class="border-[2px] border-blue rounded-full px-3 py-2 inline-flex items-center justify-center">
+                            <iconify-icon icon="mdi:download" width="18" height="18" class="text-blue"></iconify-icon>
                         </a>
                     </td>
                 </tr>
@@ -57,8 +71,51 @@
             </tbody>
         </table>
     </div>
+
+    <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @forelse($memos as $memo)
+        <div class="p-4 border rounded-lg shadow bg-white">
+            <h2 class="text-lg font-semibold mb-2">{{ $memo->title }}</h2>
+            <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
+            <div class="flex justify-between items-center text-sm text-gray-500 mb-2">
+                <span>
+                    {{ $memo->date ? \Carbon\Carbon::parse($memo->date)->format('F d, Y') : 'No date' }}
+                </span>
+                <a href="{{ route('dean.memo.download', $memo->id) }}" class="inline-flex items-center px-3 py-1 text-sm bg-blue text-white rounded hover:bg-blue-600">
+                    <iconify-icon icon="mdi:download" class="mr-1" width="16" height="16"></iconify-icon>
+                    Download
+                </a>
+            </div>
+        </div>
+        @empty
+        <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
+        @endforelse
+    </div>
 </div>
 
 <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+<script>
+    function setView(view) {
+        const tableView = document.getElementById('tableView');
+        const tileView = document.getElementById('tileView');
+        const tableBtn = document.getElementById('tableBtn');
+        const tilesBtn = document.getElementById('tilesBtn');
+
+        if (view === 'tiles') {
+            tableView.classList.add('hidden');
+            tileView.classList.remove('hidden');
+            tilesBtn.classList.add('bg-gray');
+            tableBtn.classList.remove('bg-gray');
+        } else {
+            tableView.classList.remove('hidden');
+            tileView.classList.add('hidden');
+            tableBtn.classList.add('bg-gray');
+            tilesBtn.classList.remove('bg-gray');
+        }
+    }
+     window.addEventListener('DOMContentLoaded', () => {
+        setView('table'); // Ensure table view is default on initial page load
+    });
+</script>
 
 @endsection
