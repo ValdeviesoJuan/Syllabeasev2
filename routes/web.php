@@ -60,6 +60,13 @@ use App\Http\Controllers\BayanihanLeader\BayanihanLeaderCOTController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderCRQController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderPDFController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderTOSController;
+use App\Http\Controllers\BayanihanLeader\SyllabusTemplate\SyllabusTemplateController;
+use App\Http\Controllers\BayanihanLeader\SyllabusTemplate\TemplatePageController;
+use App\Http\Controllers\SyllabusController;
+
+
+
+
 //Bayanihan Teacher Controls
 use App\Http\Controllers\BayanihanTeacher\BayanihanTeacherSyllabusController;
 use App\Http\Controllers\BayanihanTeacher\BayanihanTeacherTOSController;
@@ -126,6 +133,9 @@ Route::group(['prefix' => 'bayanihanleader', 'middleware' => ['auth', 'isBL']], 
 
     Route::get('/syllabus', [BayanihanLeaderSyllabusController::class, 'index'])->name('bayanihanleader.syllabus');
     Route::get('/syllabus/createSyllabus', [BayanihanLeaderSyllabusController::class, 'createSyllabus'])->name('bayanihanleader.createSyllabus');
+    Route::get('/syllabus/template/{id}', [TemplatePageController::class, 'show'])->name('syllabus.template');
+    Route::get('/syllabus/template', [TemplatePageController::class, 'show'])->name('syllabus.template');
+    Route::get('/bayanihanleader/syllabus-template/create', [SyllabusTemplateController::class, 'create'])->name('bayanihanleader.createTemplate');
     Route::post('/syllabus/storeSyllabus', [BayanihanLeaderSyllabusController::class, 'storeSyllabus'])->name('bayanihanleader.storeSyllabus');
     Route::get('/syllabus/viewSyllabus/{syll_id}', [BayanihanLeaderSyllabusController::class, 'viewSyllabus'])->name('bayanihanleader.viewSyllabus');
     Route::get('/syllabus/editSyllabus/{syll_id}', [BayanihanLeaderSyllabusController::class, 'editSyllabus'])->name('bayanihanleader.editSyllabus');
