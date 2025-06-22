@@ -117,6 +117,7 @@ class ChairSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
+            
         $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
             ->get();
 

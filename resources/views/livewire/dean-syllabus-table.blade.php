@@ -51,6 +51,7 @@
                 <th class="">School Year</th>
                 <th class="">Semester</th>
                 <th class="">Submitted At</th>
+                <th class="">Approved At</th>
                 <th class="">Version</th>
                 <th class="">Status</th>
                 <th class="px-6 py-3 rounded-tr-lg">Action</th>
@@ -64,6 +65,7 @@
                 <td>{{ $syllabus->bg_school_year }}</td>
                 <td>{{ $syllabus->course_semester }}</td>
                 <td>{{$syllabus->chair_submitted_at}}</td>
+                <td>{{$syllabus->dean_approved_at}}</td>
                 <td>Version {{$syllabus->version}}</td>
                 <td class="mr-[200px]">
                 <button class="

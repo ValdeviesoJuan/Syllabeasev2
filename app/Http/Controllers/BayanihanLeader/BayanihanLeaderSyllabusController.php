@@ -123,6 +123,7 @@ class BayanihanLeaderSyllabusController extends Controller
         $previousStatus = null;
         $previousReviewForm = null;
         $previousChecklistItems = [];
+        $previousChecklistSRF = collect();
 
         if ($previousSyllabus) {
             $previousStatus = $previousSyllabus->status;
