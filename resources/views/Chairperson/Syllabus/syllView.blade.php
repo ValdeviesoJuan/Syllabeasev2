@@ -594,7 +594,7 @@
             <div>
                 @if($syll->chair_submitted_at != null)
                 <div class="flex justify-center mt-20">
-                    sgd
+                    syllView blade php ni na locate
                 </div>
                 @else
                 <div class="flex justify-center mt-20">

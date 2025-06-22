@@ -5,6 +5,37 @@ use App\Http\Controllers\Admin\ManageUser;
 use App\Http\Controllers\Dean\DeanController;
 use Illuminate\Support\Facades\Auth;
 
+//NEW Memo page for Dean
+use App\Http\Controllers\Dean\DeanMemoController;
+use App\Http\Controllers\Chairperson\ChairMemoController;
+use App\Http\Controllers\BayanihanLeader\BLMemoController;
+use App\Http\Controllers\BayanihanTeacher\BTMemoController;
+
+Route::get('/dean/memos', [DeanMemoController::class, 'index'])->name('dean.memo');
+Route::get('/dean/memo/download/{id}', [DeanMemoController::class, 'download'])->name('dean.memo.download');
+Route::post('/dean/memo/store', [DeanMemoController::class, 'store'])->name('dean.memo.store');
+
+//New Code for memo
+
+Route::get('/dean/memos/{id}/edit', [DeanMemoController::class, 'edit'])->name('dean.memo.edit');
+Route::put('/dean/memos/{id}', [DeanMemoController::class, 'update'])->name('dean.memo.update');
+Route::delete('/dean/memos/{id}', [DeanMemoController::class, 'destroy'])->name('dean.memo.destroy');
+
+//For chairperson view
+Route::middleware(['auth', 'isChair'])->group(function () {
+    Route::get('/chair/memo', [ChairMemoController::class, 'index'])->name('chair.memo');
+});
+
+//For bayanihan leader view
+Route::middleware(['auth', 'isBL'])->group(function () {
+    Route::get('/bayanihanleader/memo', [App\Http\Controllers\BayanihanLeader\BLMemoController::class, 'index'])->name('bayanihanleader.memo');
+});
+
+//For bayanihan teacher view memo
+Route::middleware(['auth', 'isBT'])->group(function () {
+    Route::get('/bayanihanteacher/memo', [BTMemoController::class, 'index'])->name('bayanihanteacher.memo');
+});
+
 
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;
