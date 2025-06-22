@@ -71,5 +71,6 @@ class Kernel extends HttpKernel
         'isChair' => \App\Http\Middleware\ChairMiddleware::class,
         'isBL' => \App\Http\Middleware\BLMiddleware::class,
         'isBT' => \App\Http\Middleware\BTMiddleware::class,
+        'isAuditor' => \App\Http\Middleware\AuditorMiddleware::class,
     ];
 }
