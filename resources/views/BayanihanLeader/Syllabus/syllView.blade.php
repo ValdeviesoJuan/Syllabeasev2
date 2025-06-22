@@ -28,26 +28,21 @@
             list-style-position: inside;
             padding-left: 40px;
         }
-
         .crq tr {
             border: 1px solid #000;
         }
-
         .crq td,
         .crq th {
             border: 1px solid #000;
             padding: 8px;
         }
-
         .crq table {
             margin: 0 auto;
         }
-
         .bg svg {
             transform: scaleY(-1);
             min-width: '1880'
         }
-
         body {
             background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
@@ -55,7 +50,6 @@
             background-attachment: fixed;
             background-size: contain;
         }
-
         .view-feedback-modal {
             display: none;
             position: fixed;
@@ -73,7 +67,6 @@
             position: relative;
             display: inline-block;
         }
-
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 120px;
@@ -87,7 +80,6 @@
             left: 25%;
             margin-left: -60px;
         }
-
         .tooltip:hover .tooltiptext {
             visibility: visible;
         }
@@ -96,7 +88,6 @@
         }
         #CO .tooltiptext{
             bottom: 100%;
-            
         }
         #Midterm .tooltiptext{
             top: 90%;
@@ -110,7 +101,13 @@
         #EditFinal .tooltiptext{
             bottom: 110%;
         }
-
+        .revision-highlight {
+            background-color: #ffe4e6; /* Light red-pink */
+            border: 2px solid #fb6a5e; /* Red border */
+        }
+        .force-full-red-border {
+            border: 3px solid red !important;
+        }
     </style>
 </head>
 
@@ -125,7 +122,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has already been submitted, and further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has already been approved by the Chairperson and submitted to the Dean, and further edits are no longer permitted.
             </div>
         </div>
         <div class="flex mt-3 mx-auto">
@@ -152,7 +149,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has already been submitted, and further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has already been submitted to the Chairperson, and further edits are no longer permitted.
             </div>
         </div>
         <div class="flex mt-3 mx-auto">
@@ -216,7 +213,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the Chair and is awaiting Dean approval; further edits are no longer permitted.
             </div>
         </div>
     </div>
@@ -235,8 +232,8 @@
         </div>
     </div>
     @else
-    <div class="ml-28 mt-5">
-        <div class="flex space-x-4">
+    <div class="ml-32 my-5 ">
+        <div class="flex flex-row space-x-4">
             <div class="bg-blue py-2 px-3 text-white rounded shadow-lg hover:scale-105 transition ease-in-out">
                 <form action="{{ route('bayanihanleader.editSyllabus', $syll_id) }}" method="GET">
                     @csrf
@@ -411,24 +408,10 @@
                                 </form>
                             </div>
                         </li>
-                        <!-- <li class="text-blue pb-4 hover:text-sePrimary">
-                            <div class="">
-                                <form action="{{ route('bayanihanleader.viewSyllabus', $syll_id) }}" method="GET">
-                                    @csrf
-                                    <div class="flex items-center space-x-2">
-                                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005V6.40005Z" stroke="#1148b1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                            <path d="M11 4H6C4.93913 4 3.92178 4.42142 3.17163 5.17157C2.42149 5.92172 2 6.93913 2 8V18C2 19.0609 2.42149 20.0783 3.17163 20.8284C3.92178 21.5786 4.93913 22 6 22H17C19.21 22 20 20.2 20 18V13" stroke="#1148b1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <button type="submit" class="btn btn-primary">Edit Course Outline</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </li> -->
                     </ul>
                 </div>
-                <!-- Course Requirements -->
             </div>
+            <!-- Course Requirements -->
             <div class="relative parent hover:bg-blue2 bg-white py-2 px-3 text-white rounded shadow-lg">
                 <a class="text-blue space-x-2 ">
                     <div class="flex items-center space-x-2">
@@ -479,125 +462,49 @@
                     </form>
                 </a>
             </div>
-
-
-            <!-- <div class="relative parent py-2 px-3 text-white rounded">
-                <a class="text-blue space-x-2 ">
-                    <div class="flex items-center space-x-2">
-                        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M14.5 4C14.5 5.38071 13.3807 6.5 12 6.5C10.6193 6.5 9.5 5.38071 9.5 4C9.5 2.61929 10.6193 1.5 12 1.5C13.3807 1.5 14.5 2.61929 14.5 4Z" fill="#ffffff" />
-                            <path d="M14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5C13.3807 9.5 14.5 10.6193 14.5 12Z" fill="#ffffff" />
-                            <path d="M12 22.5C13.3807 22.5 14.5 21.3807 14.5 20C14.5 18.6193 13.3807 17.5 12 17.5C10.6193 17.5 9.5 18.6193 9.5 20C9.5 21.3807 10.6193 22.5 12 22.5Z" fill="#ffffff" />
-                        </svg>
-                    </div>                    @php
-                        $totalHours = 0;
-                        foreach($courseOutlines as $cot) {
-                            $totalHours += floatval($cot->syll_allotted_hour);
-                        }
-                        foreach($courseOutlinesFinals as $cotf) {
-                            $totalHours += floatval($cotf->syll_allotted_hour);
-                        }
-                    @endphp
-                    
-                    @if($totalHours > 35 && $totalHours < 40)
-                        <div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-10/12 mx-auto mb-4" role="alert">
-                            <div class="flex">
-                                <div class="py-1">
-                                    <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="font-bold">Warning: High Total Hours</p>
-                                    <p class="text-sm">Total allotted hours ({{ $totalHours }}) are above 35. Please review your entries.</p>
-                                </div>
-                            </div>
-                        </div>
-                    @elseif($totalHours >= 40)
-                        <div class="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-md w-10/12 mx-auto mb-4" role="alert">
-                            <div class="flex">
-                                <div class="py-1">
-                                    <svg class="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="font-bold">Alert: Maximum Hours Reached</p>
-                                    <p class="text-sm">Total allotted hours ({{ $totalHours }}) have reached or exceeded the 40-hour threshold!</p>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </a>
-                <div class="rounded">
-                    <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full md:w-[120px] bg-white shadow-2xl shadow-gray rounded">
-                        <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
-                            <div class="">
-                                <form id="submitForm" action="{{ route('bayanihanleader.submitSyllabus', $syll_id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="flex items-center space-x-2">
-                                        <svg width="20px" height="20px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M905.92 237.76a32 32 0 0 0-52.48 36.48A416 416 0 1 1 96 512a418.56 418.56 0 0 1 297.28-398.72 32 32 0 1 0-18.24-61.44A480 480 0 1 0 992 512a477.12 477.12 0 0 0-86.08-274.24z" fill="#1148b1" />
-                                            <path d="M630.72 113.28A413.76 413.76 0 0 1 768 185.28a32 32 0 0 0 39.68-50.24 476.8 476.8 0 0 0-160-83.2 32 32 0 0 0-18.24 61.44zM489.28 86.72a36.8 36.8 0 0 0 10.56 6.72 30.08 30.08 0 0 0 24.32 0 37.12 37.12 0 0 0 10.56-6.72A32 32 0 0 0 544 64a33.6 33.6 0 0 0-9.28-22.72A32 32 0 0 0 505.6 32a20.8 20.8 0 0 0-5.76 1.92 23.68 23.68 0 0 0-5.76 2.88l-4.8 3.84a32 32 0 0 0-6.72 10.56A32 32 0 0 0 480 64a32 32 0 0 0 2.56 12.16 37.12 37.12 0 0 0 6.72 10.56zM230.08 467.84a36.48 36.48 0 0 0 0 51.84L413.12 704a36.48 36.48 0 0 0 51.84 0l328.96-330.56A36.48 36.48 0 0 0 742.08 320l-303.36 303.36-156.8-155.52a36.8 36.8 0 0 0-51.84 0z" fill="#1148b1" />
-                                        </svg>
-                                        <button type="button" class="btn btn-primary" onclick="handleConfirmation()">Submit</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
+            @if($previousStatus === 'Returned by Chair')
+                <!-- Highlight Revisions Toggle -->
+                <div class="flex items-center ml-6 text-gray bg-[#f3a71a] hover:bg-[#f3a71a]  px-3 rounded shadow-lg space-x-2 cursor-pointer"> 
+                    <input type="checkbox" id="toggleRevisions" class="btn btn-primary">
+                    <label for="toggleRevisions" >Highlight Revisions</label>
                 </div>
-            </div> -->
-
-            <!-- <div class="relative parent py-2 px-3 text-white rounded">
-                <a class="text-blue space-x-2 ">
-                    <div class="flex items-center space-x-2">
-                        <svg width="25px" height="25px" viewBox="0 0 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                <g id="Dribbble-Light-Preview" transform="translate(-99.000000, -520.000000)" fill="#e65a45">
-                                    <g id="icons" transform="translate(56.000000, 160.000000)">
-                                        <path d="M52.45,371.512 L52.45,364.512 C52.45,363.96 52.9204,363.512 53.5,363.512 C54.0796,363.512 54.55,363.96 54.55,364.512 L54.55,371.512 C54.55,372.064 54.0796,372.512 53.5,372.512 C52.9204,372.512 52.45,372.064 52.45,371.512 L52.45,371.512 Z M54.55,374.512 C54.55,375.064 54.0796,375.512 53.5,375.512 C52.9204,375.512 52.45,375.064 52.45,374.512 C52.45,373.96 52.9204,373.512 53.5,373.512 C54.0796,373.512 54.55,373.96 54.55,374.512 L54.55,374.512 Z M45.1,378 L61.9,378 L61.9,362 L45.1,362 L45.1,378 Z M43,380 L64,380 L64,360 L43,360 L43,380 Z" id="important_message-[#1449]">
-
-                                        </path>
-                                    </g>
-                                </g>
-                            </g>
-                        </svg>
-                    </div>
-                </a>
-                <div class="rounded">
-                    <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full md:w-[180px] bg-white shadow-2xl shadow-gray rounded">
-                        <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
-                            <div>
-                                <form id="" action="{{ route('bayanihanleader.viewReviewForm', $syll_id) }}" method="get">
-                                    @csrf
-                                    <button type="submit" class="mx-5 btn btn-primary">Syllabus Review Form</button>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
+            @elseif($previousStatus === 'Returned by Dean')
+                <!-- Feedback by Dean Button -->
+                <div class="flex items-center ml-6 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded shadow-lg space-x-2 cursor-pointer">
+                    <a href="{{ route('syllabus.deanFeedback', $previousSyllabus->syll_id) }}">View Dean Feedback</a>
                 </div>
-                </li>
-                </ul>
-            </div> -->
+            @endif
         </div>
     </div>
     @endif
-    </div>
 
+    <!-- SYLLABUS TABLE -->
+    <table x-data="{ showPrev: false }" class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white" 
+        x-init="
+            const toggle = document.getElementById('toggleRevisions');
+            toggle.addEventListener('change', () => showPrev = toggle.checked);"
+    >
 
-    </div>
-
-    <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white">
         <!-- 1st Header -->
         <tr>
-            <th colspan="2" class="font-medium border-2 border-solid px-4">
+            <th colspan="2" 
+                :class="{
+                    'force-full-red-border': 
+                        {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                        (showPrev && {{ isset($previousChecklistSRF[2]) && $previousChecklistSRF[2]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                }"
+                class="font-medium border-2 border-solid px-4">
                 <span class="font-bold">{{$syll->college_description}}</span><br>
                 {{$syll->department_name}}
             </th>
 
-            <th class="font-medium border-2 border-solid text-left px-4 w-2/6">
+            <th :class="{
+                    'force-full-red-border': 
+                        {{ isset($srf3) && $srf3['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                        (showPrev && {{ isset($previousChecklistSRF[3]) && $previousChecklistSRF[3]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                }"
+                class="font-medium border-2 border-solid text-left px-4 w-2/6"
+            >
                 <span class="font-bold underline underline-offset-4">Syllabus<br></span>
                 Course Title :<span class="font-bold">{{$syll->course_title}}<br></span>
                 Course Code: {{$syll->course_code}}<br>
@@ -606,7 +513,12 @@
         </tr>
         <!-- 2nd Header -->
         <tr class="">
-            <td class="border-2 border-solid font-medium  text-sm text-left px-4 text-justify align-top">
+            <td :class="{
+                    'force-full-red-border': 
+                        {{ isset($srf8) && $srf8['srf_yes_no'] === 'no' || isset($srf10) && $srf10['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                        (showPrev && {{ isset($previousChecklistSRF[8]) && $previousChecklistSRF[8]->srf_yes_no === 'no' || isset($previousChecklistSRF[10]) && $previousChecklistSRF[10]->srf_yes_no === 'no'? 'true' : 'false' }})
+                }"
+                class="border-2 border-solid font-medium  text-sm text-left px-4 text-justify align-top">
                 <!-- VISION -->
                 <div class="mt-2 mb-8">
                     <span class="font-bold">USTP Vision<br><br></span>
@@ -688,23 +600,36 @@
             <td colspan="2" class="w-[10/12] align-top">
                 <table class="my-4 mx-2 ">
                     <tr class="">
-                        <td class="border-2 border-solid font-medium text-left px-4 w-1/2">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf5) && $srf5['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[5]) && $previousChecklistSRF[5]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium text-left px-4 w-1/2"
+                        >
                             Semester/Year: {{$syll->course_semester}} SY{{$syll->bg_school_year}}<br>
                             Class Schedule:{!! nl2br(e($syll->syll_class_schedule)) !!}<br>
                             Bldg./Rm. No. {{$syll->syll_bldg_rm}}
                         </td>
-                        <td class="border-2 border-solid font-medium  text-start text-top px-4">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf4) && $srf4['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[4]) && $previousChecklistSRF[4]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium  text-start text-top px-4">
                             Pre-requisite(s): {{$syll->course_pre_req}} <br>
                             Co-requisite(s): {{$syll->course_co_req}}
                         </td>
                     </tr>
 
                     <tr>
-                        <td class="items-start border-2 border-solid font-medium text-left px-4">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf6) && $srf6['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[6]) && $previousChecklistSRF[6]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="items-start border-2 border-solid font-medium text-left px-4">
                             Instructor:
-                            <!-- @foreach ($instructors[$syll->syll_id] ?? [] as $instructor)
-                            <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
-                            @endforeach <br> -->
                             @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
                             @if ($loop->first)
                             <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
@@ -724,21 +649,36 @@
                             {{ $instructor->phone }}
                             @endforeach <br>
                         </td>
-                        <td class="border-2 border-solid font-medium text-left px-4">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf7) && $srf7['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[7]) && $previousChecklistSRF[7]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium text-left px-4">
                             Consultation Schedule: {!! nl2br(e($syll->syll_ins_consultation)) !!}<br>
                             Bldg rm no: {{$syll->syll_ins_bldg_rm}}
                         </td>
                     </tr>
                     <tr>
-                        <td colspan=2 class="items-start border-2 border-solid font-medium text-left px-4 ">
+                        <td colspan=2 :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf9) && $srf9['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[9]) && $previousChecklistSRF[9]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="items-start border-2 border-solid font-medium text-left px-4">
                             <span class="text-left font-bold">
-                                I. Course Descripion:</span><br>
+                                I. Course Description:</span><br>
                             {{ $syll->syll_course_description }}
                         </td>
                     </tr>
                     <tr class="">
                         <!-- course_outcome table-->
-                        <td colspan=2 class=" border-2 border-solid font-medium px-4">
+                        <td colspan=2 :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf11) && $srf11['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class=" border-2 border-solid font-medium px-4 ">
                             <span class="text-left font-bold">
                                 II. Course Outcome:</span><br>
                             <table class="m-10 mx-auto border-2 border-solid w-11/12">
@@ -818,28 +758,63 @@
 
                             <table class="m-5 mx-auto border-2 border-solid w-">
                                 <tr class="border-2 border-solid">
-                                    <th class="border-2 border-solid">
-                                        Alloted Time
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf13) && $srf13['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[13]) && $previousChecklistSRF[13]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
+                                        Allotted Time
                                     </th>
                                     <th class="border-2 border-solid">
                                         Course Outcomes (C)
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Intended Learning Outcome (ILO)
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Topics
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf15) && $srf15['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[15]) && $previousChecklistSRF[15]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Suggested Readings
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf16) && $srf16['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[16]) && $previousChecklistSRF[16]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Teaching Learning Activities
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf17) && $srf17['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[17]) && $previousChecklistSRF[17]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Assessment Tasks/Tools
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf19) && $srf19['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[19]) && $previousChecklistSRF[19]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Grading Criteria
                                     </th>
                                     <th class="border-2 border-solid">
@@ -982,7 +957,12 @@
                     </tr>
                     <!-- course Requirements -->
                     <tr class="crq border-2">
-                        <td colspan="2" class="border-2 border-solid font-medium">
+                        <td colspan="2" :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf18) && $srf18['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[18]) && $previousChecklistSRF[18]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium">
                             <span class="text-left font-bold">
                                 IV. Course Requirements:
                             </span><br>
