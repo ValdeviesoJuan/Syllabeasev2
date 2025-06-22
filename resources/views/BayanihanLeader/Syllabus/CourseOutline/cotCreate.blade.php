@@ -1,7 +1,32 @@
+{{-- #Midterm course outline --}}
 @extends('layouts.blNav')
-
 @section('content')
 
+{{-- na add ni gelski --}}
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $totalHours = DB::table('syllabus_course_outlines_midterms')
+        ->where('syll_id', $syll_id)
+        ->sum('syll_allotted_hour');
+    $isDisabled = ($totalHours > 40) ? 'disabled' : '';
+@endphp
+
+@if($totalHours > 40)
+    <div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-6" role="alert">
+      <div class="flex">
+        <div class="py-1">
+          <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-bold">Allotted Time Exceeded</p>
+          <p class="text-sm">The allotted time is more than 40. You cannot add more course outlines.</p>
+        </div>
+      </div>
+    </div>
+@endif
 
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +56,6 @@
 
 <body>
     <div class="m-auto bg-slate-100 mt-[120px] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-11/12">
-        {{-- <div class="max-w-md  w-[560px] p-6 px-8 rounded-lg shadow-lg"> --}}
         <img class="edit_user_img text-center mt-12 w-[370px] m-auto mb-12" src="/assets/Midterm Course Outline.png" alt="SyllabEase Logo">
         <form action="{{ route('bayanihanleader.storeCot', $syll_id) }}" method="POST">
             @csrf
@@ -55,51 +79,120 @@
                 <tbody id="tableBody">
                     <tr class="border-2 border-solid text-sm" id="">
                         <td class="p-2">
-                            <input type="number"class="w-full h-60 font-sans" name="syll_allotted_hour" id="" placeholder="e.g. 10" required>
-                            <!-- <textarea id="syll_allotted_hour" placeholder=" e.g. 1 hour" name="syll_allotted_hour" rows="4" cols="50" class="font-sans border-2 border-solid w-full" required></textarea> -->
-                        </td>
-                        <td class="p-2">
-                            <!-- <input type="number"class="w-[65%] font-sans mb-1" name="syll_allotted_time" id="" placeholder="e.g. 10"> week -->
-                            <textarea id="syll_allotted_time" placeholder=" e.g. Week 1" name="syll_allotted_time" rows="4" cols="50" class="font-sans border-2 border-solid w-full h-60"></textarea>
+                            {{-- na add ni gelski --}}
+                            <input type="number"
+                            class="w-full h-60 font-sans {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
+                            name="syll_allotted_hour"
+                            id=""
+                            placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. 10' }}"
+                            value="{{ $isDisabled ? 'Disabled' : '' }}"
+                            required {{ $isDisabled }}>
+                                                    <!-- <textarea id="syll_allotted_hour" placeholder=" e.g. 1 hour" name="syll_allotted_hour" rows="4" cols="50" class="font-sans border-2 border-solid w-full" required></textarea> -->
+                                                </td>
+                                                <td class="p-2">
+                                                    <!-- <input type="number"class="w-[65%] font-sans mb-1" name="syll_allotted_time" id="" placeholder="e.g. 10"> week -->
+                                                    <textarea id="syll_allotted_time"
+                            placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. Week 1' }}"
+                            name="syll_allotted_time"
+                            rows="4"
+                            cols="50"
+                            class="font-sans border-2 border-solid w-full h-60 {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
+                            {{ $isDisabled }}>{{ $isDisabled ? 'Disabled' : '' }}</textarea>
                         </td>
                         <td class="">
-                            <select name="syll_course_outcome[]" id="syll_course_outcome[]" class="select2 border-2 border-solid w-full h-60" multiple>
+                            <select name="syll_course_outcome[]" id="syll_course_outcome[]" class="select2 border-2 border-solid w-full h-60" multiple {{ $isDisabled }}>
                                 @foreach ($courseOutcomes as $co)
                                 <option value="{{ $co->syll_co_id }}">{{ $co->syll_co_code }}</option>
                                 @endforeach
                             </select>
                         </td>
                         <td class="">
-                            <textarea id="syllabus" name="syll_intended_learning" rows="4" cols="50" class="border-2 border-solid w-full h-60"></textarea>
+                            <textarea id="syllabus" name="syll_intended_learning" rows="4" cols="50" class="border-2 border-solid w-full h-60" {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_topics" name="syll_topics" rows="4" cols="50" class="border-2 border-solid w-full h-60" required></textarea>
+                            <textarea id="syll_topics" name="syll_topics" rows="4" cols="50" class="border-2 border-solid w-full h-60" required {{ $isDisabled }}></textarea>
                         </td>
                         <td class=""> 
-                            <textarea id="syll_suggested_readings" name="syll_suggested_readings" rows="4" cols="50" class="border-2 border-solid w-full h-60"></textarea>
+                            <textarea id="syll_suggested_readings" name="syll_suggested_readings" rows="4" cols="50" class="border-2 border-solid w-full h-60" {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_learning_act" name="syll_learning_act" rows="4" cols="50" class="border-2 border-solid w-full h-60"></textarea>
+                            <textarea id="syll_learning_act" name="syll_learning_act" rows="4" cols="50" class="border-2 border-solid w-full h-60" {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_asses_tools" name="syll_asses_tools" rows="4" cols="50" class="border-2 border-solid w-full h-60"></textarea>
+                            <textarea id="syll_asses_tools" name="syll_asses_tools" rows="4" cols="50" class="border-2 border-solid w-full h-60" {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_grading_criteria" name="syll_grading_criteria" rows="4" cols="50" class="border-2 border-solid w-full h-60"></textarea>
+                            <textarea id="syll_grading_criteria" name="syll_grading_criteria" rows="4" cols="50" class="border-2 border-solid w-full h-60" {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_remarks" name="syll_remarks" rows="4" cols="50" class="border-2 border-solid w-full h-60"></textarea>
+                            <textarea id="syll_remarks" name="syll_remarks" rows="4" cols="50" class="border-2 border-solid w-full h-60" {{ $isDisabled }}></textarea>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <div class="text-center">
-                <button type="submit" class="bg-blue p-2 px-6 font-semibold text-white rounded-lg m-5">Create Course Outline</button>
+                <button type="submit" class="bg-blue p-2 px-6 font-semibold text-white rounded-lg m-5" {{ $isDisabled }}>Create Course Outline</button>
             </div>
             <div class="text-center mb-8">
                 <a href="{{ route('bayanihanleader.viewSyllabus', $syll_id) }}" class="-mt-[80px] hover:underline hover:text-blue hover:underline-offset-4 p-2 px-6 font-semibold text-black rounded-lg m-5">Back</a>
             </div>
         </form>
+        <div id="customAlert"
+     class="hidden fixed top-6 right-6 z-50 bg-white border-t-4 border-[#ef4444] rounded-b text-red-900 px-8 py-8 shadow-md min-w-[320px] flex items-start"
+     role="alert">
+  <div class="py-1 mr-4">
+    <svg class="fill-current h-6 w-6 text-[#ef4444]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+      <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+    </svg>
+  </div>
+  <div class="flex-1">
+    <p class="font-bold">Allotted Time Exceeded</p>
+    <p class="text-sm">The allotted time exceeds 40. You cannot add more.</p>
+  </div>
+  <button onclick="document.getElementById('customAlert').classList.add('hidden')" class="ml-4 text-red-700 hover:text-red-900 text-xl font-bold leading-none">
+    &times;
+  </button>
+</div>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let totalHours = {{ $totalHours }};
+    const maxHours = 40;
+
+    const hourInput = document.querySelector('input[name="syll_allotted_hour"]');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const formFields = document.querySelectorAll('input, textarea, select');
+
+    // Disable fields and show "Disabled" if totalHours > 40
+    function setDisabledState() {
+        formFields.forEach(f => {
+            f.disabled = true;
+            f.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
+            if (f.tagName === 'INPUT' || f.tagName === 'TEXTAREA') {
+                f.value = 'Disabled';
+                f.placeholder = 'Disabled';
+            }
+        });
+        submitBtn.disabled = true;
+    }
+
+    // On page load, if totalHours > 40, disable everything
+    if (totalHours > maxHours) {
+        setDisabledState();
+    }
+
+    // On submit, show warning if totalHours > 40
+    submitBtn.addEventListener('click', function(e) {
+        let current = parseFloat(hourInput.value) || 0;
+        if (totalHours > maxHours || (totalHours + current) > maxHours) {
+            e.preventDefault();
+            setDisabledState();
+            document.getElementById('customAlert').classList.remove('hidden');
+            // Optionally, scroll to the alert
+            document.getElementById('customAlert').scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+</script>
 </body>
 
 </html>

@@ -56,7 +56,10 @@
                     Semester
                 </th>
                 <th scope="col" class="bg-blue5 px-6 py-3">
-                    Submitted At
+                    Date Submitted At
+                </th>
+                <th scope="col" class="bg-blue5 px-6 py-3">
+                    Date Approved At
                 </th>
                 <th scope="col" class="bg-blue5 px-6 py-3">
                     Version
@@ -86,6 +89,9 @@
                 </td>
                 <td class="px-6 py-4">
                     {{$syllabus->chair_submitted_at}}
+                </td>
+                <td class="px-6 py-4">
+                    {{$syllabus->dean_submitted_at}}
                 </td>
                 <td class="px-6 py-4">
                     Version {{$syllabus->version}}

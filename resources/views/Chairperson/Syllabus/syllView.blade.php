@@ -33,32 +33,26 @@
             list-style-position: inside;
             padding-left: 40px;
         }
-
         .mission li {
             list-style-type: disc;
             list-style-position: inside;
             padding-left: 40px;
         }
-
         .crq tr {
             border: 1px solid #000;
         }
-
         .crq td,
         .crq th {
             border: 1px solid #000;
             padding: 8px;
         }
-
         .crq table {
             margin: 0 auto;
         }
-
         .bg svg {
             transform: scaleY(-1);
             min-width: '1880'
         }
-
         body {
             background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
@@ -66,7 +60,6 @@
             background-attachment: fixed;
             background-size: contain;
         }
-
         #overlay {
             display: none;
             position: fixed;
@@ -77,7 +70,6 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
-
         .feedback-modal {
             display: none;
             position: fixed;
@@ -104,6 +96,9 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             z-index: 1001;
         }
+        .force-full-red-border {
+            border: 3px solid red !important;
+        }
     </style>
 </head>
 
@@ -112,7 +107,6 @@
     <div class="flex justify-end mr-28">
         <form action="{{ route('chairperson.reviewForm', $syll_id) }}" method="get">
             @csrf
-
             <button wire:click="openComments" class=" rounded bg-green2 text-green px-3 py-3">
                 <div class="flex">
                     <div class="mr-2">
@@ -152,16 +146,15 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been retuned by the chair.
+                <span class="font-semibold">Notice: </span>This syllabus has been returned for revisions.
             </div>
-            
         </div>
 
         <div class="flex mt-1 mx-auto">
-        <form action="{{ route('chairperson.viewReviewForm', $syll_id) }}" method="get">
-            @csrf
-                <button id="viewFeedback" type="submit" class="p-2 mb-1 items-center rounded shadow hover:text-white hover:bg-green hover:bg-blue text-green">View Review Form</button>
-        </form>
+            <form action="{{ route('chairperson.viewReviewForm', $syll_id) }}" method="get">
+                @csrf
+                <button id="viewFeedback" type="submit" class="p-2 mb-1 items-center rounded shadow hover:text-white hover:bg-green hover:bg-blue hover:border-none text-[#73d693] font-bold border-solid border-2 border-[#73d693]">View Review Form</button>
+            </form>
         </div>
     </div>
     @elseif($syll->dean_rejected_at != null && $syll->status == 'Returned by Dean')
@@ -174,7 +167,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has been returned by the dean for further revision.
+                <span class="font-semibold">Notice:</span> This syllabus has been returned by the Dean for further revision.
             </div>
         </div>
         <div class="flex mt-1 mx-auto">
@@ -267,16 +260,15 @@
 
         </div> -->
 
-
-    <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white">
+    <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white {{ isset($srf1) && $srf1['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
         <!-- 1st Header -->
         <tr>
-            <th colspan="2" class="font-medium border-2 border-solid px-4">
+            <th colspan="2" class="font-medium border-2 border-solid px-4 {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                 <span class="font-bold">{{$syll->college_description}}</span><br>
                 {{$syll->department_name}}
             </th>
 
-            <th class="font-medium border-2 border-solid text-left px-4 w-2/6">
+            <th class="font-medium border-2 border-solid text-left px-4 w-2/6 {{ isset($srf3) && $srf3['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                 <span class="font-bold underline underline-offset-4">Syllabus<br></span>
                 Course Title :<span class="font-bold">{{$syll->course_title}}<br></span>
                 Course Code: {{$syll->course_code}}<br>
@@ -285,7 +277,7 @@
         </tr>
         <!-- 2nd Header -->
         <tr class="">
-            <td class="border-2 border-solid font-medium  text-sm text-left px-4 text-justify align-top">
+            <td class="border-2 border-solid font-medium  text-sm text-left px-4 text-justify align-top {{ isset($srf8) && $srf8['srf_yes_no'] === 'no' || isset($srf10) && $srf10['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                 <!-- VISION -->
                 <div class="mt-2 mb-8">
                     <span class="font-bold">USTP Vision<br><br></span>
@@ -367,19 +359,19 @@
             <td colspan="2" class="w-[10/12] align-top">
                 <table class="my-4 mx-2 ">
                     <tr class="">
-                        <td class="border-2 border-solid font-medium text-left px-4 w-1/2">
+                        <td class="border-2 border-solid font-medium text-left px-4 w-1/2 {{ isset($srf5) && $srf5['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             Semester/Year: {{$syll->course_semester}} SY{{$syll->bg_school_year}}<br>
                             Class Schedule:{!! nl2br(e($syll->syll_class_schedule)) !!}<br>
                             Bldg./Rm. No. {{$syll->syll_bldg_rm}}
                         </td>
-                        <td class="border-2 border-solid font-medium  text-start text-top px-4">
+                        <td class="border-2 border-solid font-medium  text-start text-top px-4 {{ isset($srf4) && $srf4['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             Pre-requisite(s): {{$syll->course_pre_req}} <br>
                             Co-requisite(s): {{$syll->course_co_req}}
                         </td>
                     </tr>
 
                     <tr>
-                        <td class="items-start border-2 border-solid font-medium text-left px-4">
+                        <td class="items-start border-2 border-solid font-medium text-left px-4 {{ isset($srf6) && $srf6['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             Instructor:
                             <!-- @foreach ($instructors[$syll->syll_id] ?? [] as $instructor)
                             <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
@@ -403,13 +395,13 @@
                             {{ $instructor->phone }}
                             @endforeach <br>
                         </td>
-                        <td class="border-2 border-solid font-medium text-left px-4">
+                        <td class="border-2 border-solid font-medium text-left px-4 {{ isset($srf7) && $srf7['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             Consultation Schedule: {!! nl2br(e($syll->syll_ins_consultation)) !!}<br>
                             Bldg rm no: {{$syll->syll_ins_bldg_rm}}
                         </td>
                     </tr>
                     <tr>
-                        <td colspan=2 class="items-start border-2 border-solid font-medium text-left px-4 ">
+                        <td colspan=2 class="items-start border-2 border-solid font-medium text-left px-4 {{ isset($srf9) && $srf9['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             <span class="text-left font-bold">
                                 I. Course Descripion:</span><br>
                             {{ $syll->syll_course_description }}
@@ -417,7 +409,7 @@
                     </tr>
                     <tr class="">
                         <!-- course_outcome table-->
-                        <td colspan=2 class=" border-2 border-solid font-medium px-4">
+                        <td colspan=2 class=" border-2 border-solid font-medium px-4 {{ isset($srf11) && $srf11['srf_yes_no'] === 'no' || isset($srf12) && $srf12['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             <span class="text-left font-bold">
                                 II. Course Outcome:</span><br>
                             <table class="m-10 mx-auto border-2 border-solid w-11/12">
@@ -458,28 +450,28 @@
                                 III. Course Outline:</span><br>
                             <table class="m-5 mx-auto border-2 border-solid w-">
                                 <tr class="border-2 border-solid">
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf13) && $srf13['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Alloted Time
                                     </th>
                                     <th class="border-2 border-solid">
                                         Course Outcomes (C)
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Intended Learning Outcome (ILO)
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Topics
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf15) && $srf15['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Suggested Readings
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf16) && $srf16['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Teaching Learning Activities
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf17) && $srf17['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Assessment Tasks/Tools
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th class="border-2 border-solid {{ isset($srf19) && $srf19['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                                         Grading Criteria
                                     </th>
                                     <th class="border-2 border-solid">
@@ -579,7 +571,7 @@
                     </tr>
                     <!-- course Requirements -->
                     <tr class="crq border-2">
-                        <td colspan="2" class="border-2 border-solid font-medium">
+                        <td colspan="2" class="border-2 border-solid font-medium {{ isset($srf18) && $srf18['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             <span class="text-left font-bold">
                                 IV. Course Requirements:
                             </span><br>
@@ -602,7 +594,7 @@
             <div>
                 @if($syll->chair_submitted_at != null)
                 <div class="flex justify-center mt-20">
-                    sgd
+                    syllView blade php ni na locate
                 </div>
                 @else
                 <div class="flex justify-center mt-20">
@@ -661,9 +653,7 @@
     </div>
     </td>
 
-
     </table>
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -686,32 +676,32 @@
         });
     </script>
     
-<script>
-       document.addEventListener("DOMContentLoaded", function() {
-            var rejectButton = document.getElementById("viewFeedback");
-            var feedbackModal = document.querySelector(".view-feedback-modal");
-            var overlay = document.getElementById("overlay");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+                var rejectButton = document.getElementById("viewFeedback");
+                var feedbackModal = document.querySelector(".view-feedback-modal");
+                var overlay = document.getElementById("overlay");
 
-            rejectButton.addEventListener("click", function() {
-                feedbackModal.style.display = "block";
-                overlay.style.display = "block";
+                rejectButton.addEventListener("click", function() {
+                    feedbackModal.style.display = "block";
+                    overlay.style.display = "block";
+                });
+
+                // Close modal functionality
+                var closeModalButton2 = document.getElementById("closeModalButton2");
+
+                closeModalButton2.addEventListener("click", function() {
+                    feedbackModal.style.display = "none";
+                    overlay.style.display = "none";
+                });
+                var closeModalButton2 = document.getElementById("closeModalButton2");
+
+                closeModalButton.addEventListener("click", function() {
+                    feedbackModal.style.display = "none";
+                    overlay.style.display = "none";
+                });
             });
-
-            // Close modal functionality
-            var closeModalButton2 = document.getElementById("closeModalButton2");
-
-            closeModalButton2.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
-            var closeModalButton2 = document.getElementById("closeModalButton2");
-
-            closeModalButton.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
-        });
-</script>
+    </script>
     <div id="overlay"></div>
 </body>
 

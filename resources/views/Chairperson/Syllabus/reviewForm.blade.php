@@ -582,41 +582,12 @@
     </div>
     </div>
     <script>
-        $(document).ready(function() {
-            $('.yes').change(function() {
-                // Check if all checkboxes with class 'yes' are checked
-                var allYesChecked = $('.yes:checked').length === $('.yes').length;
-
-                // Show or hide the "Approve" button based on the condition
-                if (allYesChecked) {
-                    $('#submitBtn').show();
-                    $('#revisionBtn').hide();
-                } else {
-                    $('#submitBtn').hide();
-                    $('#revisionBtn').show();
-                }
-            });
-        });
-        $(document).ready(function() {
-            function checkAllYesCheckboxes() {
-                $('.yes').prop('checked', true);
-            }
-
-            // Event listener for a button or element to trigger the 'checkAllYesCheckboxes' function
-            $('#checkAllYesButton').on('click', function() {
-                checkAllYesCheckboxes();
-                checkCheckbox();
-            });
-        });
-        $('.yes, .no').on('change', function() {
-            checkCheckbox();
-        });
+    $(document).ready(function () {
         function checkCheckbox() {
-            // Check if all checkboxes with class 'yes' are checked
-            var allYesChecked = $('.yes:checked').length === $('.yes').length;
+            let allYesChecked = $('.yes').length > 0 && $('.yes:checked').length === $('.yes').length;
+            let anyNoChecked = $('.no:checked').length > 0;
 
-            // Show or hide the "Approve" and "Revision" buttons based on the condition
-            if (allYesChecked) {
+            if (allYesChecked && !anyNoChecked) {
                 $('#submitBtn').show();
                 $('#revisionBtn').hide();
             } else {
@@ -624,44 +595,52 @@
                 $('#revisionBtn').show();
             }
         }
-        $(document).ready(function() {
-            $('input[name="srf_yes_no[]"]').on('change', function() {
-                var row = $(this).closest('tr');
 
-                if ($(this).hasClass('yes') && $(this).prop('checked')) {
-                    row.find('input.no').prop('checked', false);
-                } else if ($(this).hasClass('no') && $(this).prop('checked')) {
-                    row.find('input.yes').prop('checked', false);
-                }
-            });
+        $('input[name="srf_yes_no[]"]').on('change', function () {
+            var row = $(this).closest('tr');
+
+            if ($(this).hasClass('yes') && $(this).prop('checked')) {
+                row.find('input.no').prop('checked', false);
+            } else if ($(this).hasClass('no') && $(this).prop('checked')) {
+                row.find('input.yes').prop('checked', false);
+            }
+
+            checkCheckbox(); 
         });
 
-        $(document).ready(function () {
-            var form = $('form');
-            var rows = $('.review-row');
+        $('#checkAllYesButton').on('click', function () {
+            $('.no').prop('checked', false);
+            $('.yes').prop('checked', true);
+            checkCheckbox();
+        });
 
-            form.on('submit', function (e) {
-                var isValid = true;
+        checkCheckbox();
 
-                rows.each(function () {
-                    var no = $(this).find('.no');
-                    var remarks = $(this).find('.remarks');
+        var form = $('form');
+        var rows = $('.review-row');
 
-                    if (no.prop('checked') && $.trim(remarks.val()) === '') {
-                        isValid = false;
-                        remarks.addClass('border-solid border-2 border-red placeholder-red').attr('placeholder', 'Please input remarks here');
-                    } else {
-                        remarks.removeClass('border-solid border-2 border-red placeholder-red').removeAttr('placeholder');
-                    }
-                });
+        form.on('submit', function (e) {
+            var isValid = true;
 
-                if (!isValid) {
-                    e.preventDefault();
-                    alert('Please provide remarks for all items marked as "No".');
+            rows.each(function () {
+                var no = $(this).find('.no');
+                var remarks = $(this).find('.remarks');
+
+                if (no.prop('checked') && $.trim(remarks.val()) === '') {
+                    isValid = false;
+                    remarks.addClass('border-solid border-2 border-red placeholder-red').attr('placeholder', 'Please input remarks here');
+                } else {
+                    remarks.removeClass('border-solid border-2 border-red placeholder-red').removeAttr('placeholder');
                 }
             });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please provide remarks for all items marked as "No".');
+            }
         });
-    </script>
+    });
+</script>
 </body>
 
 </html>

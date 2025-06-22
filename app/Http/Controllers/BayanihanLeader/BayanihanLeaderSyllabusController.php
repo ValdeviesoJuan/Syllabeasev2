@@ -97,12 +97,10 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('users.*', 'syllabus_instructors.*')
             ->get()
             ->groupBy('syll_id');
-            $user = Auth::user(); 
-            $notifications = $user->notifications;
+            
+        $user = Auth::user(); 
+        $notifications = $user->notifications;
 
-
-
-        // View::share('syll', $syll);
         return view('BayanihanLeader.Syllabus.syllList', compact('notifications','syllabi', 'instructors', 'syllabus'));
     }
 
@@ -116,6 +114,33 @@ class BayanihanLeaderSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
+        
+        $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
+            ->whereRaw('CAST(version AS UNSIGNED) < ?', [intval($syll->version)])
+            ->orderByRaw('CAST(version AS UNSIGNED) DESC')
+            ->first();
+
+        $previousStatus = null;
+        $previousReviewForm = null;
+        $previousChecklistItems = [];
+        $previousChecklistSRF = collect();
+
+        if ($previousSyllabus) {
+            $previousStatus = $previousSyllabus->status;
+
+            if ($previousStatus === "Returned by Chair") {
+                $previousReviewForm = SyllabusReviewForm::where('syll_id', $previousSyllabus->syll_id)->first();
+
+                if ($previousReviewForm) {
+                    $previousChecklistItems = SrfChecklist::where('srf_id', $previousReviewForm->srf_id)
+                        ->orderBy('srf_no')
+                        ->get();
+
+                    $previousChecklistSRF = $previousChecklistItems->keyBy('srf_no');
+                }
+                
+            }
+        }
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -182,10 +207,21 @@ class BayanihanLeaderSyllabusController extends Controller
         // ->orderBy('syllabus_comments.syll_created_at', 'asc')
         // ->get();
 
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = null;
+        }
+
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
             ->first();
+
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
+                ->where('syll_id', $syll_id)
+                ->where('srf_no', $i)
+                ->first();
+        }
 
         $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->select('syllabi.*')
@@ -207,9 +243,33 @@ class BayanihanLeaderSyllabusController extends Controller
             'bLeaders',
             'bMembers',
             'poes',
-            'reviewForm',
             'syllabusVersions',
-            'feedback'
+            'feedback',
+            'reviewForm',
+            'srf1',
+            'srf2',
+            'srf3',
+            'srf4',
+            'srf5',
+            'srf6',
+            'srf7',
+            'srf8',
+            'srf9',
+            'srf10',
+            'srf11',
+            'srf12',
+            'srf13',
+            'srf14',
+            'srf15',
+            'srf16',
+            'srf18',
+            'srf17',
+            'srf19',
+            'previousSyllabus',
+            'previousStatus',
+            'previousReviewForm',
+            'previousChecklistItems',
+            'previousChecklistSRF'
         ))->with('success', 'Switched to Edit Mode');
     }
     public function commentSyllabus($syll_id)
