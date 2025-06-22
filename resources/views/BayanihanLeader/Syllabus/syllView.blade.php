@@ -265,7 +265,7 @@
                     </div>
                 </a>
                 <div class="rounded-b-lg ">
-                    <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full right-0 md:w-52 bg-white shadow-2xl md:rounded-b-lg shadow-gray rounded-b-lg">
+                    <ul class="shadow-2xl pl-4 pt-1 child transition duration-300 md:absolute top-full right-0 md:w-52 bg-white md:rounded-b-lg shadow-gray rounded-b-lg">
                         <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
                             <div class="">
                                 <form action="{{ route('bayanihanleader.createCo', $syll_id) }}" method="GET">
@@ -717,6 +717,45 @@
                         <td colspan=2 class=" border-2 border-solid font-medium px-4">
                             <span class="text-left font-bold">
                                 III. Course Outline:</span><br>
+                                {{-- <<! Na add ni gelski --}}
+                                @php
+                                    $totalHours = 0;
+                                    foreach($courseOutlines as $cot) {
+                                        $totalHours += floatval($cot->syll_allotted_hour);
+                                    }
+                                    foreach($courseOutlinesFinals as $cotf) {
+                                        $totalHours += floatval($cotf->syll_allotted_hour);
+                                    }
+                                @endphp
+
+                                @if($totalHours > 35 && $totalHours < 40)
+                                    <div id="hoursAlert" class="fixed top-6 right-6 z-50 bg-white border-t-4 border-orange-500 rounded-b text-black px-8 py-8 shadow-md min-w-[320px] flex items-start" role="alert">
+                                        <div class="py-1">
+                                            <svg class="h-6 w-6 text-orange-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-lg">Warning: High Total Hours</p>
+                                            <p class="text-base">Total allotted Time ({{ $totalHours }}) are nearing the 40-hour limit. Please review your entries.</p>
+                                        </div>
+                                        <button onclick="document.getElementById('hoursAlert').style.display='none'" class="ml-4 text-black hover:text-orange-500 font-bold text-lg">&times;</button>
+                                    </div>
+                                @elseif($totalHours >= 40)
+                                    <div id="hoursAlert" class="fixed top-6 right-6 z-50 bg-white border-t-4 border-[#ef4444] rounded-b text-red-900 px-8 py-8 shadow-md min-w-[320px] flex items-start" role="alert">
+                                        <div class="py-1">
+                                            <svg class="h-6 w-6 text-red-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-lg">Alert: Maximum Hours Reached</p>
+                                            <p class="text-base">Total allotted Time ({{ $totalHours }}) have reached or exceeded the 40-hour threshold!</p>
+                                        </div>
+                                        <button onclick="document.getElementById('hoursAlert').style.display='none'" class="ml-4 text-black hover:text-red-500 font-bold text-lg">&times;</button>
+                                    </div>
+                                @endif
+
                             <table class="m-5 mx-auto border-2 border-solid w-">
                                 <tr class="border-2 border-solid">
                                     <th :class="{
@@ -1028,6 +1067,16 @@
             });
         });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var alertBox = document.getElementById('hoursAlert');
+        if(alertBox){
+            setTimeout(function(){
+                if(alertBox) alertBox.style.display = 'none';
+            }, 7000); // 7 seconds
+        }
+    });
+</script>
 </body>
 
 </html>

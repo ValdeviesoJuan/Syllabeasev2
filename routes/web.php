@@ -321,6 +321,10 @@ Route::prefix('/')->middleware('auth')->group(function () {
     Route::post('updatePassword', [EditProfileController::class, 'updatePassword'])->name('password.update');
 });
 
+//Auditor
+Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
+    Route::get('/home', [App\Http\Controllers\AuditorController::class, 'home'])->name('auditor.home');
+});
 
 
 //Admin: Department Controller
