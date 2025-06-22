@@ -49,9 +49,7 @@
                     </form>
                 </div>
             </span>
-
             <livewire:b-l-syllabus-table />
-
         </div>
         </div>
         </div>

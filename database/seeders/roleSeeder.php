@@ -34,6 +34,10 @@ class roleSeeder extends Seeder
                 'role_id' => '5',
                 'role_name' => 'Bayanihan Teacher',
             ],
+            [
+                'role_id' => '6',
+                'role_name' => 'Auditor',
+            ],
         ]);
     }
 }

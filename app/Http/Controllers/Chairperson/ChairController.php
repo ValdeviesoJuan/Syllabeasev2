@@ -74,27 +74,27 @@ class ChairController extends Controller
         return view('Chairperson.Bayanihan.btList', compact('notifications','users', 'bgroups', 'bmembers', 'bleaders'));
     }
     public function createBTeam()
-{
-    try {
-        // Retrieve the department ID for the logged-in user
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
+    {
+        try {
+            // Retrieve the department ID for the logged-in user
+            $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
+            $department_id = $chairperson->department_id;
 
-        // Retrieve users and courses based on the department ID
-        $users = User::all();
-        $user = Auth::user(); 
-        $notifications = $user->notifications;
-        $courses = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('curricula.department_id', $department_id)
-            ->get();
+            // Retrieve users and courses based on the department ID
+            $users = User::all();
+            $user = Auth::user(); 
+            $notifications = $user->notifications;
+            $courses = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
+                ->where('curricula.department_id', $department_id)
+                ->get();
 
-        // Return the view with the necessary data
-        return view('Chairperson.Bayanihan.btCreate', compact('notifications','users', 'courses'));
-    } catch (\Exception $e) {
-        // Handle exceptions (e.g., user not found, department not found)
-        return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
+            // Return the view with the necessary data
+            return view('Chairperson.Bayanihan.btCreate', compact('notifications','users', 'courses'));
+        } catch (\Exception $e) {
+            // Handle exceptions (e.g., user not found, department not found)
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
+        }
     }
-}
     public function storeBTeam(Request $request)
     {
         $request->validate([

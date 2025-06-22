@@ -223,6 +223,7 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
     Route::get('/syallbus/commentSyllabus/{syll_id}', [ChairSyllabusController::class, 'commentSyllabus'])->name('chairperson.commentSyllabus');
     Route::get('/syallbus/viewReviewForm/{syll_id}', [ChairSyllabusController::class, 'viewReviewForm'])->name('chairperson.viewReviewForm');
 
+    // TOS
     Route::get('/tos', [ChairTOSController::class, 'index'])->name('chairperson.tos');
     Route::get('/tos/viewTos/{tos_id}', [ChairTOSController::class, 'viewTos'])->name('chairperson.viewTos');
     Route::put('/tos/approveTos/{tos_id}', [ChairTOSController::class, 'approveTos'])->name('chairperson.approveTos');
