@@ -6,3 +6,8 @@ enable prettier >>>>> shift + alt + f
 
 
 to migrate:refresh specific migration >>> php artisan migrate:refresh --path=database/migrations/<migration_name.php>
+
+Every sprint must do:
+-npm install
+-copy paste .env
+-composer install
