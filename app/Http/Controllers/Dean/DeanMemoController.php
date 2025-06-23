@@ -34,26 +34,29 @@ class DeanMemoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file' => 'required|file|mimes:pdf,doc,docx,pdf',
+            'files.*' => 'required|file|mimes:pdf',
             'date' => 'nullable|date',
-            'emails' => 'required|array', // ← change from string to array
-            'emails.*' => 'email' // validate each item as an email
+            'emails' => 'required|array',
+            'emails.*' => 'email'
         ]);
 
-        // Handle the file upload
-        $file = $request->file('file');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->storeAs('public/memos', $filename);
+        $fileNames = [];
 
-        // Store the memo
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/memos', $filename);
+                $fileNames[] = $filename;
+            }
+        }
+
         $memo = Memo::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'file_name' => $filename,
+            'file_name' => json_encode($fileNames),
             'date' => $validated['date'],
         ]);
 
-        // Send email to each valid recipient
         foreach ($validated['emails'] as $email) {
             Mail::to($email)->send(new \App\Mail\MemoNotification($memo));
         }
@@ -73,7 +76,7 @@ class DeanMemoController extends Controller
             'title' => 'required',
             'description' => 'required',
             'date' => 'required|date',
-            'file' => 'nullable|mimes:pdf|max:2048',
+            'files.*' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         $memo = Memo::findOrFail($id);
@@ -81,16 +84,24 @@ class DeanMemoController extends Controller
         $memo->description = $request->description;
         $memo->date = $request->date;
 
-        if ($request->hasFile('file')) {
-            // Delete old file
-            if ($memo->file_name && Storage::exists('public/memos/' . $memo->file_name)) {
-                Storage::delete('public/memos/' . $memo->file_name);
+        $fileNames = $memo->file_name ? json_decode($memo->file_name, true) : [];
+
+        if ($request->hasFile('files')) {
+            // Delete old files
+            foreach ($fileNames as $file) {
+                if (Storage::exists('public/memos/' . $file)) {
+                    Storage::delete('public/memos/' . $file);
+                }
             }
 
-            $file = $request->file('file');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/memos', $filename);
-            $memo->file_name = $filename;
+            $fileNames = [];
+            foreach ($request->file('files') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/memos', $filename);
+                $fileNames[] = $filename;
+            }
+
+            $memo->file_name = json_encode($fileNames);
         }
 
         $memo->save();
@@ -111,15 +122,23 @@ class DeanMemoController extends Controller
         return redirect()->route('dean.memo')->with('success', 'Memo deleted successfully.');
     }
 
-    public function download($id)
+    public function download($id, $filename)
     {
         $memo = Memo::findOrFail($id);
-        $filePath = storage_path('app/public/memos/' . $memo->file_name);
+        $rawFiles = json_decode($memo->file_name, true);
+        $files = is_array($rawFiles) ? $rawFiles : [$memo->file_name];
 
-        if (file_exists($filePath)) {
-            return response()->download($filePath, $memo->file_name);
+        if (!in_array($filename, $files)) {
+            return back()->with('error', 'File not associated with this memo.');
         }
 
-        return redirect()->back()->with('error', 'File not found.');
+        $filePath = storage_path('app/public/memos/' . $filename);
+        return file_exists($filePath) ? response()->download($filePath) : back()->with('error', 'File not found.');
+    }
+
+    public function show($id)
+    {
+        $memo = Memo::findOrFail($id);
+        return view('Dean.Memo.showMemo', compact('memo'));
     }
 }

@@ -18,4 +18,10 @@ class BLMemoController extends Controller
         })->latest()->get();
         return view('BayanihanLeader.Memo.blLeader', compact('memos'));
     }
+
+    public function show($id)
+    {
+        $memo = Memo::findOrFail($id);
+        return view('BayanihanLeader.Memo.showMemoBleader', compact('memo'));
+    }
 }
