@@ -16,6 +16,9 @@
     },
     "dependencies": {
         "alpinejs": "^3.13.2",
+        "react-draggable": "^4.4.6",
+        "react-grid-layout": "^1.5.1",
+        "react-resizable": "^3.0.5",
         "tinymce": "^7.9.1"
     }
 }
