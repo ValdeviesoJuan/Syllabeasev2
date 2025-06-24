@@ -101,12 +101,36 @@ class ChairController extends Controller
             'bg_school_year' => 'required',
             'course_id' => 'required',
         ]);
+
+        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
+        $department_id = $chairperson->department_id;
+
+        // Check if the course belongs to the department through curricula
+        $course = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
+            ->where('courses.course_id', $request->input('course_id'))
+            ->where('curricula.department_id', $department_id)
+            ->first();
+
+        if (!$course) {
+            return redirect()->back()->with('error', 'This course does not belong to your department.');
+        }
+
+        // Check if a BayanihanGroup already exists for the course and bg.school_year
+        $exists = BayanihanGroup::join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
+            ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
+            ->where('bayanihan_groups.course_id', $request->input('course_id'))
+            ->where('bayanihan_groups.bg_school_year', $request->input('bg_school_year'))
+            ->where('curricula.department_id', $department_id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'A Bayanihan Team already exists for this course and school year.');
+        }
+
         $bGroup = new BayanihanGroup();
         $bGroup->bg_school_year = $request->input('bg_school_year');
         $bGroup->course_id = $request->input('course_id');
         $bGroup->save();
-
-        $chairperson = User::findOrFail(Auth::user()->id);
 
         $department = Department::join('chairpeople', 'chairpeople.department_id', '=', 'departments.department_id')
         ->where('chairpeople.user_id', '=', Auth::user()->id)
@@ -119,21 +143,25 @@ class ChairController extends Controller
             $bLeader->bg_id = $bGroup->bg_id;
             $bLeader->bg_user_id = $leader;
             $bLeader->save();
+            
             $user = User::find($bLeader->bg_user_id);            
             // if ($user) {
             //     Mail::to($user->email)->send(new BLeader($user, $chairperson, $department, $bGroup));
             // }
+
             UserRole::firstOrCreate([
                 'role_id' => 4,
                 'user_id' => $leader,
             ]);
         }
+        
         $members = $request->input('bm_user_id');
         foreach ($members as $member) {
             $bMember = new BayanihanMember();
             $bMember->bg_id = $bGroup->bg_id;
             $bMember->bm_user_id = $member;
             $bMember->save();
+
             $user = User::find($bMember->bm_user_id);            
             // if ($user) {
             //     Mail::to($user->email)->send(new bTeam($user, $chairperson, $department, $bGroup));
@@ -159,11 +187,36 @@ class ChairController extends Controller
     public function updateBTeam(Request $request, string $bg_id)
     {
         $bGroup = BayanihanGroup::findorfail($bg_id);
+
         $request->validate([
             'bg_school_year' => 'required',
             'course_id' => 'required',
         ]);
 
+        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
+        $department_id = $chairperson->department_id;
+
+        $course = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
+            ->where('courses.course_id', $request->input('course_id'))
+            ->where('curricula.department_id', $department_id)
+            ->first();
+
+        if (!$course) {
+            return redirect()->back()->with('error', 'This course does not belong to your department.');
+        }
+
+        $exists = BayanihanGroup::join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
+            ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
+            ->where('bayanihan_groups.course_id', $request->input('course_id'))
+            ->where('bayanihan_groups.bg_school_year', $request->input('bg_school_year'))
+            ->where('curricula.department_id', $department_id)
+            ->where('bayanihan_groups.bg_id', '!=', $bg_id)
+            ->exists();
+        
+        if ($exists) {
+            return redirect()->back()->with('error', 'Another Bayanihan Team already exists for this course and school year.');
+        }
+        
         $bGroup->bg_school_year = $request->input('bg_school_year');
         $bGroup->course_id = $request->input('course_id');
         $bGroup->save();
