@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Models\roles;
 
 class User extends Authenticatable  implements Auditable
 //  implements MustVerifyEmail
@@ -50,4 +51,9 @@ class User extends Authenticatable  implements Auditable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function roles()
+    {
+        return $this->belongsToMany(roles::class, 'user_roles', 'user_id', 'role_id');
+    }
+
 }

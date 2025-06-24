@@ -11,7 +11,7 @@ class roles extends Model implements Auditable
     use HasFactory;
     use \OwenIt\Auditing\Auditable; 
     
-    protected $primarykey = 'role_id';
+    protected $primaryKey = 'role_id';
     protected $table = 'roles';
     protected $fillable = [
         'role_id',

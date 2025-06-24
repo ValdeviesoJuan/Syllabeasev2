@@ -41,6 +41,19 @@ Route::middleware(['auth', 'isBT'])->group(function () {
     Route::get('/bayanihanteacher/memo/{id}', [BTMemoController::class, 'show'])->name('bayanihanteacher.memo.show');
 });
 
+//Notification from Dean - BLeader route
+Route::get('/notifications/mark-read/{id}', function ($id) {
+    $notif = auth()->user()->notifications()->find($id);
+    if ($notif) {
+        $notif->markAsRead();
+    }
+    return response()->json(['success' => true]);
+})->name('notifications.markRead');
+
+//New middlware route for notification Dean - BLeader
+Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
+    Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
+});
 
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;

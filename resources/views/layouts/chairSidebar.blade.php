@@ -72,15 +72,17 @@
                                             <!-- User Initial -->
                                             <div class="pr-1">
                                                 <div class="bg-yellow rounded-full text-xl font-medium w-12 h-12 px-2 flex items-center justify-center text-white mr-3">
-                                                    <div>{{ $notification->data['for'] }}</div>
+                                                    <div>{{ $notification->data['for'] ?? 'User' }}</div>
                                                 </div>
                                             </div>
 
                                             <!-- date and time -->
                                             <div>
                                                 <div>
-                                                    <span class="hover:text-blue"><a href="{{ $notification->data['action_url'] }}">
-                                                            <span class="font-semibold">{{ $notification->data['course_code'] }}-{{ $notification->data['bg_school_year'] }}</span>: {{ $notification->data['message'] }}</a></span>
+                                                    <a href="{{ $notification->data['action_url'] ?? '#' }}" class="hover:text-blue">
+                                                            <span class="font-semibold">
+                                                                {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
+                                                            </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
                                                 </div>
                                                 <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
                                             </div>
