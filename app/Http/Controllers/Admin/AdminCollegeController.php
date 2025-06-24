@@ -8,6 +8,9 @@ use App\Models\Dean;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DeanAssigned;
 
 class AdminCollegeController extends Controller
 {
@@ -89,19 +92,32 @@ class AdminCollegeController extends Controller
     public function storeDean(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|string',
-            'college_id' => 'required|string',
+            'user_id' => 'required|string|exists:users,id',
+            'college_id' => 'required|string|exists:colleges,college_id',
             'start_validity' => 'required|date',
             'end_validity' => 'required|date|after:start_validity',
         ]);
-        Dean::create($request->all());
 
+        // Save the dean assignment
+        $dean = Dean::create([
+            'user_id' => $request->user_id,
+            'college_id' => $request->college_id,
+            'start_validity' => $request->start_validity,
+            'end_validity' => $request->end_validity,
+        ]);
+
+        // Assign Dean role (role_id = 2)
         UserRole::firstOrCreate([
             'role_id' => 2,
             'user_id' => $request->user_id,
         ]);
 
-        return redirect()->route('admin.college')->with('success', 'Dean assigned successfully.');
+        // Send email to the assigned Dean
+        $user = User::findOrFail($request->user_id);
+        $college = College::findOrFail($request->college_id);
+        Mail::to($user->email)->send(new DeanAssigned($user, $college, $request->start_validity, $request->end_validity));
+
+        return redirect()->route('admin.college')->with('success', 'Dean assigned successfully and email sent.');
     }
     public function editDean(string $dean_id)
     {
