@@ -179,6 +179,8 @@ Route::group(['prefix' => 'bayanihanleader', 'middleware' => ['auth', 'isBL']], 
 
     Route::get('/syllabus/replicate/{syll_id}', [BayanihanLeaderSyllabusController::class, 'replicateSyllabus'])->name('bayanihanleader.replicateSyllabus');
 
+    Route::get('/syllabus/duplicate/{syll_id}/{target_bg_id}', [BayanihanLeaderSyllabusController::class, 'duplicateSyllabus'])->name('bayanihanleader.duplicateSyllabus');
+    
     // Row Edit 
     Route::get('/syllabus/editCotRowM/{syll_id}', [BayanihanLeaderCOTController::class, 'editCotRowM'])->name('bayanihanleader.editCotRowM');
     Route::post('/syllabus/updateCotRowM/{syll_id}', [BayanihanLeaderCOTController::class, 'updateCotRowM'])->name('bayanihanleader.updateCotRowM');
