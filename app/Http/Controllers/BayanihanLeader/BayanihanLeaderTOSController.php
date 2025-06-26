@@ -424,6 +424,19 @@ class BayanihanLeaderTOSController extends Controller
                 $totalCol4 += $Data4;
             }
         }
+
+        // Send email to Chairperson(s)
+        $chairpersons = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
+            ->where('chairpeople.department_id', $tos->department_id)
+            ->select('users.*')
+            ->get();
+
+        foreach ($chairpersons as $chair) {
+            if (filter_var($chair->email, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($chair->email)->send(new TosCreatedNotification($tos));
+            }
+        }
+
         return redirect()->route('bayanihanleader.editTosRow', $tos->tos_id);
     }
 

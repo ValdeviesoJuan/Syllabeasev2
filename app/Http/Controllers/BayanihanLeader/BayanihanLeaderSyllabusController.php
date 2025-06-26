@@ -29,6 +29,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\UserRole;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SyllabusSubmittedNotification;
 
 use function Laravel\Prompts\select;
 
@@ -525,6 +528,13 @@ class BayanihanLeaderSyllabusController extends Controller
         $course_code = $submitted_syllabus->course_code;
         $bg_school_year= $submitted_syllabus->bg_school_year;
         $chair->notify(new Chair_SyllabusSubmittedtoChair($course_code, $bg_school_year, $syll_id));
+
+        // Send email to the chair
+        if (filter_var($chair->email, FILTER_VALIDATE_EMAIL)) {
+            Mail::to($chair->email)->send(
+                new SyllabusSubmittedNotification($course_code, $bg_school_year, $syll_id)
+            );
+        }
 
         return redirect()->route('bayanihanleader.syllabus')->with('success', 'Syllabus submission successful.');
     }
