@@ -39,6 +39,9 @@ use Carbon\Carbon;
 use Dotenv\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Mail\DeanSyllabusChairApprovedMail;
+use App\Mail\BLSyllabusChairApprovedMail;
+use App\Mail\BTSyllabusChairApprovedMail;
 
 class ChairSyllabusController extends Controller
 {
@@ -224,15 +227,10 @@ class ChairSyllabusController extends Controller
         if (!$syllabus) {
             return redirect()->route('bayanihanleader.home')->with('error', 'Syllabus not found.');
         }
+
         $syllabus->dean_submitted_at = Carbon::now();
         $syllabus->status = 'Approved by Chair';
         $syllabus->save();
-
-        $dean = User::join('deans', 'deans.user_id', '=', 'users.id')
-            ->join('colleges', 'colleges.college_id', '=', 'deans.college_id')
-            ->where('colleges.college_id', '=', $syllabus->college_id)
-            ->select('users.*', 'colleges.*')
-            ->first();
 
         $submitted_syllabus = Syllabus::where('syll_id', $syll_id)
             ->join('bayanihan_groups', 'bayanihan_groups.bg_id', 'syllabi.bg_id')
@@ -243,22 +241,35 @@ class ChairSyllabusController extends Controller
         $course_code = $submitted_syllabus->course_code;
         $bg_school_year = $submitted_syllabus->bg_school_year;
 
-        // Notification for Dean 
-        $dean->notify(new Dean_SyllabusChairApproved($course_code, $bg_school_year, $syll_id));
+        // ✅ Dean Notification & Email
+        $dean = User::join('deans', 'deans.user_id', '=', 'users.id')
+            ->join('colleges', 'colleges.college_id', '=', 'deans.college_id')
+            ->where('colleges.college_id', '=', $syllabus->college_id)
+            ->select('users.*', 'colleges.*')
+            ->first();
 
-        // Notification for Bayanihan Members 
+        if ($dean) {
+            $dean->notify(new Dean_SyllabusChairApproved($course_code, $bg_school_year, $syll_id));
+            Mail::to($dean->email)->send(new DeanSyllabusChairApprovedMail($course_code, $bg_school_year, $syll_id));
+        }
+
+        // ✅ Bayanihan Leaders Notification & Email
         $bayanihan_leaders = BayanihanLeader::where('bg_id', $submitted_syllabus->bg_id)->get();
-        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_syllabus->bg_id)->get();
         foreach ($bayanihan_leaders as $leader) {
             $user = User::find($leader->bg_user_id);
             if ($user) {
                 $user->notify(new BL_SyllabusChairApproved($course_code, $bg_school_year, $syll_id));
+                Mail::to($user->email)->send(new BLSyllabusChairApprovedMail($course_code, $bg_school_year, $syll_id));
             }
         }
+
+        // ✅ Bayanihan Teachers Notification & Email
+        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_syllabus->bg_id)->get();
         foreach ($bayanihan_members as $member) {
             $user = User::find($member->bm_user_id);
             if ($user) {
                 $user->notify(new BT_SyllabusChairApproved($course_code, $bg_school_year, $syll_id));
+                Mail::to($user->email)->send(new BTSyllabusChairApprovedMail($course_code, $bg_school_year, $syll_id));
             }
         }
 

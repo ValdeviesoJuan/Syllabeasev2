@@ -18,4 +18,10 @@ class ChairMemoController extends Controller
         })->latest()->get();
         return view('Chairperson.Memo.chairMemo', compact('memos'));
     }
+
+    public function show($id)
+    {
+        $memo = Memo::findOrFail($id);
+        return view('Chairperson.Memo.showChairMemo', compact('memo'));
+    }
 }

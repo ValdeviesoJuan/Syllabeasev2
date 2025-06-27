@@ -16,7 +16,8 @@ use App\Mail\BTeam;
 use App\Models\Department;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Auth;
-
+use App\Mail\BLeaderCreatedMail;
+use App\Mail\BMemberCreatedMail;
 
 class ChairController extends Controller
 {
@@ -144,11 +145,10 @@ class ChairController extends Controller
             $bLeader->bg_user_id = $leader;
             $bLeader->save();
             
-            $user = User::find($bLeader->bg_user_id);            
-            // if ($user) {
-            //     Mail::to($user->email)->send(new BLeader($user, $chairperson, $department, $bGroup));
-            // }
-
+            $user = User::find($bLeader->bg_user_id);      
+            if ($user) {
+                Mail::to($user->email)->send(new BLeaderCreatedMail($user, $chairperson, $department, $bGroup));
+            }
             UserRole::firstOrCreate([
                 'role_id' => 4,
                 'user_id' => $leader,
@@ -163,9 +163,9 @@ class ChairController extends Controller
             $bMember->save();
 
             $user = User::find($bMember->bm_user_id);            
-            // if ($user) {
-            //     Mail::to($user->email)->send(new bTeam($user, $chairperson, $department, $bGroup));
-            // }
+            if ($user) {
+                Mail::to($user->email)->send(new BMemberCreatedMail($user, $chairperson, $department, $bGroup));
+            }
 
             UserRole::firstOrCreate([
                 'role_id' => 5,

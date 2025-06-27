@@ -11,3 +11,17 @@ Every sprint must do:
 -npm install
 -copy paste .env
 -composer install
+
+1st open the admin assign a curriculum then go to department then assign chairperson then go to college then assign dean.
+
+then go to chairperson create Create course:D. Then bayanihan team.
+
+Go to BL and do the shit you want to do
+
+Very Cleared process.
+
+1. Open Admin Create a curriculum.
+2. In Admin page go to department and assign chairperson.
+3. Same page go to college then assign dean.
+4. Chairperson role - Create course and Bayanihan Team
+5. Go to Bayanihan Leader - and do the right thing.

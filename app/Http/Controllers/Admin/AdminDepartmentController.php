@@ -12,6 +12,8 @@ use App\Models\Curriculum;
 use App\Models\Department;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ChairAssigned;
 
 
 use Illuminate\Http\Request;
@@ -110,11 +112,18 @@ class AdminDepartmentController extends Controller
         ]);
 
         UserRole::firstOrCreate([
-            'role_id' => 3,
+            'role_id' => 3, // Chairperson role
             'user_id' => $request->user_id,
         ]);
 
         Chairperson::create($request->all());
+
+        // Send email to assigned user
+        $user = User::find($request->user_id);
+        if ($user && $user->email) {
+            Mail::to($user->email)->send(new ChairAssigned($user));
+        }
+
         return redirect()->route('admin.department')->with('success', 'Chair created successfully.');
     }
     public function editChair(string $chairman_id)

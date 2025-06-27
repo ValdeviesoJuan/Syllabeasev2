@@ -23,41 +23,35 @@
         {{-- View Toggle Buttons --}}
         <div class="flex gap-2">
             <button type="button" id="tableBtn" onclick="setView('table')"
-                class="p-2 border rounded-lg hover:bg-gray-100 bg-gray-300" title="Table View">
+                class="p-2 border rounded-lg bg-[#D1D5DB] hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
+                title="Table View">
                 <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
             </button>
             <button type="button" id="tilesBtn" onclick="setView('tiles')"
-                class="p-2 border rounded-lg hover:bg-gray-100" title="Tile View">
+                class="p-2 border rounded-lg bg-transparent hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
+                title="Tile View">
                 <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
             </button>
         </div>
     </form>
 
-    {{-- Memo Table View --}}
+    {{-- Table View --}}
     <div id="tableView" class="overflow-x-auto">
         <table class="w-full table-fixed border-separate border-spacing-y-2">
             <thead>
                 <tr class="bg-blue text-white text-sm">
-                    <th class="p-3 rounded-l-lg w-[25%]">Title</th>
-                    <th class="p-3 w-[45%]">Description</th>
-                    <th class="p-3 w-[20%]">Date</th>
-                    <th class="p-3 rounded-r-lg w-[5%]">Action</th>
+                    <th class="px-2 py-2 w-[15%] rounded-l-lg">Title</th>
+                    <th class="px-2 py-2 w-[60%]">Description</th>
+                    <th class="px-2 py-2 w-[10%] rounded-r-lg">Date</th>
                 </tr>
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr class="bg-white rounded shadow-sm">
-                    <td class="p-3">{{ $memo->title }}</td>
-                    <td class="p-3">{{ Str::limit($memo->description, 80) }}</td>
-                    <td class="p-3">
-                        {{ $memo->date ? \Carbon\Carbon::parse($memo->date)->format('F d, Y') : 'No date' }}
-                    </td>
-                    <td class="p-3">
-                        <a href="{{ route('dean.memo.download', $memo->id) }}" title="Download"
-                           class="border-[2px] border-blue rounded-full px-3 py-2 inline-flex items-center justify-center">
-                            <iconify-icon icon="mdi:download" width="18" height="18" class="text-blue"></iconify-icon>
-                        </a>
-                    </td>
+                <tr onclick="handleRowClick(event, '{{ route('bayanihanteacher.memo.show', $memo->id) }}')"
+                    class="bg-white rounded shadow-sm cursor-pointer hover:bg-gray-100 transition">
+                    <td class="px-2 py-2 w-[15%]">{{ $memo->title }}</td>
+                    <td class="px-2 py-2 w-[60%]">{{ Str::limit($memo->description, 80) }}</td>
+                    <td class="px-2 py-2 w-[10%]">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -68,29 +62,78 @@
         </table>
     </div>
 
-    {{-- Memo Tile View --}}
+    {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div class="p-4 border rounded-lg shadow bg-white">
-            <h2 class="text-lg font-semibold mb-2">{{ $memo->title }}</h2>
+        <div onclick="window.location.href='{{ route('bayanihanteacher.memo.show', $memo->id) }}'"
+            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
+
+            {{-- Title --}}
+            <h2 class="text-lg font-semibold mb-2 text-gray-800">{{ $memo->title }}</h2>
+
+            {{-- Description --}}
             <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-2">
-                <span>
-                    {{ $memo->date ? \Carbon\Carbon::parse($memo->date)->format('F d, Y') : 'No date' }}
-                </span>
-                <a href="{{ route('dean.memo.download', $memo->id) }}" class="inline-flex items-center px-3 py-1 text-sm bg-blue text-white rounded hover:bg-blue-600">
-                    <iconify-icon icon="mdi:download" class="mr-1" width="16" height="16"></iconify-icon>
-                    Download
-                </a>
+
+            {{-- Date --}}
+            <div class="text-sm text-gray-500 mb-3">
+                {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
+            </div>
+
+            {{-- File Buttons (Prevent row click) --}}
+            @php
+                $files = json_decode($memo->file_name, true);
+                $files = is_array($files) ? $files : [$memo->file_name];
+            @endphp
+
+            <div class="flex flex-wrap gap-2 z-10 relative">
+                @foreach ($files as $file)
+                    @php
+                        $ext = pathinfo($file, PATHINFO_EXTENSION);
+                        $icon = match(strtolower($ext)) {
+                            'pdf' => 'mdi:file-pdf-box',
+                            'doc', 'docx' => 'mdi:file-word-box',
+                            'xls', 'xlsx' => 'mdi:file-excel-box',
+                            'jpg', 'jpeg', 'png' => 'mdi:file-image',
+                            default => 'mdi:file-document-outline',
+                        };
+
+                        $iconColor = match(strtolower($ext)) {
+                            'pdf' => '#DC2626',
+                            'doc', 'docx' => '#1D4ED8',
+                            'xls', 'xlsx' => '#15803D',
+                            'jpg', 'jpeg', 'png' => '#CA8A04',
+                            default => '#2563EB',
+                        };
+                    @endphp
+
+                    <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+                    onclick="event.stopPropagation()"
+                    class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
+                    style="border-color: #B3D4FC;"
+                    title="Download {{ $file }}">
+                        <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
+                        <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
+                            {{ Str::limit($file, 20) }}
+                        </span>
+                    </a>
+                @endforeach
             </div>
         </div>
         @empty
         <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
         @endforelse
     </div>
-</div>
 
 <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+
+<script>
+    function handleRowClick(event, url) {
+        // If the clicked element or its parent has a "stop-row-click" class, don't redirect
+        if (event.target.closest('.stop-row-click')) return;
+        window.location = url;
+    }
+</script>
+
 <script>
     function setView(view) {
         const tableView = document.getElementById('tableView');
@@ -101,19 +144,21 @@
         if (view === 'tiles') {
             tableView.classList.add('hidden');
             tileView.classList.remove('hidden');
-            tilesBtn.classList.add('bg-gray');
-            tableBtn.classList.remove('bg-gray');
+
+            tableBtn.classList.remove('bg-[#D1D5DB]');
+            tilesBtn.classList.add('bg-[#D1D5DB]');
         } else {
-            tableView.classList.remove('hidden');
             tileView.classList.add('hidden');
-            tableBtn.classList.add('bg-gray');
-            tilesBtn.classList.remove('bg-gray');
+            tableView.classList.remove('hidden');
+
+            tilesBtn.classList.remove('bg-[#D1D5DB]');
+            tableBtn.classList.add('bg-[#D1D5DB]');
         }
     }
 
-    // Highlight Table View by default on page load
     window.addEventListener('DOMContentLoaded', () => {
         setView('table');
     });
 </script>
+
 @endsection

@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/Sample/se.png') }}">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
@@ -74,15 +75,18 @@
                                             <!-- User Initial -->
                                             <div class="pr-1">
                                                 <div class="bg-yellow rounded-full text-xl font-medium w-12 h-12 px-2 flex items-center justify-center text-white mr-3">
-                                                    <div>{{ $notification->data['for'] }}</div>
+                                                    <div>{{ $notification->data['for'] ?? 'User' }}</div>
                                                 </div>
                                             </div>
 
                                             <!-- date and time -->
                                             <div>
                                                 <div>
-                                                    <span class="hover:text-blue"><a href="{{ $notification->data['action_url'] }}">
-                                                            <span class="font-semibold">{{ $notification->data['course_code'] }}-{{ $notification->data['bg_school_year'] }}</span>: {{ $notification->data['message'] }}</a></span>
+                                                    <a href="{{ $notification->data['action_url'] ?? '#' }}" class="hover:text-blue">
+                                                            <span class="font-semibold">
+                                                                {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
+                                                            </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
+
                                                 </div>
                                                 <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
                                             </div>

@@ -13,7 +13,7 @@ use App\Http\Controllers\BayanihanLeader\BLMemoController;
 use App\Http\Controllers\BayanihanTeacher\BTMemoController;
 
 Route::get('/dean/memos', [DeanMemoController::class, 'index'])->name('dean.memo');
-Route::get('/dean/memo/download/{id}', [DeanMemoController::class, 'download'])->name('dean.memo.download');
+Route::get('/dean/memo/{id}/download/{filename}', [DeanMemoController::class, 'download'])->name('dean.memo.download');
 Route::post('/dean/memo/store', [DeanMemoController::class, 'store'])->name('dean.memo.store');
 
 //New Code for memo
@@ -21,22 +21,40 @@ Route::post('/dean/memo/store', [DeanMemoController::class, 'store'])->name('dea
 Route::get('/dean/memos/{id}/edit', [DeanMemoController::class, 'edit'])->name('dean.memo.edit');
 Route::put('/dean/memos/{id}', [DeanMemoController::class, 'update'])->name('dean.memo.update');
 Route::delete('/dean/memos/{id}', [DeanMemoController::class, 'destroy'])->name('dean.memo.destroy');
+Route::get('/dean/memo/{id}', [App\Http\Controllers\Dean\DeanMemoController::class, 'show'])->name('dean.memo.show');
+
 
 //For chairperson view
 Route::middleware(['auth', 'isChair'])->group(function () {
     Route::get('/chair/memo', [ChairMemoController::class, 'index'])->name('chair.memo');
+    Route::get('/chair/memo/{id}', [ChairMemoController::class, 'show'])->name('chair.memo.show');
 });
 
 //For bayanihan leader view
 Route::middleware(['auth', 'isBL'])->group(function () {
     Route::get('/bayanihanleader/memo', [App\Http\Controllers\BayanihanLeader\BLMemoController::class, 'index'])->name('bayanihanleader.memo');
+    Route::get('/bayanihanleader/memo/{id}', [BLMemoController::class, 'show'])->name('bayanihanleader.memo.show');
 });
 
 //For bayanihan teacher view memo
 Route::middleware(['auth', 'isBT'])->group(function () {
     Route::get('/bayanihanteacher/memo', [BTMemoController::class, 'index'])->name('bayanihanteacher.memo');
+    Route::get('/bayanihanteacher/memo/{id}', [BTMemoController::class, 'show'])->name('bayanihanteacher.memo.show');
 });
 
+//Notification from Dean - BLeader route
+Route::get('/notifications/mark-read/{id}', function ($id) {
+    $notif = auth()->user()->notifications()->find($id);
+    if ($notif) {
+        $notif->markAsRead();
+    }
+    return response()->json(['success' => true]);
+})->name('notifications.markRead');
+
+//New middlware route for notification Dean - BLeader
+Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
+    Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
+});
 
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;

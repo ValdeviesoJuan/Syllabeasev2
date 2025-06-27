@@ -11,6 +11,10 @@ use App\Models\UserRole;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
 use App\Exports\UsersExport;
+use App\Mail\RoleAssigned;
+use Illuminate\Support\Facades\Mail;
+use App\Models\College;
+use App\Mail\DeanAssigned;
 
 class ManageUser extends Controller
 {
@@ -79,12 +83,22 @@ class ManageUser extends Controller
     }
     public function storeRole(Request $request)
     {
-        $validatedData = $request->validate([
-            'user_id' => 'required',
-            'role_id' => ' required',
+            $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role_id' => 'required|exists:roles,role_id',
         ]);
+
+        // Assign the role
         UserRole::create($validatedData);
-        return redirect()->route('admin.index')->with('success', 'New Role has been assigned');
+
+        // Get the user and role for the email
+        $user = User::findOrFail($request->user_id);
+        $role = roles::where('role_id', $request->role_id)->first();
+
+        // Send role assignment email
+        Mail::to($user->email)->send(new RoleAssigned($user, $role->role_name));
+
+        return redirect()->route('admin.index')->with('success', 'New Role has been assigned and email sent.');
     }
 
     public function editRoles(string $id)

@@ -28,16 +28,20 @@
             {{-- View Toggle Buttons --}}
             <div class="flex gap-2">
                 <button type="button" id="tableBtn" onclick="setView('table')"
-                    class="p-2 border rounded-lg hover:bg-gray-100 bg-gray-300" title="Table View">
+                    class="p-2 border rounded-lg bg-[#D1D5DB] hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
+                    title="Table View">
                     <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
                 </button>
                 <button type="button" id="tilesBtn" onclick="setView('tiles')"
-                    class="p-2 border rounded-lg hover:bg-gray-100" title="Tile View">
+                    class="p-2 border rounded-lg bg-transparent hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
+                    title="Tile View">
                     <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
                 </button>
             </div>
-            
-            <button type="button" onclick="openMemoModal()" class="bg-blue text-white px-4 py-2 rounded">
+
+            {{-- Create Memo Button --}}
+            <button type="button" onclick="openMemoModal()"
+                class="px-4 py-2 rounded text-white bg-[#2563EB] hover:bg-[#1E40AF] transition duration-200 ease-in-out">
                 Create Memo
             </button>
         </div>
@@ -48,40 +52,40 @@
         <table class="w-full table-fixed border-separate border-spacing-y-2">
             <thead>
                 <tr class="bg-blue text-white text-sm">
-                    <th class="p-3 rounded-l-lg w-[3%]">Title</th>
-                    <th class="p-3 w-[8%]">Description</th>
-                    <th class="p-3 w-[3%]">Date</th>
-                    <th class="p-3 rounded-r-lg w-[2%]">Action</th>
+                    <th class="px-2 py-2 w-[15%] rounded-l-lg">Title</th>
+                    <th class="px-2 py-2 w-[55%]">Description</th>
+                    <th class="px-2 py-2 w-[15%]">Date</th>
+                    <th class="px-2 py-2 w-[10%] rounded-r-lg">Action</th>
                 </tr>
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr class="bg-white rounded shadow-sm">
-                    <td class="p-3">{{ $memo->title }}</td>
-                    <td class="p-3">{{ Str::limit($memo->description, 80) }}</td>
-                    <td class="p-3">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
-                    <td class="p-3">
-                        <div class="flex gap-2">
-                            {{-- Download --}}
-                            <a href="{{ route('dean.memo.download', $memo->id) }}" title="Download"
-                                class="border-[2px] border-blue rounded-full px-3 py-2 inline-flex items-center justify-center">
-                                <iconify-icon icon="mdi:download" width="18" height="18" class="text-blue"></iconify-icon>
-                            </a>
+                <tr onclick="handleRowClick(event, '{{ route('dean.memo.show', $memo->id) }}')"
+                    class="bg-white rounded shadow-sm cursor-pointer hover:bg-gray-100 transition">
+                    <td class="px-2 py-2 w-[15%]">{{ $memo->title }}</td>
+                    <td class="px-2 py-2 w-[55%]">{{ Str::limit($memo->description, 80) }}</td>
+                    <td class="px-2 py-2 w-[15%]">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
+                    <td class="px-2 py-2 w-[10%]">
+                        <div class="flex flex-wrap gap-2">
+                            @php
+                                $files = json_decode($memo->file_name, true);
+                                $files = is_array($files) ? $files : [$memo->file_name]; // Fallback if it's a single file string
+                            @endphp
 
                             {{-- Edit --}}
                             <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
                                 title="Edit"
-                                class="border-[2px] border-green rounded-full px-3 py-2 inline-flex items-center justify-center">
+                                class="stop-row-click border-[2px] border-green rounded-full px-3 py-2 inline-flex items-center justify-center hover:bg-green-100 transition">
                                 <iconify-icon icon="mdi:pencil" width="18" height="18" class="text-green"></iconify-icon>
                             </button>
 
                             {{-- Delete --}}
                             <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure?')" class="inline">
+                                onsubmit="return confirm('Are you sure?')" class="inline stop-row-click">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" title="Delete"
-                                    class="border-[2px] border-red rounded-full px-3 py-2 inline-flex items-center justify-center">
+                                    class="border-[2px] border-red rounded-full px-3 py-2 inline-flex items-center justify-center hover:bg-red-100 transition">
                                     <iconify-icon icon="mdi:trash-can" width="18" height="18" class="text-red"></iconify-icon>
                                 </button>
                             </form>
@@ -100,70 +104,131 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div class="p-4 border rounded-lg shadow bg-white">
-            <h2 class="text-lg font-semibold mb-2">{{ $memo->title }}</h2>
+        <div onclick="window.location.href='{{ route('dean.memo.show', $memo->id) }}'"
+            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
+
+            {{-- Title --}}
+            <h2 class="text-lg font-semibold mb-2 text-gray-800">{{ $memo->title }}</h2>
+
+            {{-- Description --}}
             <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-2">
-                <span>{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</span>
-                <a href="{{ route('dean.memo.download', $memo->id) }}"
-                    class="inline-flex items-center px-3 py-1 text-sm bg-blue text-white rounded hover:bg-blue-600">
-                    <iconify-icon icon="mdi:download" class="mr-1" width="16" height="16"></iconify-icon>
-                    Download
-                </a>
+
+            {{-- Date --}}
+            <div class="text-sm text-gray-500 mb-3">
+                {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
+            </div>
+
+            {{-- File Buttons (Prevent row click) --}}
+            @php
+                $files = json_decode($memo->file_name, true);
+                $files = is_array($files) ? $files : [$memo->file_name];
+            @endphp
+
+            <div class="flex flex-wrap gap-2 z-10 relative">
+                @foreach ($files as $file)
+                    @php
+                        $ext = pathinfo($file, PATHINFO_EXTENSION);
+                        $icon = match(strtolower($ext)) {
+                            'pdf' => 'mdi:file-pdf-box',
+                            'doc', 'docx' => 'mdi:file-word-box',
+                            'xls', 'xlsx' => 'mdi:file-excel-box',
+                            'jpg', 'jpeg', 'png' => 'mdi:file-image',
+                            default => 'mdi:file-document-outline',
+                        };
+
+                        $iconColor = match(strtolower($ext)) {
+                            'pdf' => '#DC2626',
+                            'doc', 'docx' => '#1D4ED8',
+                            'xls', 'xlsx' => '#15803D',
+                            'jpg', 'jpeg', 'png' => '#CA8A04',
+                            default => '#2563EB',
+                        };
+                    @endphp
+
+                    <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+                    onclick="event.stopPropagation()"
+                    class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
+                    style="border-color: #B3D4FC;"
+                    title="Download {{ $file }}">
+                        <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
+                        <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
+                            {{ Str::limit($file, 20) }}
+                        </span>
+                    </a>
+                @endforeach
             </div>
         </div>
         @empty
         <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
         @endforelse
     </div>
-</div>
+
 
 <!-- Create Memo Modal -->
-<div id="memoModal" class="fixed inset-0 z-40 flex items-center justify-center bg-gray bg-opacity-30 hidden">
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-lg shadow-lg relative z-50">
+<div id="memoModal" class="fixed inset-0 z-40 flex items-center justify-center bg-[#00000080] hidden">
+    <div class="bg-[#FFFFFF] dark:bg-[#1F2937] p-6 rounded-lg w-full max-w-lg shadow-lg relative z-50">
         <button onclick="closeMemoModal()"
-            class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            class="absolute top-2 right-2 text-[#9CA3AF] hover:text-[#4B5563] text-2xl font-bold"
             aria-label="Close Modal">&times;</button>
-        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Create New Memo</h2>
+
+        <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-[#FFFFFF]">Create New Memo</h2>
 
         <form id="createMemoForm" action="{{ route('dean.memo.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+
+            <!-- Title -->
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 font-medium">Title</label>
+                <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
                 <input type="text" name="title" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white">
+                    class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
             </div>
+
+            <!-- Description -->
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 font-medium">Description</label>
+                <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
                 <textarea name="description" rows="3" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"></textarea>
+                    class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white"></textarea>
             </div>
+
+            <!-- Date -->
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 font-medium">Date</label>
+                <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
                 <input type="date" name="date" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white">
+                    class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
             </div>
+
+            <!-- File Upload -->
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 font-medium">Upload File (PDF only)</label>
-                <input type="file" name="file" accept="application/pdf" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white">
+                <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload Files (PDF only)</label>
+                <input type="file" name="files[]" accept="application/pdf" multiple required
+                    class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
             </div>
+
+            <!-- Emails -->
             <div class="mb-4">
-                <label for="emails" class="block text-gray-700 dark:text-gray-300 font-medium">Recipient Emails</label>
+                <label for="emails" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Recipient Emails</label>
                 <select name="emails[]" id="emails" multiple
-                    class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3]" size="10">
+                    class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white" size="10">
                     @foreach($users as $user)
-                        <option value="{{ $user->email }}">{{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})</option>
+                        <option value="{{ $user->email }}">
+                            {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                        </option>
                     @endforeach
                 </select>
-                <p class="text-sm text-gray-500 mt-1">You can select or type new email addresses.</p>
+                <p class="text-sm text-[#6B7280] mt-1">You can select or type new email addresses.</p>
             </div>
+
+            <!-- Submit -->
             <div class="text-right">
-                <button type="submit" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Upload Memo</button>
+                <button type="submit"
+                    class="px-4 py-2 rounded text-white bg-[#000000] hover:bg-[#1F2937] transition duration-200">
+                    Upload Memo
+                </button>
             </div>
         </form>
     </div>
 </div>
+
 
 <!-- Edit Memo Modal -->
 <div id="editMemoModal" class="fixed inset-0 flex items-center justify-center bg-gray bg-opacity-30 z-50 hidden">
@@ -190,8 +255,8 @@
                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 font-medium">Upload New File (optional)</label>
-                <input type="file" name="file" accept="application/pdf"
+                <label class="block text-gray-700 dark:text-gray-300 font-medium">Upload New Files (optional)</label>
+                <input type="file" name="files[]" accept="application/pdf" multiple
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white">
             </div>
             <div class="flex justify-end">
@@ -210,7 +275,14 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 
 <script>
-    // Toggle View Handler
+    function handleRowClick(event, url) {
+        // If the clicked element or its parent has a "stop-row-click" class, don't redirect
+        if (event.target.closest('.stop-row-click')) return;
+        window.location = url;
+    }
+</script>
+
+<script>
     function setView(view) {
         const tableView = document.getElementById('tableView');
         const tileView = document.getElementById('tileView');
@@ -220,17 +292,18 @@
         if (view === 'tiles') {
             tableView.classList.add('hidden');
             tileView.classList.remove('hidden');
-            tilesBtn.classList.add('bg-gray');
-            tableBtn.classList.remove('bg-gray');
+
+            tableBtn.classList.remove('bg-[#D1D5DB]');
+            tilesBtn.classList.add('bg-[#D1D5DB]');
         } else {
-            tableView.classList.remove('hidden');
             tileView.classList.add('hidden');
-            tableBtn.classList.add('bg-gray');
-            tilesBtn.classList.remove('bg-gray');
+            tableView.classList.remove('hidden');
+
+            tilesBtn.classList.remove('bg-[#D1D5DB]');
+            tableBtn.classList.add('bg-[#D1D5DB]');
         }
     }
 
-    // Set default to Table View
     window.addEventListener('DOMContentLoaded', () => {
         setView('table');
     });

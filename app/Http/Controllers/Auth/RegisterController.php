@@ -6,26 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use App\Rules\PhoneNumberRule;
-
-use App\Models\role_user;
 use App\Rules\EmployeeNumberRule;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
+// New imports for emailing
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserRegistered;
+use Illuminate\Support\Facades\DB;
+
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
     /**
@@ -58,23 +50,23 @@ class RegisterController extends Controller
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255', new PhoneNumberRule()],
-            // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'ends_with:@ustp.edu.ph'],
-            'prefix' => ['nullable','string', 'max:255'],
-            'suffix' => ['nullable','string', 'max:255'],
+            'prefix' => ['nullable', 'string', 'max:255'],
+            'suffix' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:7', 'confirmed'],
         ]);
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Create a new user instance after a valid registration,
+     * then notify admin(s) via email.
      *
      * @param  array  $data
      * @return \App\Models\User
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'id' => $data['id'],
             'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],
@@ -84,5 +76,18 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        // Fetch admin emails from user_roles where role_id = 1
+        $adminEmails = DB::table('user_roles')
+            ->where('role_id', 1)
+            ->join('users', 'user_roles.user_id', '=', 'users.id')
+            ->pluck('users.email');
+
+        // Send email to all admin accounts
+        foreach ($adminEmails as $email) {
+            Mail::to($email)->send(new NewUserRegistered($user));
+        }
+
+        return $user;
     }
 }
