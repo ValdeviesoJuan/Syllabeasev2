@@ -1,5 +1,4 @@
 @extends('layouts.chairSidebar')
-
 @section('content')
 @include('layouts.modal')
 

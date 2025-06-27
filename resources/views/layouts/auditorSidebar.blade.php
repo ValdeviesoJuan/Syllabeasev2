@@ -38,7 +38,7 @@
 
                 <div class="flex items-center">
                     <div class="flex items-center ms-3">
-                        <div>
+                        <!-- <div>
                             <button type="button" class="flex text-sm bg-white justify-center items-center rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-notif">
                                 <span class="sr-only">Open user menu</span>
                                 <div class="w-8 h-8 rounded-full text-white text-sm flex justify-center items-center">
@@ -57,10 +57,7 @@
                                     </svg>
                                 </div>
                             </button>
-                        </div>
-                            
-
-                                            
+                        </div>               -->
 
                     <div class="flex items-center ms-3">
                         <div>
@@ -116,7 +113,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </nav>

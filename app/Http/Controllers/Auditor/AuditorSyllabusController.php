@@ -20,39 +20,45 @@ use App\Models\SrfChecklist;
 use App\Models\SyllabusDeanFeedback;
 use App\Models\BayanihanLeader;
 use App\Models\BayanihanMember;
+use App\Models\BayanihanGroup;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AuditorSyllabusController extends Controller
 {
     public function index()
     {
-        $syllabi = Syllabus::with(['bayanihanGroup', 'course', 'instructors'])->get();
-
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
-
-        $user = Auth::user();
-        $notifications = $user->notifications;
-
-        return view('Auditor.Syllabus.syllList', compact('syllabi', 'instructors', 'notifications'));
+        return view('auditor.syllabus.syllList');
     }
 
     public function commentSyllabus($syll_id)
     {
-        $syll = Syllabus::with(['bayanihanGroup', 'course'])->findOrFail($syll_id);
+        $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
+            ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
+            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id')
+            ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
+            ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->first();
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
-            ->where('departments.department_id', '=', $syll->department_id)
+            ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
+            ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
 
-        $poes = POE::where('department_id', '=', $syll->department_id)->get();
+        $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
+            ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->select('poes.*')
+            ->get();
 
-        $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)->get();
+        $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
+            ->get();
 
-        $copos = SyllabusCoPO::where('syll_id', '=', $syll_id)->get();
+        $copos = SyllabusCoPO::where('syll_id', '=', $syll_id)
+            ->get();
 
         $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
             ->select('users.*', 'syllabus_instructors.*')
@@ -77,16 +83,18 @@ class AuditorSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->where('bayanihan_leaders.bg_id', '=', $syll->bg_id)
+        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
             ->select('bayanihan_leaders.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
             ->get();
 
-        $bMembers = BayanihanMember::join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->where('bayanihan_members.bg_id', '=', $syll->bg_id)
+        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
             ->select('bayanihan_members.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
             ->get();
 
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
@@ -94,30 +102,32 @@ class AuditorSyllabusController extends Controller
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
             ->first();
 
-        $syllabusVersions = Syllabus::where('bg_id', $syll->bg_id)->get();
-
+        $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
+            ->select('syllabi.*')
+            ->get();
+            
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
 
-        return view('auditor.Syllabus.syllView', compact(
-    'syll',
-    'instructors',
-    'syll_id',
-    'courseOutcomes',
-    'programOutcomes',
-    'copos',
-    'courseOutlines',
-    'cotCos',
-    'courseOutlinesFinals',
-    'cotCosF',
-    'bLeaders',
-    'bMembers',
-    'poes',
-    'reviewForm',
-    'syllabusVersions',
-    'feedback'
-));
+        return view('auditor.syllabus.syllView', compact(
+            'syll',
+            'instructors',
+            'syll_id',
+            'instructors',
+            'courseOutcomes',
+            'programOutcomes',
+            'copos',
+            'courseOutlines',
+            'cotCos',
+            'courseOutlinesFinals',
+            'cotCosF',
+            'bLeaders',
+            'bMembers',
+            'poes',
+            'reviewForm',
+            'syllabusVersions',
+            'feedback'
+        ));
         
-
     }
     
 }

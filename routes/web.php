@@ -5,9 +5,6 @@ use App\Http\Controllers\Admin\ManageUser;
 use App\Http\Controllers\Dean\DeanController;
 
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Auditor\AuditorController;
-use App\Models\TOS;
-use App\Http\Controllers\Auditor\AuditorSyllabusController;
 
 //NEW Memo page for Dean
 use App\Http\Controllers\Dean\DeanMemoController;
@@ -48,6 +45,7 @@ use App\Http\Controllers\Admin\AdminCourseController;
 use App\Http\Controllers\Admin\AdminDepartmentController;
 use App\Http\Controllers\Auth\EditProfileController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderAuditController;
+
 //Chair Controls
 use App\Http\Controllers\Chairperson\ChairController;
 use App\Http\Controllers\Chairperson\ChairPOController;
@@ -55,6 +53,9 @@ use App\Http\Controllers\Chairperson\ChairPOEController;
 use App\Http\Controllers\Chairperson\ChairCurrController;
 use App\Http\Controllers\Chairperson\ChairCourseController;
 use App\Http\Controllers\Chairperson\ChairDeadlineController;
+use App\Http\Controllers\Chairperson\ChairReportsController;
+use App\Http\Controllers\Chairperson\ChairSyllabusController;
+use App\Http\Controllers\Chairperson\ChairTOSController;
 
 //Bayanihan Leader Controls
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderHomeController;
@@ -68,15 +69,9 @@ use App\Http\Controllers\BayanihanLeader\SyllabusTemplate\SyllabusTemplateContro
 use App\Http\Controllers\BayanihanLeader\SyllabusTemplate\TemplatePageController;
 use App\Http\Controllers\SyllabusController;
 
-
-
-
 //Bayanihan Teacher Controls
 use App\Http\Controllers\BayanihanTeacher\BayanihanTeacherSyllabusController;
 use App\Http\Controllers\BayanihanTeacher\BayanihanTeacherTOSController;
-use App\Http\Controllers\Chairperson\ChairReportsController;
-use App\Http\Controllers\Chairperson\ChairSyllabusController;
-use App\Http\Controllers\Chairperson\ChairTOSController;
 use App\Http\Controllers\Dean\DeanDeadlineController;
 use App\Http\Controllers\Dean\DeanReportsController;
 use App\Http\Controllers\Dean\DeanSyllabusController;
@@ -86,6 +81,11 @@ use App\Livewire\BLCommentModal;
 use App\Models\Course;
 use App\Models\Curriculum;
 use Livewire\Livewire;
+
+//Auditor Controls
+use App\Http\Controllers\Auditor\AuditorController;
+use App\Http\Controllers\Auditor\AuditorSyllabusController;
+use App\Http\Controllers\Auditor\AuditorTOSController;
 
 Route::get('/', function () {
     return view('auth/login');
@@ -443,12 +443,14 @@ Route::get('/auditor/home', [AuditorController::class, 'home'])
 // Grouped auditor routes
 Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
     Route::get('/home', [AuditorController::class, 'home'])->name('auditor.home');
-    Route::get('/tos', [AuditorController::class, 'tos'])->name('auditor.tos');
-    Route::get('/syllabus', [AuditorController::class, 'syllabus'])->name('auditor.syllabus');
+    Route::get('/tos', [AuditorTOSController::class, 'index'])->name('auditor.tos');
+    Route::get('/syllabus', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabus');
+    Route::get('/syllabus/commentSyllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.commentSyllabus');
 
 
 });
-Route::prefix('auditor')->middleware(['auth', 'role:auditor'])->group(function () {
-    Route::get('/syllabi', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabi.index');
-    Route::get('/syllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.syllabus.view');
-});
+
+// Route::prefix('auditor')->middleware(['auth', 'role:auditor'])->group(function () {
+//     Route::get('/syllabi', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabi.index');
+//     Route::get('/syllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.syllabus.view');
+// });

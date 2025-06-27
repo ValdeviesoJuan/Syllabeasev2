@@ -17,7 +17,7 @@ class AuditorController extends Controller
     public function tos()
     {
         $toss = TOS::all();
-        return view('auditor.TOS.TOS', compact('toss'));
+        return view('auditor.TOS.tosList', compact('toss'));
     }
 
     public function syllabus()
