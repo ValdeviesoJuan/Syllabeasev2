@@ -50,10 +50,10 @@ class User extends Authenticatable  implements Auditable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-    ];
+    ];    
+
     public function roles()
     {
-        return $this->belongsToMany(roles::class, 'user_roles', 'user_id', 'role_id');
+        return $this->belongsToMany(\App\Models\UserRole::class, 'user_roles', 'user_id', 'role_id');
     }
-
 }

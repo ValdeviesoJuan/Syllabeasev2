@@ -622,6 +622,7 @@ class BayanihanLeaderSyllabusController extends Controller
         $oldSyllabusCourseOutcome = SyllabusCourseOutcome::where('syll_id', $syll_id)->get();
         $oldSyllabusCourseOutlineM = SyllabusCourseOutlineMidterm::where('syll_id', $syll_id)->get();
         $oldSyllabusCourseOutlineF = SyllabusCourseOutlinesFinal::where('syll_id', $syll_id)->get();
+        
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
             $newSyllabus->status = null;
@@ -683,5 +684,80 @@ class BayanihanLeaderSyllabusController extends Controller
             }
             return redirect()->route('bayanihanleader.viewSyllabus', $newSyllabus->syll_id)->with('success', 'Syllabus replication successful.');
         }
+    }
+
+    public function duplicateSyllabus($syll_id, $target_bg_id)
+    {   
+        $oldSyllabus = Syllabus::where('syll_id', $syll_id)->first();
+        $oldSyllabusInstructor = SyllabusInstructor::where('syll_id', $syll_id)->get();
+        $oldSyllabusCourseOutcome = SyllabusCourseOutcome::where('syll_id', $syll_id)->get();
+        $oldSyllabusCourseOutlineM = SyllabusCourseOutlineMidterm::where('syll_id', $syll_id)->get();
+        $oldSyllabusCourseOutlineF = SyllabusCourseOutlinesFinal::where('syll_id', $syll_id)->get();
+        
+        if ($oldSyllabus) {
+            $newSyllabus = $oldSyllabus->replicate();
+            $newSyllabus->status = null;
+            $newSyllabus->chair_submitted_at = null;
+            $newSyllabus->dean_submitted_at = null;
+            $newSyllabus->chair_rejected_at = null;
+            $newSyllabus->dean_rejected_at = null;  
+            $newSyllabus->dean_approved_at = null;
+            $newSyllabus->version = 1;
+            $newSyllabus->bg_id = $target_bg_id;
+            $newSyllabus->save();
+
+            foreach ($oldSyllabusInstructor as $syllabusInstructor) {
+                $newSyllabusInstructor = $syllabusInstructor->replicate();
+                $newSyllabusInstructor->syll_id = $newSyllabus->syll_id;
+                $newSyllabusInstructor->save();
+            }
+            foreach ($oldSyllabusCourseOutcome as $syllabusCourseOutcome) {
+                $newSyllabusCourseOutcome = $syllabusCourseOutcome->replicate();
+                $newSyllabusCourseOutcome->syll_id = $newSyllabus->syll_id;
+                $newSyllabusCourseOutcome->save();
+
+                $oldSyllabusCoPo = SyllabusCoPo::where('syll_co_id', $syllabusCourseOutcome->syll_co_id)->get();
+
+                foreach ($oldSyllabusCoPo as $syllabusCoPo) {
+                    $newSyllabusCoPo = $syllabusCoPo->replicate();
+                    $newSyllabusCoPo->syll_co_id = $newSyllabusCourseOutcome->syll_co_id;
+                    $newSyllabusCoPo->syll_id = $newSyllabus->syll_id;
+                    $newSyllabusCoPo->save();
+                }
+            }
+
+            foreach ($oldSyllabusCourseOutlineM as $syllabusCourseOutlineM) {
+                $newSyllabusCourseOutlineM = $syllabusCourseOutlineM->replicate();
+                $newSyllabusCourseOutlineM->syll_id = $newSyllabus->syll_id;
+                $newSyllabusCourseOutlineM->save();
+
+                $oldSyllabusCotCoM = SyllabusCotCoM::where('syll_co_out_id', $syllabusCourseOutlineM->syll_co_out_id)->get();
+
+                foreach ($oldSyllabusCotCoM as $syllabusCotCoM) {
+                    $newSyllabusCotCoM = $syllabusCotCoM->replicate();
+                    $newSyllabusCotCoM->syllabus_cot_co = null;
+                    $newSyllabusCotCoM->syll_co_out_id = $newSyllabusCourseOutlineM->syll_co_out_id;
+                    $newSyllabusCotCoM->save();
+                }
+            }
+
+            foreach ($oldSyllabusCourseOutlineF as $syllabusCourseOutlineF) {
+                $newSyllabusCourseOutlineF = $syllabusCourseOutlineF->replicate();
+                $newSyllabusCourseOutlineF->syll_id = $newSyllabus->syll_id;
+                $newSyllabusCourseOutlineF->save();
+
+                $oldSyllabusCotCoF = SyllabusCotCoF::where('syll_co_out_id', $syllabusCourseOutlineF->syll_co_out_id)->get();
+
+                foreach ($oldSyllabusCotCoF as $syllabusCotCoF) {
+                    $newSyllabusCotCoF = $syllabusCotCoF->replicate();
+                    $newSyllabusCotCoF->syllabus_cot_co = null;
+                    $newSyllabusCotCoF->syll_co_out_id = $newSyllabusCourseOutlineF->syll_co_out_id;
+                    $newSyllabusCotCoF->save();
+                }
+            }
+            return redirect()->route('bayanihanleader.syllabus')->with('success', 'Syllabus duplication successful.');
+        }
+
+        return redirect()->back()->with('error', 'Original syllabus not found.');
     }
 }

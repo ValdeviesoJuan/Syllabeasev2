@@ -484,7 +484,6 @@
             const toggle = document.getElementById('toggleRevisions');
             toggle.addEventListener('change', () => showPrev = toggle.checked);"
     >
-
         <!-- 1st Header -->
         <tr>
             <th colspan="2" 

@@ -1,7 +1,7 @@
 <div class="mt-4 ml-[4%]">
     <div class="btn btn-primary font-semibold text-white px-6 py-2 rounded-lg m-2 bg-blue">
         <button wire:click="openComments" class="">
-            <span class="">Create Syllabus From Existing</span>
+            <span class="">Create From Approved Syllabi</span>
         </button>
     </div>
     @if($isOpen)
@@ -21,7 +21,7 @@
                 <div>
                     <div class="grid grid-cols-1 gap-y-3 mt-2">
                         @foreach($syllabi as $syllabus)
-                        <a href="{{ route('bayanihanleader.createTos', $syllabus->syll_id) }}" class="p-3 flex w-[390px] ml-3 h-auto py-4 px-2 shadow-lg justify-center items-center bg-[#f9fafb] hover:bg-blue2 rounded text-center text-gray-500 hover:bg-[#f3f4f6]">{{$syllabus->course_code . ' ' . $syllabus->bg_school_year . ' ' . $syllabus->course_semester}}</a>
+                            <a href="{{ route('bayanihanleader.duplicateSyllabus', ['syll_id' => $syllabus->syll_id, 'target_bg_id' => $syllabus->target_bg_id]) }}" class="p-3 flex w-[390px] ml-3 h-auto py-4 px-2 shadow-lg justify-center items-center bg-[#f9fafb] hover:bg-blue2 rounded text-center text-gray-500 hover:bg-[#f3f4f6]">{{$syllabus->course_code . ' ' . $syllabus->bg_school_year . ' ' . $syllabus->course_semester}}</a>
                         @endforeach
                         <div>
                         </div>

@@ -1,7 +1,6 @@
-@extends('layouts.chairSidebar')
+@extends('layouts.auditorSidebar')
 @section('content')
 @include('layouts.modal')
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,7 +28,7 @@
 <div class="p-4 pb-10 shadow bg-white border-dashed rounded-lg dark:border-gray-700 mt-14">
         <h1 class="font-bold text-4xl text-[#201B50] mb-8">List of Syllabus</h1>
         <div class="">
-            <livewire:chair-syllabus-table />
+            <livewire:auditor-syllabus-table />
         </div>
         <livewire:scripts />
 </body>

@@ -11,58 +11,82 @@
     <title>Reset Password</title>
 </head>
 
-<body class="bg-slate-100">
+<body class="bg-white">
     <section class="relative flex flex-wrap lg:h-screen lg:items-center">
-        <div class="w-full px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2 lg:px-8 lg:py-24">
-            <div class="mx-auto max-w-lg text-center">
-                <h1 class="text-2xl font-bold sm:text-3xl">Forgot Password</h1>
-
-                <p class="mt-4 text-gray-500 text-md">
-                    Already have an account? <a class="text-blue5 text-lg hover:underline" href="{{ route('login') }}">Sign in</a>
+        <div class="w-full flex items-center justify-center min-h-screen px-4 py-8 sm:px-6 sm:py-12 lg:w-1/2 lg:px-8 lg:py-24">
+            <div class="
+                bg-white 
+                bg-opacity-90 
+                shadow-[0_4px_20px_rgba(0,0,0,0.08)] 
+                rounded-2xl 
+                lg:rounded-l-2xl lg:rounded-r-none
+                backdrop-blur-md
+                p-8 sm:p-10 max-w-md w-full
+                transition-all
+            ">
+                <!-- Logo -->
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('assets/Sample/syllabease.png') }}" alt="SyllabEase Logo" class="mx-auto w-60">
+                </div>
+                <h1 class="text-xl font-bold text-gray-900 mb-2 text-left">Forgot Password</h1>
+                <p class="text-gray-500 text-sm text-left mb-6">
+                    Already have an account?
+                    <a class="text-[#F4A100] font-semibold hover:underline" href="{{ route('login') }}">Sign in</a>
                 </p>
-            </div>
-
-            <form method="POST" action="{{ route('password.email') }}" class="mx-auto mb-0 mt-8 max-w-md space-y-4">
-                <div>
-                    <label for="email" class="sr-only">Email</label>
-
-                    <div class="relative">
-                        <input type="email" class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm" @error('email') is-invalid @enderror name="email" value="{{ old('email') }}" required autocomplete="email" autofocus
-                            placeholder="Enter email" />
+                <form method="POST" action="{{ route('password.email') }}" class=   "space-y-5">
+                    @csrf
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                        <div class="relative">
+                            <input
+                                id="email"
+                                type="email"
+                                class="w-full rounded-lg border border-gray-200 p-3 pr-12 text-sm shadow-sm focus:border-[#F4A100] focus:ring-[#F4A100] transition-colors duration-200"
+                                @error('email') is-invalid @enderror
+                                name="email"
+                                value="{{ old('email') }}"
+                                required
+                                autocomplete="email"
+                                autofocus
+                                placeholder="Email address"
+                            />
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                <!-- Envelope Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#F4A100]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <rect x="3" y="5" width="18" height="14" rx="2" stroke-width="2" stroke="currentColor" fill="none"/>
+                                    <path d="M3 7l9 6 9-6" stroke-width="2" stroke="currentColor" fill="none"/>
+                                </svg>
+                            </span>
                             @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                        <strong class="invalid_text">{{ $message }}</strong>
-                                </span>
+                                <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span>
                             @enderror
-
-                        <span class="absolute inset-y-0 end-0 grid place-content-center px-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-gray-400" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                            </svg>
-                        </span>
+                        </div>
                     </div>
-                </div>
-
-                <div class="send_btn text-lg flex justify-center bg-blue3 hover:bg-blue5 text-white p-4 rounded-lg">
-                    <button type="submit" class="btn_text text-center cursor-pointer ">
-                        {{ __('Send Password Reset Link') }}
+                    <button type="submit"
+                        class="w-full flex items-center justify-center gap-2 bg-blue5 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition-colors duration-200 text-base">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 10l9-6 9 6-9 6-9-6zm0 0v6a9 9 0 009 9 9 9 0 009-9v-6" />
+                        </svg>
+                        Send Password Reset Link
                     </button>
+                    @if (session('status'))
+                        <div class="text-green-600 text-sm text-center mt-2">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                </form>
+                <div class="mt-8 text-center">
+                    <p class="text-sm text-gray-500">
+                        No account?
+                        <a class="text-blue5 font-semibold hover:underline" href="{{ route('register') }}">Sign up</a>
+                    </p>
                 </div>
-
-                <div class="flex justify-center">
-                    <div class=" mt-12">
-                        <p class="text-md text-gray-500">
-                            No account?
-                            <a class="text-blue5 text-lg hover:underline" href="{{ route('register') }}">Sign up</a>
-                        </p>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
 
-        <div class=" bg-blue5 relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
+        <div class="bg-blue5 relative h-64 w-full sm:h-96 lg:h-full lg:w-1/2">
             <img alt=""
                 src="/assets/forgotpass-vector.png"
                 class="absolute inset-0 h-full w-full object-cover" />
