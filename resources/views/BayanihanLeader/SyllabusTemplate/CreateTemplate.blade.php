@@ -35,9 +35,9 @@
     <div class="flex justify-end mb-6 px-4">
     <form action="{{ route('syllabus.template') }}" method="GET">
             @csrf    
-    <button class="bg-yellow hover:scale-105 transition ease-in-out text-white px-4 py-2 rounded-lg shadow">
-        + Create Syllabus Template
-    </button>
+        <button class="bg-yellow hover:scale-105 transition ease-in-out text-white px-4 py-2 rounded-lg shadow">
+            + Create Syllabus Template
+        </button>
     </div>
 
     
