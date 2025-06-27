@@ -40,4 +40,9 @@ class Syllabus extends Model implements Auditable
     {
         return $this->hasMany(SyllabusInstructor::class, 'syll_id', 'syll_id');
     }
+
+    public function course()
+{
+    return $this->belongsTo(Course::class, 'course_id', 'course_id');
+}
 }

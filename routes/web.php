@@ -3,7 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ManageUser;
 use App\Http\Controllers\Dean\DeanController;
+
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auditor\AuditorController;
+use App\Models\TOS;
+use App\Http\Controllers\Auditor\AuditorSyllabusController;
 
 //NEW Memo page for Dean
 use App\Http\Controllers\Dean\DeanMemoController;
@@ -361,10 +365,10 @@ Route::prefix('/')->middleware('auth')->group(function () {
     Route::get('editPassword', [EditProfileController::class, 'editPassword'])->name('password.edit');
     Route::post('updatePassword', [EditProfileController::class, 'updatePassword'])->name('password.update');
 });
-
+//na add ni gelski
 //Auditor
 Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
-    Route::get('/home', [App\Http\Controllers\AuditorController::class, 'home'])->name('auditor.home');
+    Route::get('/home', [App\Http\Controllers\Auditor\AuditorController::class, 'home'])->name('auditor.home');
 });
 
 
@@ -429,4 +433,22 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
     Route::put('admin/updateRoles/{role_id}', [ManageUser::class, 'updateRoles'])->name('admin.updateRoles');
     Route::delete('admin/destroyRoles/{role_id}', [ManageUser::class, 'destroyRoles'])->name('admin.destroyRoles');
     Route::post('admin/{userid}', [ManageUser::class, 'update']);
+});
+
+//route for auditor
+Route::get('/auditor/home', [AuditorController::class, 'home'])
+    ->middleware(['auth', 'isAuditor'])
+    ->name('auditor.home');
+
+// Grouped auditor routes
+Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
+    Route::get('/home', [AuditorController::class, 'home'])->name('auditor.home');
+    Route::get('/tos', [AuditorController::class, 'tos'])->name('auditor.tos');
+    Route::get('/syllabus', [AuditorController::class, 'syllabus'])->name('auditor.syllabus');
+
+
+});
+Route::prefix('auditor')->middleware(['auth', 'role:auditor'])->group(function () {
+    Route::get('/syllabi', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabi.index');
+    Route::get('/syllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.syllabus.view');
 });
