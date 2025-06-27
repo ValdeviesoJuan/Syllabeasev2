@@ -41,28 +41,41 @@ body{
     padding-top: 6%;
     text-align: center;
 }
-.resetpass_input{
-    margin: auto;
-    padding: 10px;
-    width: 300px;
-    border-radius: 15px;
-    justify-content: center;
-    align-items: center;
+.resetpass_input {
+    border: 2px solid #ffd600;
+    background: #fff;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    width: 100%;
     margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.resetpass_input:focus {
+    border-color: #ffd600;
+    box-shadow: 0 0 0 2px #ffe06633;
+    outline: none;
 }
 .send_btn{
     text-align: center;
 }
-.btn_text{
-    padding: 2%;
-    font-weight:lighter;
-    width: 300px;
-    border-radius: 15px;
-    background-color: #2468d2;
-    color: #ffffff;
-    font-size: 18px;
-    cursor: pointer;
+.btn_text {
+    background: #ffd600;
+    color: #222;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: background 0.2s;
+    font-size: 1rem;
+    padding: 0.6rem 0;
+    width: 100%;
     border: none;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.btn_text:hover {
+    background: #ffea80;
 }
 .backbtn{
     text-align: center;
@@ -92,4 +105,12 @@ body{
     margin: auto;
     font-size: 12px;
     color:rgb(29, 173, 29);
+}
+label,
+.text-sm {
+    font-size: 0.9rem;
+}
+
+.text-xs {
+    font-size: 0.8rem;
 }

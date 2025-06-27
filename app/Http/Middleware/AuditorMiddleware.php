@@ -3,27 +3,37 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\UserRole;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class AuditorMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        // Check if the user is authenticated and has the 'auditor' role
-        if (Auth::check() && Auth::user()->role === 'auditor') {
-            return $next($request);
-        }
+        $user = Auth::user();
+        if ($user) {
+            $user_role = UserRole::join('users', 'user_roles.user_id', '=', 'users.id')
+                ->where('user_roles.user_id', '=', $user->id)
+                ->select('user_roles.role_id')
+                ->get('user_roles.role_id');
 
-        // Optionally, redirect or abort if not authorized
-        return redirect()->route('home')->with('error', 'Unauthorized access.');
+            $roleIds = $user_role->pluck('role_id')->toArray();
+            if (in_array(6, $roleIds)) {
+                return $next($request);
+            } else {
+                return redirect('/home')->with('message', 'Access Denied');
+            }
+        } else {
+            return redirect('/login')->with('message', 'Login');
+        }  
     }
 }

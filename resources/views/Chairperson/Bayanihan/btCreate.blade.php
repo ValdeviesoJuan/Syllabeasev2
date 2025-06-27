@@ -27,6 +27,17 @@
     <div class="p-4 pb-10 flex items-center justify-center  mt-14">
         <div class="max-w-md bg-gradient-to-r from-[#FFF] to-[#dbeafe] w-[560px] p-6 px-8 rounded-lg shadow-lg">
             <img class="edit_user_img text-center mt-4 w-[330px] m-auto mb-6" src="/assets/Create Bayanihan Team.png" alt="SyllabEase Logo">
+            @if(session('error'))
+                <div class="bg-[#fca5a5] border border-[#f87171] text-[#EF4444] px-4 py-3 rounded mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="bg-green-100 border border-green text-green px-4 py-3 rounded mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
             <form action="{{ route('chairperson.storeBTeam') }}" id="form" method="POST">
                 @csrf
                 <div class="m-6">

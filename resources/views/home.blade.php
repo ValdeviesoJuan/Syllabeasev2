@@ -105,12 +105,6 @@
         <div class="login-title">Login as</div>
 
         @php
-         
-            $myRoles[] = (object)[
-                'role_id' => 6,
-                'role_name' => 'Auditor'
-            ];
-
             $href = '';
             $roleCount = count($myRoles);
 
@@ -128,6 +122,21 @@
                 }
 
                 echo "<script>window.location.href = '{$href}';</script>";
+            }
+        @endphp
+
+        @php
+           
+            $userHasAccount = isset($myRoles) && count($myRoles) > 0;
+
+            if (!$userHasAccount) {
+                // Default role if no roles are assigned
+                $myRoles = [
+                    (object)[
+                        'role_id' => 1,
+                        'role_name' => 'Admin'
+                    ]
+                ];
             }
         @endphp
 
