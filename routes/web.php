@@ -51,7 +51,8 @@ Route::get('/notifications/mark-read/{id}', function ($id) {
     return response()->json(['success' => true]);
 })->name('notifications.markRead');
 
-//New middlware route for notification Dean - BLeader
+//New middleware route for notification Dean - BLeader
+use App\Http\Controllers\BayanihanLeader\BLSyllabusController;
 Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
     Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
 });
@@ -202,7 +203,7 @@ Route::group(['prefix' => 'bayanihanleader', 'middleware' => ['auth', 'isBL']], 
     Route::get('/syllabus/replicate/{syll_id}', [BayanihanLeaderSyllabusController::class, 'replicateSyllabus'])->name('bayanihanleader.replicateSyllabus');
 
     Route::get('/syllabus/duplicate/{syll_id}/{target_bg_id}', [BayanihanLeaderSyllabusController::class, 'duplicateSyllabus'])->name('bayanihanleader.duplicateSyllabus');
-    
+
     // Row Edit 
     Route::get('/syllabus/editCotRowM/{syll_id}', [BayanihanLeaderCOTController::class, 'editCotRowM'])->name('bayanihanleader.editCotRowM');
     Route::post('/syllabus/updateCotRowM/{syll_id}', [BayanihanLeaderCOTController::class, 'updateCotRowM'])->name('bayanihanleader.updateCotRowM');
@@ -463,11 +464,14 @@ Route::get('/auditor/home', [AuditorController::class, 'home'])
 // Grouped auditor routes
 Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
     Route::get('/home', [AuditorController::class, 'home'])->name('auditor.home');
-    Route::get('/tos', [AuditorTOSController::class, 'index'])->name('auditor.tos');
+
+    //Auditor: Syllabus Controller
     Route::get('/syllabus', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabus');
     Route::get('/syllabus/commentSyllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.commentSyllabus');
+    Route::get('/syllabus/viewReviewForm/{syll_id}', [AuditorSyllabusController::class, 'viewReviewForm'])->name('auditor.viewReviewForm');
 
-
+    //Auditor: TOS Controller
+    Route::get('/tos', [AuditorTOSController::class, 'index'])->name('auditor.tos');
 });
 
 // Route::prefix('auditor')->middleware(['auth', 'role:auditor'])->group(function () {

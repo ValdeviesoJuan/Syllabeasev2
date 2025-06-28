@@ -19,7 +19,7 @@ use App\Models\TosRows;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
 
-class BayanihanLeaderAuditController extends Controller
+class BayanihanTeacherAuditController extends Controller
 {
     public function viewAudit($syll_id)
     {

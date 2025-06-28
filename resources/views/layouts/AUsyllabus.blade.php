@@ -64,13 +64,12 @@
 </head>
 
 <body class="box-border">
-    <div class=" min-h-screen shadow-lg">
+    <div class=" ">
         <div class="relative">
             <div class="fixed top-0 z-50">
-
                 <nav class="w-screen flex px-6 md:shadow-lg items-center relative bg-blue py-1">
                     <img class="w-48 text-lg font-bold md:py-0 py-4" src="/assets/Sample/syllabease4.png" alt="SyllabEase">
-                    <div class="border-2 border-solid border-white rounded-full text-white mt-4 ml-2">
+                    <div class="border-2 border-solid border-white rounded-full text-white ml-2">
                         <button class="flex p-0.5 relative">
                             <div class="bg-white rounded-full">
                                 <svg fill="#1148b1" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
@@ -84,7 +83,7 @@
                                 </svg>
                             </div>
                             <div class="mt mx-1 text-[13px]">
-                                <a href="{{ route('home') }}">B Teacher</a>
+                                <a href="{{ route('home') }}">Auditor</a>
                             </div>
                         </button>
                     </div>
@@ -132,30 +131,34 @@
                             </div>
 
                             @foreach($syllabusVersions as $syllabusVersion)
+                                @php
+                                $currentRouteMatches = request()->route()->getName() === 'auditor.commentSyllabus' &&
+                                request()->route('syll_id') == $syllabusVersion->syll_id;
+                                $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'bg-white';
+                                @endphp
 
-                            @php
-                            $currentRouteMatches = request()->route()->getName() === 'bayanihanteacher.commentSyllabus' &&
-                            request()->route('syll_id') == $syllabusVersion->syll_id;
-                            $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'bg-white';
-                            @endphp
-
-                            <a href="{{ route('bayanihanteacher.commentSyllabus', $syllabusVersion->syll_id) }}" class="">
-                                <div class="p-2 flex justify-between hover:bg-blue2 rounded {{ $bgColorClass }}">
-                                    <div class="flex flex-row">
-                                        Version {{ $syllabusVersion->version }}
-                                    </div>
-                                    <div class="flex items-center">
-                                        <div class="text-gray text-sm italic pr-5">
-                                            {{ $syllabusVersion->status }}
+                                <a href="{{ route('auditor.commentSyllabus', $syllabusVersion->syll_id) }}" class="">
+                                    <div class="p-2 flex justify-between hover:bg-blue2 rounded {{ $bgColorClass }}">
+                                        <div class="flex flex-row">
+                                            Version {{ $syllabusVersion->version }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="text-gray text-sm italic pr-5">
+                                                {{ $syllabusVersion->status }}
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="text-gray text-sm italic pr-5">
+                                                {{ $syllabusVersion->chair_submitted_at }}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
+                                </a>
                             @endforeach
                         </div>
                         
                         <a onclick="dropDownComment()" id="modeButton" class="hover:bg-blue2 bg-blue3 rounded-full cursor-pointer w-[180px] px-2 h- flex justify-center md:inline-flex items-center justify-center">
-                            @if(request()->route()->getName() == 'bayanihanteacher.commentSyllabus')
+                            @if(request()->route()->getName() == 'auditor.commentSyllabus')
                             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
@@ -166,7 +169,7 @@
                             @endif
 
                             <div id="modeText" class="mx-2 text-white text-sm">
-                                @if(request()->route()->getName() == 'bayanihanteacher.commentSyllabus')
+                                @if(request()->route()->getName() == 'auditor.commentSyllabus')
                                 Comment Mode
                                 @else
                                 Editing Mode
@@ -179,10 +182,9 @@
                             </div>
                         </a>
 
-
                         <!-- Comment Dropdown -->
                         <div id="dropDownComment" class="hidden mt-1 transition duration-300 md:absolute top-full right-[90px] md:w-[200px] bg-white bg-opacity-90 md:shadow-lg md:rounded">
-                            <a href="{{ route('bayanihanteacher.commentSyllabus', $syll_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">
+                            <a href="{{ route('auditor.commentSyllabus', $syll_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">
                                 <div class="mx-2 my-2">
                                     <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#454545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
