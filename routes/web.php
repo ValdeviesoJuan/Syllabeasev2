@@ -105,6 +105,7 @@ use Livewire\Livewire;
 use App\Http\Controllers\Auditor\AuditorController;
 use App\Http\Controllers\Auditor\AuditorSyllabusController;
 use App\Http\Controllers\Auditor\AuditorTOSController;
+use App\Http\Controllers\BayanihanTeacher\BayanihanTeacherAuditController;
 
 Route::get('/', function () {
     return view('auth/login');
@@ -140,8 +141,8 @@ Route::group(['prefix' => 'bayanihanteacher', 'middleware' => ['auth', 'isBT']],
     Route::get('/tos/commentTos/{tos_id}', [BayanihanTeacherTOSController::class, 'commentTos'])->name('bayanihanteacher.commentTos');
 
     // Audit Trail 
-    Route::get('/syllabus/auditTrail/{syll_id}', [BayanihanLeaderAuditController::class, 'viewAudit'])->name('bayanihanteacher.viewAudit');
-    Route::get('/tos/auditTrail/{tos_id}', [BayanihanLeaderAuditController::class, 'viewTosAudit'])->name('bayanihanteacher.viewTosAudit');
+    Route::get('/syllabus/auditTrail/{syll_id}', [BayanihanTeacherAuditController::class, 'viewAudit'])->name('bayanihanteacher.viewAudit');
+    Route::get('/tos/auditTrail/{tos_id}', [BayanihanTeacherAuditController::class, 'viewTosAudit'])->name('bayanihanteacher.viewTosAudit');
 });
 
 
