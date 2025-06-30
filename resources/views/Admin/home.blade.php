@@ -14,12 +14,11 @@
 
     <style>
         body {
-            /* background-image: url("{{ asset('assets/Wave.png') }}");
+            background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
             background-position: top;
             background-attachment: fixed;
-            background-size: contain; */
-
+            background-size: contain; 
             background-color: #EEEEEE;
         }
         table,
@@ -53,19 +52,50 @@
                         </form> -->
                     </div>
                 </div>
-                    <button class="export_btn flex absolute content-start">
-                        <a class="export_text relative p-2 flex display-flex text-right import_btn bg-seThird text-black font-semibold rounded hover:drop-shadow-md" href="{{ route('fileUserExport') }}">Export data</a>
-                    </button>
-                    <div class="import whitespace-nowrap">
-                        <form action="{{ route('fileUserImport') }}" method="POST" enctype="multipart/form-data" class="relative w-full px-4 max-w-full float-right inline-block text-right">
-                            @csrf
-                            <button type="submit" class="import_btn flex display-flex float-right bg-seThird hover:bg-blue-400 py-1 text-black font-semibold px-2 rounded hover:drop-shadow-md">Import data</button>
-                            <button class="custom_file">
-                                <input type="file" name="file" class="custom-file-input relative w-full mt-[-5px] -mr-10" id="customFile">
-                            </button>
-                        </form>
-                    </div>
+                
+                     <a href="{{ route('fileUserExport') }}"
+   style="display: flex; align-items: center; gap: 10px; background: #d7ecf9; border: none; border-radius: 10px; padding: 12px 24px; font-size: 1rem; color: #1a3557; font-weight: 500; min-width: 0; justify-content: center; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); cursor: pointer; transition: background 0.3s ease; text-decoration: none;"
+   class="absolute content-start"
+   onmouseover="this.style.background='#c3dff3';"
+   onmouseout="this.style.background='#d7ecf9';">
+   
+   <!-- Modern Download Icon -->
+   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+     <path stroke-linecap="round" stroke-linejoin="round"
+           d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12l4.5 4.5m0 0l4.5-4.5m-4.5 4.5V3"/>
+   </svg>
+
+   Export data
+</a>
+
+
+
+  <!-- na add ni gels -->
+    <div class="import whitespace-nowrap">
+    <form action="{{ route('fileUserImport') }}" method="POST" enctype="multipart/form-data" class="relative w-full px-4 max-w-full float-right inline-block text-right">
+        @csrf
+        <button type="submit"
+            class="import_btn flex items-center gap-2 float-right"
+            style="background: #d7ecf9; border: none; border-radius: 10px; padding: 5px 24px; font-size: 1rem; color: #1a3557; font-weight: 500; justify-content: center; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); cursor: pointer; transition: background 0.3s ease;"
+            onmouseover="this.style.background='#c3dff3';"
+            onmouseout="this.style.background='#d7ecf9';">
+
+            <!-- Modern Upload Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12l-4.5-4.5m0 0L7.5 12m4.5-4.5V21" />
+            </svg>
+
+            Import data
+        </button>
+                <button class="custom_file ">
+                    <input type="file" name="file" class="custom-file-input relative w-full mt-[-5px] -mr-10" style="border:none; border-radius:15px" id="customFile">
+                </button>
+            </form>
                 </div>
+            </div>
             </div>
             <livewire:admin-user-table />
         </div>

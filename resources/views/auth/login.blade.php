@@ -36,7 +36,9 @@
                 </div>
 
                 <!-- Headings -->
-               
+                <h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                        Login
+                </h2>
 
                 <!-- Form -->
                 <form method="POST" action="{{ route('login') }}" class="space-y-5">

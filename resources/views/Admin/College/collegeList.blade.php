@@ -16,11 +16,11 @@
 
     <style>
         body {
-            /* background-image: url("{{ asset('assets/Wave.png') }}");
+            background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
             background-position: top;
             background-attachment: fixed;
-            background-size: contain; */
+            background-size: contain;
             background-color: #EEEEEE;
         }
         </style>
@@ -34,13 +34,23 @@
                     <div class="min-w-full inline-block align-middle">
                         <div class="overflow-hidden">
                             <h2 class="text-3xl text-black -mb-[30px] font-semibold">Colleges</h2>
-                                <a class="whitespace-nowrap mb-6 w-50 bg-seThird rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex max-w-full float-right" href="{{ route('admin.createCollege') }}">
-                                <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                                </svg>
-                                Create College
-                                </a>
+                               <a href="{{ route('admin.createCollege') }}"
+   class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full float-right"
+   style="background: #d7ecf9;"
+   onmouseover="this.style.background='#c3dff3';"
+   onmouseout="this.style.background='#d7ecf9';">
+    
+    <!-- Na change ni gels -->
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+         xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+    </svg>
+
+    Create College
+</a>
+
                         </div>
                     </div>
                 </div>
@@ -72,23 +82,40 @@
                                 </td>
 
                                 <td class="px-4 py-2 text-center">
-                                    <form action="{{ route('admin.editCollege', $college->college_id) }}" method="GET">
-                                    @csrf
-                                        <button type="submit" class="text-green font-medium mt-5 hover:scale-105">
-                                            Edit
-                                        </button>
-                                    </form>
-                                </td>
+    <div class="flex items-center justify-center gap-1">
+        <!-- Edit Button -->
+        <form action="{{ route('admin.editCollege', $college->college_id) }}" method="GET">
+            @csrf
+            <button type="submit"
+                class="flex items-center justify-center p-2 border border-green hover:scale-105 transition-transform duration-150 ease-in-out"
+                style="border-radius: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="green" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.5 19.5 3 21l1.5-4.5L16.862 3.487z" />
+                </svg>
+            </button>
+        </form>
 
-                                <td>
-                                    <form action="{{ route('admin.destroyCollege',$college->college_id) }}" method="Post">
-                                    @csrf
-                                    @method('DELETE')
-                                        <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
-                                           Delete
-                                        </button>
-                                    </form>
-                                </td>
+        <!-- Delete Button -->
+        <form action="{{ route('admin.destroyCollege', $college->college_id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                class="flex items-center justify-center p-2 border border-red-600 hover:scale-105 transition-transform duration-150 ease-in-out"
+                style="border-radius: 15px; color: red;">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="red" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6 7h12M9 7V4h6v3m2 0v13a2 2 0 01-2 2H8a2 2 0 01-2-2V7z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+</td>
+
                             </tr>
                             @endforeach
                         </tbody>
@@ -110,13 +137,24 @@
                 <div class="min-w-full inline-block align-middle">
                     <div class="overflow-hidden">
                         <h2 class="text-3xl text-black font-semibold -mb-[35px]">Dean</h2>
-                            <a class="whitespace-nowrap mb-6 w-50 bg-seThird rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex max-w-full float-right" href="{{ route('createDean') }}">
-                                <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                                </svg>
-                                Assign Dean
-                            </a>
+                          
+<a href="{{ route('createDean') }}"
+   class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full float-right"
+   style="background: #d7ecf9;"
+   onmouseover="this.style.background='#c3dff3';"
+   onmouseout="this.style.background='#d7ecf9';">
+   
+   <!-- na add ni gels -->
+   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+       <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round"/>
+       <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+   </svg>
+
+   Assign Dean
+</a>
+
                     </div>
                 </div>
             </div>
@@ -155,24 +193,40 @@
                                 <p class="">{{ $dean->end_validity }}</p>
                             </td>
 
-                            <td class="px-2 py-2 text-center">
-                                <form action="{{ route('editDean', $dean->dean_id) }}" method="GET">
-                                @csrf
-                                    <button type="submit" class="text-green mt-5 font-medium hover:scale-105">
-                                        Edit
-                                    </button>
-                                </form>
-                            </td>
+                            <td class="px-2 py-2 text-center" colspan="2">
+    <div class="flex items-center justify-center gap-1">
+        <!-- Edit Dean Button -->
+        <form action="{{ route('editDean', $dean->dean_id) }}" method="GET">
+            @csrf
+            <button type="submit"
+                class="flex items-center justify-center p-2 border border-green hover:scale-105 transition-transform duration-150 ease-in-out"
+                style="border-radius: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="green" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.5 19.5 3 21l1.5-4.5L16.862 3.487z" />
+                </svg>
+            </button>
+        </form>
 
-                            <td>
-                                <form action="{{ route('destroyDean',$dean->dean_id) }}" method="Post">
-                                @csrf
-                                @method('DELETE')
-                                    <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
-                                        Delete
+        <!-- Delete Dean Button -->
+        <form action="{{ route('destroyDean', $dean->dean_id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+                              <button type="submit"
+                                        class="flex items-center justify-center p-2 border border-red-600 hover:scale-105 transition-transform duration-150 ease-in-out"
+                                        style="border-radius: 15px; color: red;">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="red" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 7h12M9 7V4h6v3m2 0v13a2 2 0 01-2 2H8a2 2 0 01-2-2V7z" />
+                                        </svg>
                                     </button>
                                 </form>
-                            </td>
+                            </div>
+                        </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -192,8 +246,6 @@
 </html>
 
 @endsection
-
-
 
 
 
