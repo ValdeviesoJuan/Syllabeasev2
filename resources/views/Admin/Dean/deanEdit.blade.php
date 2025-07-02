@@ -29,7 +29,7 @@
         <div class="max-w-md bg-gradient-to-r from-[#FFF] to-[#dbeafe] w-[500px] p-6 rounded-lg shadow-lg">
             <img class="edit_user_img text-center mt-4 w-[190px] m-auto mb-2" src="/assets/Edit Dean.png" alt="SyllabEase Logo">
 
-            <form class="" action="{{ route('updateDean', $dean->dean_id) }}" method="POST">
+            <form class="" action="{{ route('updateDean', $dean->ur_id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -50,7 +50,7 @@
                     </div>
                     <select name="college_id" id="college_id" class="px-1 py-[6px] w-[380px] border rounded border-gray" required>
                         @foreach ($colleges as $college)
-                        <option value="{{ $college->college_id }}" {{ $dean->college_id == $college->college_id ? 'selected' : '' }}>{{ $college->college_code }}</option>
+                        <option value="{{ $college->college_id }}" {{ $dean->entity_id == $college->college_id ? 'selected' : '' }}>{{ $college->college_code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -65,7 +65,7 @@
                     <div>
                         <label class="mr-[52%]" for="end_validity">End of Validity</label>
                     </div>
-                    <input type="date" name="end_validity" id="end_validity" class="px-1 py-[6px] w-[380px] border rounded border-gray" value="{{ $dean->end_validity }}" required></input>
+                    <input type="date" name="end_validity" id="end_validity" class="px-1 py-[6px] w-[380px] border rounded border-gray" value="{{ $dean->end_validity }}" ></input>
                     @error('end_validity')
                     <span class="" role="alert">
                         <strong class="">{{ $message }}</strong>

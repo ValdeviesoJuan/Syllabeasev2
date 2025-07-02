@@ -129,7 +129,6 @@ Route::prefix('')->middleware('auth')->group(function () {
 Route::post('/fileUserImport', [ManageUser::class, 'fileUserImport'])->name('fileUserImport');
 Route::get('/export-users', [ManageUser::class, 'fileUserExport'])->name('fileUserExport');
 
-
 //Bayanihan Teacher
 Route::group(['prefix' => 'bayanihanteacher', 'middleware' => ['auth', 'isBT']], function () {
     Route::get('/home', [BayanihanTeacherSyllabusController::class, 'index'])->name('bayanihanteacher.home');
@@ -302,6 +301,7 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
 
 });
 
+//Dean
 Route::group(['prefix' => 'dean', 'middleware' => ['auth', 'isDean']], function () {
     Route::get('/', [DeanController::class, 'index'])->name('dean.home');
     Route::get('/chairs', [DeanController::class, 'chairperson'])->name('dean.chairs');
@@ -387,12 +387,6 @@ Route::prefix('/')->middleware('auth')->group(function () {
     Route::get('editPassword', [EditProfileController::class, 'editPassword'])->name('password.edit');
     Route::post('updatePassword', [EditProfileController::class, 'updatePassword'])->name('password.update');
 });
-//na add ni gelski
-//Auditor
-Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
-    Route::get('/home', [App\Http\Controllers\Auditor\AuditorController::class, 'home'])->name('auditor.home');
-});
-
 
 //Admin: Department Controller
 Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
@@ -432,17 +426,17 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
 
 //Admin: College Controller
 Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
-    Route::get('admin/college', [AdminCollegeController::class, 'index'])->name('admin.college')->middleware('isAdmin');
+    Route::get('admin/college', [AdminCollegeController::class, 'index'])->name('admin.college');
     Route::get('/createCollege', [AdminCollegeController::class, 'createCollege'])->name('admin.createCollege');
     Route::post('/storeCollege', [AdminCollegeController::class, 'storeCollege'])->name('admin.storeCollege');
     Route::get('/editCollege/{college_id}', [AdminCollegeController::class, 'editCollege'])->name('admin.editCollege');
     Route::put('updateCollege/{college_id}', [AdminCollegeController::class, 'updateCollege'])->name('admin.updateCollege');
     Route::delete('/destroyCollege/{college_id}', [AdminCollegeController::class, 'destroyCollege'])->name('admin.destroyCollege');
-    Route::get('/createDean', [AdminCollegeController::class, 'createDean'])->name('createDean');
-    Route::post('/storeDean', [AdminCollegeController::class, 'storeDean'])->name('storeDean');
-    Route::get('/editDean/{dean_id}', [AdminCollegeController::class, 'editDean'])->name('editDean');
-    Route::put('updateDean/{dean_id}', [AdminCollegeController::class, 'updateDean'])->name('updateDean');
-    Route::delete('/destroyDean/{dean_id}', [AdminCollegeController::class, 'destroyDean'])->name('destroyDean');
+    Route::get('/createDean', [AdminCollegeController::class, 'createDean'])->name('admin.createDean');
+    Route::post('/storeDean', [AdminCollegeController::class, 'storeDean'])->name('admin.storeDean');
+    Route::get('/editDean/{dean_id}', [AdminCollegeController::class, 'editDean'])->name('admin.editDean');
+    Route::put('updateDean/{dean_id}', [AdminCollegeController::class, 'updateDean'])->name('admin.updateDean');
+    Route::delete('/destroyDean/{dean_id}', [AdminCollegeController::class, 'destroyDean'])->name('admin.destroyDean');
 });
 
 //Route for admin
@@ -455,6 +449,12 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
     Route::put('admin/updateRoles/{role_id}', [ManageUser::class, 'updateRoles'])->name('admin.updateRoles');
     Route::delete('admin/destroyRoles/{role_id}', [ManageUser::class, 'destroyRoles'])->name('admin.destroyRoles');
     Route::post('admin/{userid}', [ManageUser::class, 'update']);
+});
+
+//na add ni gelski
+//Auditor
+Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
+    Route::get('/home', [App\Http\Controllers\Auditor\AuditorController::class, 'home'])->name('auditor.home');
 });
 
 //route for auditor

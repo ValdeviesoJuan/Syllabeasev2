@@ -27,10 +27,12 @@ class HomeController extends Controller
     public function index()
     {
         $myRoles = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-        ->join('roles', 'roles.role_id', '=', 'user_roles.role_id')
-        ->where('users.id', '=', Auth::user()->id)
-        ->select('roles.*')
-        ->get();
+            ->join('roles', 'roles.role_id', '=', 'user_roles.role_id')
+            ->where('user_roles.user_id', '=', Auth::id())
+            ->select('roles.*')
+            ->distinct()
+            ->get();
+
         return view('home', compact('myRoles'));
     }
 }

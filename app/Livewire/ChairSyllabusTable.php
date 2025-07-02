@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanLeader;
 use App\Models\Chairperson;
@@ -23,9 +25,12 @@ class ChairSyllabusTable extends Component
     ];
     public function render()
     {
-        
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
             // $syllabi = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             // ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')

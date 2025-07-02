@@ -5,27 +5,36 @@ namespace App\Http\Controllers\Dean;
 use App\Http\Controllers\Controller;
 use App\Models\Chairperson as ModelsChairperson;
 use App\Models\Deadline;
-use App\Models\Dean;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\UserRole;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\DeadlineSetMail;
 use App\Notifications\DeadlineSetNotification;
-use App\Models\roles as Role;
+use App\Models\Roles;
 use Illuminate\Support\Facades\DB;
 
 class DeanDeadlineController extends Controller
 {
-    public function deadline(){
-        $dean = Dean::where('user_id', Auth::user()->id)->firstOrFail();
-        $college_id = $dean->college_id;
+    public function deadline()
+    {
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+
+        $dean = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->firstOrFail();
+
+        $college_id = $dean->entity_id;
+
         if ($college_id) {
             $deadlines = Deadline::where('deadlines.college_id', $college_id)->get();
         } else {
             $deadlines = [];
         }
+
         $user = Auth::user(); 
         $notifications = $user->notifications;
         return view('Dean.Deadline.dlList', compact('notifications', 'deadlines'));
@@ -38,6 +47,8 @@ class DeanDeadlineController extends Controller
     }
     public function storeDeadline(Request $request)
     {
+        $user_id = Auth::user()->id; 
+
         $request->validate([
             'dl_syll' => 'required',
             'dl_tos_midterm' => 'nullable',
@@ -46,9 +57,14 @@ class DeanDeadlineController extends Controller
             'dl_semester' => 'required',
         ]);
 
-        $dean = Dean::where('user_id', Auth::user()->id)->firstOrFail();
-        $college_id = $dean->college_id;
-        $user_id = Auth::user()->id; 
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+
+        $dean = UserRole::where('user_id', $user_id)
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->firstOrFail();
+
+        $college_id = $dean->entity_id;
 
         $request->merge(['user_id' => $user_id]);
         $request->merge(['college_id' => $college_id]);
@@ -88,7 +104,9 @@ class DeanDeadlineController extends Controller
         return view('Dean.Deadline.dlEdit', compact('notifications','deadline'));
     }
     public function updateDeadline(Request $request, $id)
-    {
+    {   
+        $user_id = Auth::user()->id;
+        
         $request->validate([
             'dl_syll' => 'required',
             'dl_tos_midterm' => 'nullable',
@@ -97,9 +115,14 @@ class DeanDeadlineController extends Controller
             'dl_semester' => 'required',
         ]);
 
-        $dean = Dean::where('user_id', Auth::user()->id)->firstOrFail();
-            $college_id = $dean->college_id;
-        $user_id = Auth::user()->id;
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+
+        $dean = UserRole::where('user_id', $user_id)
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->firstOrFail();
+
+        $college_id = $dean->entity_id;
 
         $request->merge(['user_id' => $user_id]);
         $request->merge(['college_id' => $college_id]);

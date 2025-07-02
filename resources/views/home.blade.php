@@ -126,7 +126,6 @@
         @endphp
 
         @php
-           
             $userHasAccount = isset($myRoles) && count($myRoles) > 0;
 
             if (!$userHasAccount) {
@@ -154,7 +153,6 @@
                             default => '#',
                         };
 
-                        
                         $icons = [
                             1 => 'fa-solid fa-user-shield',      
                             2 => 'fa-solid fa-user-graduate',    

@@ -110,7 +110,7 @@
                 <div class="min-w-full inline-block align-middle">
                     <div class="overflow-hidden">
                         <h2 class="text-3xl text-black font-semibold -mb-[35px]">Dean</h2>
-                            <a class="whitespace-nowrap mb-6 w-50 bg-seThird rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex max-w-full float-right" href="{{ route('createDean') }}">
+                            <a class="whitespace-nowrap mb-6 w-50 bg-seThird rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex max-w-full float-right" href="{{ route('admin.createDean') }}">
                                 <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="black" stroke-width="1.5" stroke-linecap="round" />
                                     <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="black" stroke-width="1.5" stroke-linecap="round" />
@@ -156,7 +156,7 @@
                             </td>
 
                             <td class="px-2 py-2 text-center">
-                                <form action="{{ route('editDean', $dean->dean_id) }}" method="GET">
+                                <form action="{{ route('admin.editDean', $dean->ur_id) }}" method="GET">
                                 @csrf
                                     <button type="submit" class="text-green mt-5 font-medium hover:scale-105">
                                         Edit
@@ -165,7 +165,7 @@
                             </td>
 
                             <td>
-                                <form action="{{ route('destroyDean',$dean->dean_id) }}" method="Post">
+                                <form action="{{ route('admin.destroyDean',$dean->ur_id) }}" method="Post">
                                 @csrf
                                 @method('DELETE')
                                     <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
@@ -236,7 +236,7 @@
     </table>
 
     <h1 class="">Dean</h1>
-    <a href="{{ route('createDean') }}">Assign Dean</a>
+    <a href="{{ route('admin.createDean') }}">Assign Dean</a>
 
     <table class="">
         <thead>
@@ -258,12 +258,12 @@
                 <td>{{ $dean->end_validity }}</td>
                 <td>
 
-                    <form action="{{ route('editDean', $dean->dean_id) }}" method="GET">
+                    <form action="{{ route('admin.editDean', $dean->ur_id) }}" method="GET">
                         @csrf
                         <button type="submit" class="btn btn-primary">Edit</button>
                     </form>
 
-                    <form action="{{ route('destroyDean',$dean->dean_id) }}" method="Post">
+                    <form action="{{ route('admin.destroyDean',$dean->ur_id) }}" method="Post">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="">Delete</button>
