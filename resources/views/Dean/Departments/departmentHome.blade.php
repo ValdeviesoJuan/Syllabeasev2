@@ -13,12 +13,12 @@
 
     <style>
         body {
-            /* background-image: url("{{ asset('assets/Wave.png') }}"); */
+            background-image: url("{{ asset('assets/Wave.png') }}"); */
             background-color: #EEEEEE;
-            /* background-repeat: no-repeat;
+            background-repeat: no-repeat;
             background-position: top;
             background-attachment: fixed;
-            background-size: contain; */
+            background-size: contain; 
         }
     </style>
 </head>
@@ -28,66 +28,75 @@
         <div class="flex justify-center align-items-center">
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
-                    <h2 class="font-bold text-3xl text-[#201B50] mb-4">Departments</h2>
-                    <a class="whitespace-nowrap w-50 absolute hover:scale-105 w-max transition ease-in-out px-4 py-2 font-semibold flex max-w-full float-left bg-blue5 mb-2 text-white rounded-lg hover:bg-blue" href="{{ route('dean.createDepartment') }}">
-                        <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#FFF" stroke-width="1.5" stroke-linecap="round" />
-                            <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#FFF" stroke-width="1.5" stroke-linecap="round" />
-                        </svg>
-                            Add new Department</a>
-                        <div class="overflow-x-auto w-full pt-6"> 
-                            <table class="w-full shadow-lg text-sm mt-12 bg-white text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="rounded text-xs text-white bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr class="bg-blue rounded text-sm text-white">
-                                        <th class="bg-blue5 rounded-tl-lg px-6 py-3">Code</th>
-                                        <th class="bg-blue5 px-6 py-3">Name</th>
-                                        <th class="bg-blue5 px-6 py-3">Status</th>
-                                        <th class="bg-blue5 px-6 py-3"></th>
-                                        <th class="bg-blue5 rounded-tr-lg px-6 py-3"></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="">
-                                    @foreach ($departments as $department)
-                                    <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white border- dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
-                                        <td class="px-6 text-md font-bold dark:text-gray-400">{{ $department->department_code }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sl text-gray-800 dark:text-gray-200">{{ $department->department_name }}</td>
-                                        {{-- <td class="px-6 py-4 whitespace-nowrap text-sl text-gray-800 dark:text-gray-200">{{ $department->department_status }}</td> --}}
+                    <div class="flex justify-between items-center mb-2 mt-2">
+                        <h2 class="font-bold text-3xl text-[#201B50]">Departments</h2>
+                        <a href="{{ route('dean.createDepartment') }}"
+                            class="whitespace-nowrap w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                            style="background: #d7ecf9;"
+                            onmouseover="this.style.background='#c3dff3';"
+                            onmouseout="this.style.background='#d7ecf9';">
 
-                                        <td class="px-6 py-4 flex">
-                                            @if($department->department_status == 'Active')
-                                                <p class="bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg text-center flex justify-center px-12 py-[1px]">Active</p>
-                                            @else
-                                                <p class="bg-[#fca5a5] text-[#b91c1c] border-2 border-[#ef4444] rounded-lg text-center flex justify-center px-11 py-[1px]">Inactive</p>
-                                            @endif
-                                        </td>
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                            </svg>
+                            Add new Department
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto w-full pt-6"> 
+                        <table class="w-full shadow-lg text-sm mt-12 bg-white text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="rounded text-xs text-white bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr class="bg-blue rounded text-sm text-white">
+                                    <th class="bg-blue5 rounded-tl-lg px-6 py-3">Code</th>
+                                    <th class="bg-blue5 px-6 py-3">Name</th>
+                                    <th class="bg-blue5 px-6 py-3">Status</th>
+                                    <th class="bg-blue5 px-6 py-3"></th>
+                                    <th class="bg-blue5 rounded-tr-lg px-6 py-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="">
+                                @foreach ($departments as $department)
+                                <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white border- dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
+                                    <td class="px-6 text-md font-bold dark:text-gray-400">{{ $department->department_code }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sl text-gray-800 dark:text-gray-200">{{ $department->department_name }}</td>
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-sl text-gray-800 dark:text-gray-200">{{ $department->department_status }}</td> --}}
 
-                                        <td>
-                                            <form action="{{ route('dean.editDepartment', $department->department_id) }}" method="GET">
-                                                @csrf
-                                                <button type="submit" class="text-green font-medium hover:scale-105 mt-3">
-                                                   Edit
-                                                </button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <form action="{{ route('dean.destroyDepartment',$department->department_id) }}" method="Post">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red font-medium hover:scale-105 mt-3">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            <div class="pagination">
-                                <div class="flex justify-center">
-                                    <span class="mt-6 text-gray-600 text-sm">Page {{ $departments->currentPage() }} of {{ $departments->lastPage() }}</span>
-                                </div>
-                                {{ $departments->links() }}
+                                    <td class="px-6 py-4 flex">
+                                        @if($department->department_status == 'Active')
+                                            <p class="bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg text-center flex justify-center px-12 py-[1px]">Active</p>
+                                        @else
+                                            <p class="bg-[#fca5a5] text-[#b91c1c] border-2 border-[#ef4444] rounded-lg text-center flex justify-center px-11 py-[1px]">Inactive</p>
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        <form action="{{ route('dean.editDepartment', $department->department_id) }}" method="GET">
+                                            @csrf
+                                            <button type="submit" class="text-green font-medium hover:scale-105 mt-3">
+                                               Edit
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="{{ route('dean.destroyDepartment',$department->department_id) }}" method="Post">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red font-medium hover:scale-105 mt-3">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <div class="flex justify-center">
+                                <span class="mt-6 text-gray-600 text-sm">Page {{ $departments->currentPage() }} of {{ $departments->lastPage() }}</span>
                             </div>
+                            {{ $departments->links() }}
                         </div>
                     </div>
                 </div>

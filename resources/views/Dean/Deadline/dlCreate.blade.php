@@ -74,7 +74,19 @@
                     </select>
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="text-white font-semibold px-6 py-2 rounded-lg m-2 mt-4 mb-4 bg-blue">Set Deadline</button>
+                    <button type="submit"
+                        class="whitespace-nowrap rounded-xl hover:scale-105 transition ease-in-out px-6 py-2 text-black font-semibold flex items-center gap-2 m-auto mt-4 mb-4"
+                        style="background: #d7ecf9;"
+                        onmouseover="this.style.background='#c3dff3';"
+                        onmouseout="this.style.background='#d7ecf9';">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="16" rx="2" stroke="black" stroke-width="1.5" fill="none"/>
+                            <path d="M16 2v4M8 2v4" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M8 13l3 3l5-5" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Set Deadline
+                    </button>
                 </div>
             </form>
         </div>
