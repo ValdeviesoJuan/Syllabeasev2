@@ -23,13 +23,15 @@
         {{-- View Toggle Buttons --}}
         <div class="flex gap-2">
             <button type="button" id="tableBtn" onclick="setView('table')"
-                class="p-2 border rounded-lg bg-[#D1D5DB] hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
-                title="Table View">
+                class="p-2 border border-transparent rounded-xl bg-[#d7ecf9] hover:bg-[#c3dff3] transition duration-200 ease-in-out"
+                title="Table View"
+                style="color: black; font-weight: 600;">
                 <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
             </button>
             <button type="button" id="tilesBtn" onclick="setView('tiles')"
-                class="p-2 border rounded-lg bg-transparent hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
-                title="Tile View">
+                class="p-2 border border-transparent rounded-xl bg-[#d7ecf9] hover:bg-[#c3dff3] transition duration-200 ease-in-out"
+                title="Tile View"
+                style="color: black; font-weight: 600;">
                 <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
             </button>
         </div>
