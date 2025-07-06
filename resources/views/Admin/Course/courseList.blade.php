@@ -16,11 +16,11 @@
     
     <style>
         body {
-            /* background-image: url("{{ asset('assets/Wave.png') }}");
+            background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
             background-position: top;
             background-attachment: fixed;
-            background-size: contain; */
+            background-size: contain; 
             background-color: #EEEEEE;
         }
         </style>
@@ -31,15 +31,23 @@
         <div class="p-4 shadow-lg bg-white border-dashed rounded-lg dark:border-gray-700 mt-10">
             <div class="" id="whole">
                 <div class="flex overflow-hidden">
-                    <h2 class="ml-2 text-4xl mb-4 flex text-left text-black font-semibold leadi ">Courses</h2>
+                    <div class="flex justify-between items-center mb-6 w-full">
+                        <h2 class="ml-2 text-4xl mb-0 flex text-left text-black font-semibold leadi">Courses</h2>
+                        <a href="{{ route('admin.createCourse') }}"
+                           class="whitespace-nowrap rounded-xl hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                           style="background: #d7ecf9;"
+                           onmouseover="this.style.background='#c3dff3';"
+                           onmouseout="this.style.background='#d7ecf9';">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                            </svg>
+                            Create New Course
+                        </a>
+                    </div>
                 </div>
-                <a class="ml-2 whitespace-nowrap mb-6 w-50 bg-seThird rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex max-w-full " href="{{ route('admin.createCourse') }}">
-                    <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                        <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                    </svg>
-                    Create New Course
-                </a>
                 <livewire:admin-course-table />
                 <div class='overflow-x-auto w-full'>
             </div>

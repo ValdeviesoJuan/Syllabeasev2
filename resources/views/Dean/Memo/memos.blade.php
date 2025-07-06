@@ -3,6 +3,18 @@
 @section('content')
 @include('layouts.modal')
 
+
+<style>
+    body {
+        background-image: url("{{ asset('assets/Wave.png') }}");
+        background-repeat: no-repeat;
+        background-position: top;
+        background-attachment: fixed;
+        background-size: contain; 
+        background-color: #EEEEEE;
+    }
+</style>
+
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -28,20 +40,31 @@
             {{-- View Toggle Buttons --}}
             <div class="flex gap-2">
                 <button type="button" id="tableBtn" onclick="setView('table')"
-                    class="p-2 border rounded-lg bg-[#D1D5DB] hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
-                    title="Table View">
+                    class="p-2 border border-transparent rounded-xl bg-[#d7ecf9] hover:bg-[#c3dff3] transition duration-200 ease-in-out"
+                    title="Table View"
+                    style="color: black; font-weight: 600;">
                     <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
                 </button>
                 <button type="button" id="tilesBtn" onclick="setView('tiles')"
-                    class="p-2 border rounded-lg bg-transparent hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
-                    title="Tile View">
+                    class="p-2 border border-transparent rounded-xl bg-[#d7ecf9] hover:bg-[#c3dff3] transition duration-200 ease-in-out"
+                    title="Tile View"
+                    style="color: black; font-weight: 600;">
                     <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
                 </button>
             </div>
 
             {{-- Create Memo Button --}}
             <button type="button" onclick="openMemoModal()"
-                class="px-4 py-2 rounded text-white bg-[#2563EB] hover:bg-[#1E40AF] transition duration-200 ease-in-out">
+                class="whitespace-nowrap rounded-xl hover:scale-105 transition ease-in-out px-6 py-2 text-black font-semibold flex items-center gap-2"
+                style="background: #d7ecf9;"
+                onmouseover="this.style.background='#c3dff3';"
+                onmouseout="this.style.background='#d7ecf9';">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                </svg>
                 Create Memo
             </button>
         </div>

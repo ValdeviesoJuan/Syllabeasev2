@@ -17,31 +17,28 @@
             <!-- Top Right fuckiign Smooth Side Blob -->
             <svg class="absolute top-0 right-0 z-0 pointer-events-none" width="360" height="260" viewBox="0 0 360 260"
                 fill="none" xmlns="http://www.w3.org/2000/svg" style="right:-60px; top:-40px;">
-                <path fill="#1769aa"
+                <path fill="#3188CFFF"
                     d="M360,0 Q330,90 270,120 Q210,150 180,90 Q150,30 90,60 Q30,90 0,0 L360,0Z" />
             </svg>
 
             <!-- Bottom Left fuckiign Smooth Side Blob -->
             <svg class="absolute bottom-0 left-0 z-0 pointer-events-none" width="420" height="300" viewBox="0 0 420 300"
                 fill="none" xmlns="http://www.w3.org/2000/svg" style="left:-120px; bottom:-60px;">
-                <path fill="#1769aa"
+                <path fill="#3188CFFF"
                     d="M0,300 Q60,200 140,170 Q220,140 260,210 Q300,280 380,250 Q420,230 420,300 L0,300Z" />
             </svg>
 
             <!-- Login Form -->
             <div class="relative z-10 w-full max-w-md">
                 <!-- Logo -->
-                <div class="text-center mx-auto mb-10">
+                <div class="text-center mx-auto mb-10 p-5">
                     <img src="{{ asset('assets/Sample/syllabease.png') }}" alt="SyllabEase Logo" class="mx-auto w-60">
                 </div>
 
                 <!-- Headings -->
-                <div class="mb-4 text-left">
-                    <h2 class="text-2xl font-bold text-gray-800">Get Started</h2>
-                    <p class="text-xs text-gray-600">
-                        Welcome to <span class="text-yellow-500 font-semibold">SyllabEase</span>
-                    </p>
-                </div>
+                <h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                        Login
+                </h2>
 
                 <!-- Form -->
                 <form method="POST" action="{{ route('login') }}" class="space-y-5">

@@ -15,7 +15,7 @@
 
     <style>
         body {
-            /* background-image: url("{{ asset('assets/Wave.png') }}");
+            background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
             background-position: top;
             background-attachment: fixed;
@@ -30,75 +30,79 @@
         <div class="p-4 shadow-lg bg-white border-dashed rounded-lg dark:border-gray-700 mt-16">
             <div id="whole">
                 <div class="overflow-hidden">
-                    <div class="flex overflow-hidden">
-                        <h2 class="text-4xl mt-2 mb-2 flex text-left text-black font-semibold leadi ">Curricula</h2>
-                    </div>
-                        <a class="whitespace-nowrap mb-8 w-50 bg-seThird rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex max-w-full" href="{{ route('admin.createCurr') }}">
-                            <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="black" stroke-width="1.5" stroke-linecap="round" />
-                        </svg>
-                            Create new Curriculum
+                    <div class="flex justify-between items-center mb-6 w-full">
+                        <h2 class="text-4xl mt-2 mb-2 flex text-left text-black font-semibold leadi">Curricula</h2>
+                        <a href="{{ route('admin.createCurr') }}"
+                           class="whitespace-nowrap rounded-xl hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                           style="background: #d7ecf9;"
+                           onmouseover="this.style.background='#c3dff3';"
+                           onmouseout="this.style.background='#d7ecf9';">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                            </svg>
+                            Create New Curriculum
                         </a>
-                        
-                        <div class=''>
-                            <table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
-                                <thead class="rounded text-sm text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th class="bg-blue5 rounded-tl-lg px-6 py-3"> Code </th>
-                                        <th class="bg-blue5 px-6 py-3"> Effectivity </th>
-                                        <th class="bg-blue5 px-6 py-3"> Department </th>
-                                        <th class="bg-blue5 px-6 py-3"> </th>
-                                        <th class="bg-blue5 px-6 py-3"> </th>
-                                    </tr>
-                                </thead>
+                    </div>
+                    <div class=''>
+                        <table class='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+                            <thead class="rounded text-sm text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th class="bg-blue5 rounded-tl-lg px-6 py-3"> Code </th>
+                                    <th class="bg-blue5 px-6 py-3"> Effectivity </th>
+                                    <th class="bg-blue5 px-6 py-3"> Department </th>
+                                    <th class="bg-blue5 px-6 py-3"> </th>
+                                    <th class="bg-blue5 px-6 py-3"> </th>
+                                </tr>
+                            </thead>
 
-                                <tbody class="divide-y divide-[#e5e7eb] bg-white">
-                                    @foreach ($curricula as $curriculum)
-                                    <tr class="hover:bg-gray4 dark:hover:bg-gray-600">
-                                        <td class="px-6 py-4 font-bold">
-                                            <div class="flex items-center space-x-3">
-                                                <div>
-                                                    <p> {{ $curriculum->curr_code }}</p>
-                                                </div>
+                            <tbody class="divide-y divide-[#e5e7eb] bg-white">
+                                @foreach ($curricula as $curriculum)
+                                <tr class="hover:bg-gray4 dark:hover:bg-gray-600">
+                                    <td class="px-6 py-4 font-bold">
+                                        <div class="flex items-center space-x-3">
+                                            <div>
+                                                <p> {{ $curriculum->curr_code }}</p>
                                             </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <p class=""> {{ $curriculum->effectivity }}</p>
-                                        </td>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class=""> {{ $curriculum->effectivity }}</p>
+                                    </td>
 
-                                        <td class="px-6 py-2 font-bold text-left"> <span class="">{{ $curriculum->department_code }}</span> </td>
-                                        <td class="px-6 py-2 text-center">
-                                           <form action="{{ route('admin.editCurr', $curriculum->curr_id) }}" method="GET">
-                                                @csrf
-                                                <button type="submit" class="text-green font-medium mt-5 hover:scale-105">
-                                                    Edit
-                                               </button>
-                                            </form>
-                                        </td>
+                                    <td class="px-6 py-2 font-bold text-left"> <span class="">{{ $curriculum->department_code }}</span> </td>
+                                    <td class="px-6 py-2 text-center">
+                                       <form action="{{ route('admin.editCurr', $curriculum->curr_id) }}" method="GET">
+                                            @csrf
+                                            <button type="submit" class="text-green font-medium mt-5 hover:scale-105">
+                                                Edit
+                                           </button>
+                                        </form>
+                                    </td>
 
-                                        <td>
-                                            <form action="{{ route('admin.destroyCurr',$curriculum->curr_id) }}" method="Post">
-                                                @csrf
-                                                @method('DELETE')
-                                                    <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
-                                                       Delete
-                                                    </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    <td>
+                                        <form action="{{ route('admin.destroyCurr',$curriculum->curr_id) }}" method="Post">
+                                            @csrf
+                                            @method('DELETE')
+                                                <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
+                                                   Delete
+                                                </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
 
-                            <div class="mt-4">
-                                <div class="flex justify-center">
-                                    <span class="text-gray-600 text-sm">Page {{ $curricula->currentPage() }} of {{ $curricula->lastPage() }}</span>
-                                </div>
-                                {{ $curricula->links() }}
+                        <div class="mt-4">
+                            <div class="flex justify-center">
+                                <span class="text-gray-600 text-sm">Page {{ $curricula->currentPage() }} of {{ $curricula->lastPage() }}</span>
                             </div>
+                            {{ $curricula->links() }}
                         </div>
-                </div>
+                    </div>
             </div>
         </div>
     </div>

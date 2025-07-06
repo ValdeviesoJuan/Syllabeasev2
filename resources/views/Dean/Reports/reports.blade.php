@@ -12,11 +12,11 @@
 
 <style>
     body {
-        /* background-image: url("{{ asset('assets/Wave.png') }}");
+        background-image: url("{{ asset('assets/Wave.png') }}");
         background-repeat: no-repeat;
         background-position: top;
         background-attachment: fixed;
-        background-size: contain; */
+        background-size: contain; 
         background-color: #EEEEEE;
     }
 </style>
@@ -24,9 +24,15 @@
 <body>
     <div>
         <div class="mt-16 p-4 pb-4 shadow bg-white border-dashed rounded-lg dark:border-gray-700">
-            <livewire:dean-reports/>
+            <div class="rounded-lg overflow-hidden">
+                <livewire:dean-reports/>
+            </div>
         </div>
     </div>
 </body>
 </html>
 @endsection
+
+<table class="w-full bg-white shadow-lg rounded-lg overflow-hidden">
+    <!-- table head and body -->
+</table>

@@ -5,6 +5,17 @@
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+<style>
+    body {
+        background-image: url("{{ asset('assets/Wave.png') }}");
+        background-repeat: no-repeat;
+        background-position: top;
+        background-attachment: fixed;
+        background-size: contain; 
+        background-color: #EEEEEE;
+    }
+</style>
+
 <div class="mt-16 p-4 shadow bg-white border-dashed rounded-lg dark:border-gray-700">
     <div class="mb-6">
         <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">Memorandum Issued by the Dean</h1>
@@ -23,17 +34,19 @@
 
         {{-- View Toggle Buttons --}}
         <div class="flex gap-2">
-            <button type="button" id="tableBtn" onclick="setView('table')"
-                class="p-2 border rounded-lg bg-[#D1D5DB] hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
-                title="Table View">
-                <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
-            </button>
-            <button type="button" id="tilesBtn" onclick="setView('tiles')"
-                class="p-2 border rounded-lg bg-transparent hover:bg-[#E5E7EB] transition duration-200 ease-in-out"
-                title="Tile View">
-                <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
-            </button>
-        </div>
+                <button type="button" id="tableBtn" onclick="setView('table')"
+                    class="p-2 border border-transparent rounded-xl bg-[#d7ecf9] hover:bg-[#c3dff3] transition duration-200 ease-in-out"
+                    title="Table View"
+                    style="color: black; font-weight: 600;">
+                    <iconify-icon icon="mdi:table" width="22" height="22"></iconify-icon>
+                </button>
+                <button type="button" id="tilesBtn" onclick="setView('tiles')"
+                    class="p-2 border border-transparent rounded-xl bg-[#d7ecf9] hover:bg-[#c3dff3] transition duration-200 ease-in-out"
+                    title="Tile View"
+                    style="color: black; font-weight: 600;">
+                    <iconify-icon icon="mdi:view-grid" width="22" height="22"></iconify-icon>
+                </button>
+            </div>
 
     </form>
 
