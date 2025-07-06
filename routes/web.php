@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ManageUser;
 use App\Http\Controllers\Dean\DeanController;
-
 use Illuminate\Support\Facades\Auth;
 
 //NEW Memo page for Dean
@@ -11,6 +10,7 @@ use App\Http\Controllers\Dean\DeanMemoController;
 use App\Http\Controllers\Chairperson\ChairMemoController;
 use App\Http\Controllers\BayanihanLeader\BLMemoController;
 use App\Http\Controllers\BayanihanTeacher\BTMemoController;
+use App\Http\Controllers\BayanihanLeader\BLSyllabusController;
 
 Route::get('/dean/memos', [DeanMemoController::class, 'index'])->name('dean.memo');
 Route::get('/dean/memo/{id}/download/{filename}', [DeanMemoController::class, 'download'])->name('dean.memo.download');
@@ -393,7 +393,7 @@ Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], fun
 
 
 //Admin: Department Controller
-Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
+Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::get('admin/department', [AdminDepartmentController::class, 'index'])->name('admin.department');
     Route::get('/createDepartment', [AdminDepartmentController::class, 'createDepartment'])->name('admin.createDepartment');
     Route::post('/storeDepartment', [AdminDepartmentController::class, 'storeDepartment'])->name('admin.storeDepartment');
@@ -409,7 +409,7 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
 });
 
 //Admin: Course Controller
-Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
+Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::get('admin/course', [AdminCourseController::class, 'index'])->name('admin.course');
     Route::get('/createCourse', [AdminCourseController::class, 'createCourse'])->name('admin.createCourse');
     Route::post('/storeCourse', [AdminCourseController::class, 'storeCourse'])->name('admin.storeCourse');
@@ -419,7 +419,7 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
 });
 
 //Admin: Curricula Controller
-Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
+Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::get('admin/curr', [AdminCurrController::class, 'index'])->name('admin.curr');
     Route::get('/createCurr', [AdminCurrController::class, 'createCurr'])->name('admin.createCurr');
     Route::post('/storeCurr', [AdminCurrController::class, 'storeCurr'])->name('admin.storeCurr');
@@ -429,7 +429,7 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
 });
 
 //Admin: College Controller
-Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
+Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::get('admin/college', [AdminCollegeController::class, 'index'])->name('admin.college')->middleware('isAdmin');
     Route::get('/createCollege', [AdminCollegeController::class, 'createCollege'])->name('admin.createCollege');
     Route::post('/storeCollege', [AdminCollegeController::class, 'storeCollege'])->name('admin.storeCollege');
@@ -444,7 +444,7 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
 });
 
 //Route for admin
-Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
+Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::get('admin/home', [ManageUser::class, 'index'])->name('admin.home');
     Route::resource('admin', ManageUser::class);
     Route::get('admin/createRole/{user_id}', [ManageUser::class, 'createRole'])->name('admin.createRole');
@@ -467,9 +467,38 @@ Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], fun
     Route::get('/syllabus', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabus');
     Route::get('/syllabus/commentSyllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.commentSyllabus');
 
+});
+    
 
+// Resourceful routes
+Route::resource('/admin/users', ManageUser::class);
+Route::resource('/admin/college', AdminCollegeController::class);
+Route::resource('/admin/department', AdminDepartmentController::class);
+Route::resource('/admin/curr', AdminCurrController::class);
+Route::resource('/admin/course', AdminCourseController::class);
+
+// Standalone routes (not covered by resource)
+Route::get('/admin/home', [ManageUser::class, 'index'])->name('admin.home'); // optional if same as users.index
+
+Route::get('/admin/audit', [BayanihanLeaderAuditController::class, 'index'])->name('admin.audit');
+Route::get('/admin/reports', [DeanReportsController::class, 'index'])->name('admin.reports');
+
+// Additional methods not covered by resource (custom routes)
+Route::controller(ManageUser::class)->group(function () {
+    Route::get('/admin/roles', 'roles')->name('admin.roles');
+    Route::get('/admin/createRole/{user_id}', 'createRole')->name('admin.createRole');
+    Route::get('/admin/editRoles/{userid}', 'editRoles')->name('admin.editRoles');
 });
 
+Route::controller(AdminCollegeController::class)->group(function () {
+    Route::get('/admin/createDean', 'createDean')->name('admin.createDean');
+    Route::get('/admin/editDean/{dean_id}', 'editDean')->name('admin.editDean');
+});
+
+Route::controller(AdminDepartmentController::class)->group(function () {
+    Route::get('/admin/createChair', 'createChair')->name('admin.createChair');
+    Route::get('/admin/editChair/{chairman_id}', 'editChair')->name('admin.editChair');
+});
 // Route::prefix('auditor')->middleware(['auth', 'role:auditor'])->group(function () {
 //     Route::get('/syllabi', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabi.index');
 //     Route::get('/syllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.syllabus.view');

@@ -151,6 +151,5 @@ class ManageUser extends Controller
     public function fileUserExport()
     {
         return Excel::download(new UsersExport, 'users.xlsx');
-        return redirect()->route('admin.index');
     }
 }

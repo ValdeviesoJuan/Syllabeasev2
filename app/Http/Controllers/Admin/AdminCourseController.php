@@ -83,7 +83,6 @@ class AdminCourseController extends Controller
             'course_hrs_lec' =>  $request->input('course_hrs_lec'),
             'course_hrs_lab' =>  $request->input('course_hrs_lab'),
             'course_pre_req' =>  $request->input('course_pre_req'),
-            'course_pre_req' =>  $request->input('course_pre_req'),
             'course_co_req' =>  $request->input('course_co_req'),
             'course_year_level' =>  $request->input('course_year_level'),
             'course_semester' =>  $request->input('course_semester'),
