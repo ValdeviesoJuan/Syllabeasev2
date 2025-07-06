@@ -58,7 +58,18 @@
                     </select>           
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary font-semibold px-6 py-2 rounded-lg m-2 text-white mt-8 mb-4 bg-blue">Create Department</button>
+                    <button type="submit"
+                        class="whitespace-nowrap rounded-xl hover:scale-105 transition ease-in-out px-6 py-2 text-black font-semibold flex items-center gap-2 m-auto mt-8 mb-4"
+                        style="background: #d7ecf9;"
+                        onmouseover="this.style.background='#c3dff3';"
+                        onmouseout="this.style.background='#d7ecf9';">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect x="4" y="3" width="16" height="18" rx="2" stroke="black" stroke-width="1.5" fill="none"/>
+                            <path d="M12 8v4m0 0v4m0-4h4m-4 0H8" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Create Department
+                    </button>
                 </div>
 
             </form>

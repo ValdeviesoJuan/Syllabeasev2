@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Chairperson;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\Chairperson;
 use App\Models\College;
 use App\Models\Course;
@@ -17,10 +19,12 @@ class ChairCourseController extends Controller
 {
     public function index()
     {
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $colleges = College::all();
         $courses = Course::join('curricula', 'courses.curr_id', '=', 'curricula.curr_id')
@@ -31,36 +35,45 @@ class ChairCourseController extends Controller
             ->paginate(10);
             $user = Auth::user(); 
             $notifications = $user->notifications;
+
         return view('Chairperson.Courses.courseList', compact('notifications', 'courses', 'colleges'));
     }
     public function viewCourse($course_id)
     {
         $course = Course::where('course_id', $course_id)->first();
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
             ->where('departments.department_id', '=', $department_id)
             ->get();
-            $user = Auth::user(); 
+
+        $user = Auth::user(); 
         $notifications = $user->notifications;
+        
         return view('Chairperson.Courses.courseView', [
             'course' => Course::where('course_id', $course_id)->first()
         ], compact('notifications','curricula'));
     }
     public function createCourse()
     {
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
             ->where('departments.department_id', '=', $department_id)
             ->get();
-            $user = Auth::user(); 
+
+        $user = Auth::user(); 
         $notifications = $user->notifications;
         return view('Chairperson.Courses.courseCreate', compact('notifications','curricula'));
     }
@@ -86,16 +99,21 @@ class ChairCourseController extends Controller
     public function editCourse(string $course_id)
     {
         $course = Course::where('course_id', $course_id)->first();
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
             ->where('departments.department_id', '=', $department_id)
             ->get();
-            $user = Auth::user(); 
-            $notifications = $user->notifications;
+
+        $user = Auth::user(); 
+        $notifications = $user->notifications;
+
         return view('Chairperson.Courses.courseEdit', [
             'course' => Course::where('course_id', $course_id)->first()
         ], compact('notifications','curricula'));
@@ -103,6 +121,7 @@ class ChairCourseController extends Controller
     public function updateCourse(Request $request, string $course_id)
     {
         $course = Course::findorFail($course_id);
+
         $request->validate([
             'course_title' => 'required|string',
             'course_code' => 'required|string',
@@ -117,6 +136,7 @@ class ChairCourseController extends Controller
             'course_year_level' => 'required|string',
             'course_semester' => 'required|string',
         ]);
+
         $course->update([
             'course_title' =>  $request->input('course_title'),
             'curr_id' =>  $request->input('curr_id'),
@@ -127,13 +147,12 @@ class ChairCourseController extends Controller
             'course_hrs_lec' =>  $request->input('course_hrs_lec'),
             'course_hrs_lab' =>  $request->input('course_hrs_lab'),
             'course_pre_req' =>  $request->input('course_pre_req'),
-            'course_pre_req' =>  $request->input('course_pre_req'),
             'course_co_req' =>  $request->input('course_co_req'),
             'course_year_level' =>  $request->input('course_year_level'),
             'course_semester' =>  $request->input('course_semester'),
         ]);
-        return redirect()->route('chairperson.course')
-            ->with('success', 'Course Information Updated');
+
+        return redirect()->route('chairperson.course')->with('success', 'Course Information Updated');
     }
     public function destroyCourse(Course $course_id)
     {

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             roleSeeder::class,
             collegeSeeder::class,
             departmentSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
 }

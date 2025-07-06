@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\College;
+use App\Models\Roles;
+use App\Models\UserRole;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,13 +22,19 @@ class DeanDepartmentTable extends Component
     ];
     public function render()
     {
-        $college = College::join('deans', 'colleges.college_id', '=', 'deans.college_id')
-        ->where('deans.user_id', '=', Auth::user()->id)
-        ->first();
+        $user = Auth::user();
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
 
-        if($college->college_id){
+        $college = UserRole::where('user_roles.entity_type', 'College')
+            ->where('user_roles.role_id', $deanRoleId)
+            ->where('user_roles.user_id', $user->id)
+            ->firstOrFail();
+
+        $college_id = $college->entity_id;
+
+        if($college_id) {
             $departments = College::join('departments', 'colleges.college_id', '=', 'departments.college_id')
-            ->where('colleges.college_id', $college->college_id)
+            ->where('colleges.college_id', $college_id)
             ->where(function ($query){
                 $query->where('departments.department_code', 'like', '%' .$this->search . '%')
                 ->orWhere('departments.department_name', 'like', '%' . $this->search . '%')
@@ -35,7 +43,7 @@ class DeanDepartmentTable extends Component
                 ->orWhere('departments.department_status', 'like', '%' . $this->search . '%')
                 ->orWhere('colleges.college_code', 'like', '%' . $this->search . '%');
             });
-        }else{
+        } else {
             $college = [];
         }
         return view('livewire.dean-department-table');

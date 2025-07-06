@@ -25,10 +25,10 @@
             <option value="2029-2030">2029-2030</option>
         </select>
 
-        <select wire:model="filters.status" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[14%] ml-" placeholder="Semester">
+        <select wire:model="filters.department_id" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[14%] ml-" placeholder="Semester">
             <option value="">Department (All)</option>
             @foreach ($departments as $department)
-                <option value="{{ $department->department_code }}">{{ $department->department_code }}</option>
+                <option value="{{ $department->department_id }}">{{ $department->department_code }}</option>
             @endforeach
         </select>
         <button wire:click="applyFilters" class="bg-blue5 focus:outline-none focus:border-blue cursor-pointer rounded-lg text-white p-[4px] px-4">Apply Filters</button>

@@ -6,6 +6,7 @@ use App\Models\Chairperson;
 use App\Models\Department;
 use App\Models\College;
 use App\Models\User;
+use App\Models\Roles;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,17 +21,27 @@ class AdminChairpersonTable extends Component
         $colleges = College::all();
         $departments = Department::all();
 
-        $chairs = College::join('departments', 'colleges.college_id', '=', 'departments.college_id')
-            ->join('chairpeople', 'chairpeople.department_id', '=', 'departments.department_id')
-            ->join('users', 'users.id', '=', 'chairpeople.user_id')
-            ->select('departments.*', 'chairpeople.*', 'users.*')
-            ->where(function ($query) {
-            $query->where('departments.department_code', 'like', '%' . $this->search . '%')
-                ->orWhere('departments.department_name', 'like', '%' . $this->search . '%')
-                ->orWhere('users.lastname', 'like', '%' . $this->search . '%')
-                ->orWhere('users.firstname', 'like', '%' . $this->search . '%');
-    })
-        ->paginate(10);
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+
+        $chairs = Department::query()
+            ->join('user_roles', function ($join) use ($chairRoleId) {
+                $join->on('user_roles.entity_id', '=', 'departments.department_id')
+                    ->where('user_roles.entity_type', 'Department')
+                    ->where('user_roles.role_id',  $chairRoleId);
+            })
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->leftJoin('colleges', 'colleges.college_id', '=', 'departments.college_id')
+            ->select('departments.*', 'user_roles.*', 'users.*')
+            ->when($this->search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('departments.department_code', 'like', "%{$search}%")
+                    ->orWhere('departments.department_name', 'like', "%{$search}%")
+                    ->orWhere('users.lastname', 'like', "%{$search}%")
+                    ->orWhere('users.firstname', 'like', "%{$search}%");
+                });
+            })
+            ->paginate(10);
+
         return view('livewire.admin-chairperson-table', compact('departments', 'chairs', 'users'));
     }
 }

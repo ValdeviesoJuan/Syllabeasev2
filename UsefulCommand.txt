@@ -1,7 +1,7 @@
-Seeder
--php artisan db:seed --class=RoleSeeder
--php artisan db:seed --class=CollegeSeeder
--php artisan db:seed --class=DepartmentSeeder
+php artisan db:seed --class=RoleSeeder
+php artisan db:seed --class=CollegeSeeder
+php artisan db:seed --class=DepartmentSeeder
+php artisan db:seed --class=AdminUserSeeder
 
 Migrations
 -php artisan migrate:refresh

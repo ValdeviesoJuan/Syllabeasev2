@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Mail\BLeader;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanLeader;
 use App\Models\BayanihanMember;
@@ -43,8 +45,14 @@ class DeanSyllabusController extends Controller
 {
     public function index()
     {
-        $dean = Dean::where('user_id', Auth::user()->id)->firstOrFail();
-        $college_id = $dean->college_id;
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+
+        $dean = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->firstOrFail();
+
+        $college_id = $dean->entity_id;
 
         $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
             ->select('syllabus_instructors.*', 'syllabi.*')
@@ -59,6 +67,7 @@ class DeanSyllabusController extends Controller
         //     ->whereNotNull('syllabi.chair_submitted_at')
         //     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
         //     ->get();
+        
         if ($college_id) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')

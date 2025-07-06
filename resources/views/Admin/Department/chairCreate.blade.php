@@ -57,7 +57,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="end_validity">End of Validity</label>
-                        <input type="date" name="end_validity" id="end_validity" class="form-control px-1 py-[2px] w-[190px] border rounded border-[#a3a3a3]" required></input>
+                        <input type="date" name="end_validity" id="end_validity" class="form-control px-1 py-[2px] w-[190px] border rounded border-[#a3a3a3]"></input>
                     </div>
                     @error('end_validity')
                         <span class="" role="alert">

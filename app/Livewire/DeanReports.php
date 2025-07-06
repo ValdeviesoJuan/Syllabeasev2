@@ -2,8 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Models\BayanihanGroup;
-use App\Models\Dean;
+use App\Models\BayanihanGroup; 
+use App\Models\Roles;
+use App\Models\UserRole;
 use App\Models\Department;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +25,16 @@ class DeanReports extends Component
     ];
     public function render()
     {
-        $dean = Dean::where('user_id', Auth::user()->id)->firstOrFail();
-        $college_id = $dean->college_id;
+        $user = Auth::user();
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+
+        $college = UserRole::where('user_roles.entity_type', 'College')
+            ->where('user_roles.role_id', $deanRoleId)
+            ->where('user_roles.user_id', $user->id)
+            ->firstOrFail();
+
+        $college_id = $college->entity_id;
+
         $departments = Department::where('departments.college_id', $college_id)
             ->select('departments.*')
             ->get();

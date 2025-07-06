@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\College;
-use App\Models\Dean;
 use App\Models\User;
 use App\Models\UserRole;
+use App\Models\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -15,12 +15,19 @@ use App\Mail\DeanAssigned;
 class AdminCollegeController extends Controller
 {
     public function index(){
-        $colleges = College::paginate(10);
+        $colleges = College::paginate(10, ['*'], 'colleges_page');
 
-        $deans = Dean::join('colleges', 'deans.college_id', '=', 'colleges.college_id')
-        ->join('users', 'deans.user_id', '=', 'users.id')
-        ->select('users.*', 'deans.*', 'colleges.*')
-        ->paginate(10);
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+
+        $deans = College::join('user_roles', function ($join) use ($deanRoleId) {
+                $join->on('user_roles.entity_id', '=', 'colleges.college_id')
+                     ->where('user_roles.entity_type', 'College')
+                     ->where('user_roles.role_id',  $deanRoleId);
+            })
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->select('users.*', 'user_roles.*', 'colleges.*')
+            ->paginate(10, ['*'], 'deans_page');
+
         return view('Admin.College.collegeList', compact('colleges', 'deans'));
     }
     public function createCollege()
@@ -37,18 +44,17 @@ class AdminCollegeController extends Controller
             'college_code' => 'required|string',
             'college_description' => 'required|string',
         ]);
+
         College::create($request->all());
+
         return redirect()->route('admin.college')->with('success', 'College created successfully.');
     }
 
-
     public function editCollege(string $college_id)
     {
-        $college = College::where('college_id', $college_id)->first();
+        $college = College::where('college_id', $college_id)->firstOrFail();
 
-        return view('Admin.College.collegeEdit', [
-            'college' => College::where('college_id', $college_id)->first()
-        ]);
+        return view('Admin.College.collegeEdit', compact('college'));
     }
 
     /**
@@ -57,19 +63,20 @@ class AdminCollegeController extends Controller
     public function updateCollege(Request $request, string $college_id)
     {
         $college = College::findorFail($college_id);
+
         $request->validate([
             'college_code' => 'required|string',
             'college_description' => 'required|string',
             'college_status' => 'required|string',
         ]);
+
         $college->update([
             'college_code' =>  $request->input('college_code'),
             'college_description' =>  $request->input('college_description'),
             'college_status' =>  $request->input('college_status'),
 
         ]);
-        return redirect()->route('admin.college')
-        ->with('success', 'College Information Updated');
+        return redirect()->route('admin.college')->with('success', 'College Information Updated');
     }
 
     /**
@@ -95,67 +102,87 @@ class AdminCollegeController extends Controller
             'user_id' => 'required|string|exists:users,id',
             'college_id' => 'required|string|exists:colleges,college_id',
             'start_validity' => 'required|date',
-            'end_validity' => 'required|date|after:start_validity',
+            'end_validity' => 'nullable|date|after:start_validity',
         ]);
 
-        // Save the dean assignment
-        $dean = Dean::create([
-            'user_id' => $request->user_id,
-            'college_id' => $request->college_id,
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
+        
+        // End any currently active dean assignment on this college
+        UserRole::where('role_id', $deanRoleId)
+            ->where('entity_type', 'College')
+            ->where('entity_id', $request->college_id)
+            ->where(function ($q) use ($request) {
+                $q->whereNull('end_validity')
+                ->orWhere('end_validity', '>', $request->start_validity);
+            })
+            ->update(['end_validity' => $request->start_validity]);
+
+        // Create new dean assignment
+        UserRole::create([
+            'user_id'        => $request->user_id,
+            'role_id'        => $deanRoleId,
+            'entity_type'    => 'College',
+            'entity_id'      => $request->college_id,
             'start_validity' => $request->start_validity,
-            'end_validity' => $request->end_validity,
-        ]);
-
-        // Assign Dean role (role_id = 2)
-        UserRole::firstOrCreate([
-            'role_id' => 2,
-            'user_id' => $request->user_id,
+            'end_validity'   => $request->end_validity,
         ]);
 
         // Send email to the assigned Dean
         $user = User::findOrFail($request->user_id);
         $college = College::findOrFail($request->college_id);
-        Mail::to($user->email)->send(new DeanAssigned($user, $college, $request->start_validity, $request->end_validity));
+        // Mail::to($user->email)->send(new DeanAssigned($user, $college, $request->start_validity, $request->end_validity));
 
         return redirect()->route('admin.college')->with('success', 'Dean assigned successfully and email sent.');
     }
-    public function editDean(string $dean_id)
+    public function editDean(string $ur_id)
     {
         $users = User::all();
         $colleges = College::all();
-        $dean = Dean::all();
-        return view('Admin.Dean.deanEdit', [
-            'dean' => Dean::where('dean_id', $dean_id)->first()
-        ], compact('users', 'colleges'));
+
+        $deanRoleId = Roles::where('role_name', 'dean')->value('role_id');
+
+        $dean = UserRole::where('ur_id', $ur_id)
+            ->where('role_id', $deanRoleId)
+            ->where('entity_type', 'College')
+            ->firstOrFail();
+
+        return view('Admin.Dean.deanEdit', compact('dean', 'users', 'colleges', 'ur_id'));
     }
-    public function updateDean(Request $request, string $dean_id)
+    public function updateDean(Request $request, string $ur_id)
     {
-        $dean = Dean::findorFail($dean_id);
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
+
+        $dean = UserRole::where('ur_id', $ur_id)
+            ->where('role_id', $deanRoleId)
+            ->where('entity_type', 'College')
+            ->firstOrFail();
+
         $request->validate([
             'user_id' => 'required|string',
             'college_id' => 'required|string',
             'start_validity' => 'required|date',
-            'end_validity' => 'required|date|after:start_validity',
+            'end_validity' => 'nullable|date|after:start_validity',
         ]);
+
         $dean->update([
             'user_id' =>  $request->input('user_id'),
-            'college_id' =>  $request->input('college_id'),
+            'entity_id' =>  $request->input('college_id'),
             'start_validity' =>  $request->input('start_validity'),
             'end_validity' =>  $request->input('end_validity'),
         ]);
 
-        UserRole::firstOrCreate([
-            'role_id' => 2,
-            'user_id' => $request->user_id,
-        ]);
-
-        return redirect()->route('admin.college')
-        ->with('success', 'College Information Updated');
+        return redirect()->route('admin.college')->with('success', 'College Information Updated');
     }
 
-    public function destroyDean(Dean $dean_id)
+    public function destroyDean(string $ur_id)
     {
-        $dean_id->delete();
+        $dean = UserRole::where('ur_id', $ur_id)
+            ->where('role_id', Roles::where('role_name', 'Dean')->value('role_id'))
+            ->where('entity_type', 'College')
+            ->firstOrFail();
+
+        $dean->delete();
+
         return redirect()->route('admin.college')
         ->with('success', 'Dean deleted successfully.');
     }

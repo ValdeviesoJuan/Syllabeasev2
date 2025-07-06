@@ -2,7 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Chairperson;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\College;
 use App\Models\Course;
 use App\Models\Curriculum;
@@ -21,12 +22,15 @@ class ChairCourses extends Component
     ];
     public function render()
     {
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $colleges = College::all();
+
         $curricula = Curriculum::where('department_id', $department_id)->get();
         $courses = Course::join('curricula', 'courses.curr_id', '=', 'curricula.curr_id')
             ->join('departments', 'curricula.department_id', '=', 'departments.department_id')

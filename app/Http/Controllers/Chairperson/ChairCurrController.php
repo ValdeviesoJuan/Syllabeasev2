@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Chairperson;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\Chairperson;
 use App\Models\Curriculum;
 use App\Models\Department;
@@ -13,10 +15,12 @@ class ChairCurrController extends Controller
 {
     public function index()
     {
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $curricula = Curriculum::join('departments', 'curricula.department_id', '=', 'departments.department_id')
             ->select('departments.*', 'curricula.*')
@@ -24,18 +28,22 @@ class ChairCurrController extends Controller
             ->paginate(10);
             $user = Auth::user(); 
             $notifications = $user->notifications;
+
         return view('Chairperson.Curricula.currList', compact('notifications', 'curricula', 'department_id'));
     }
     public function createCurr()
     {
-        $department_id = Chairperson::where('chairpeople.user_id', '=', Auth::user()->id)
-            ->select('chairpeople.department_id')
-            ->first()
-            ->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $departments = Department::all();
         $user = Auth::user(); 
         $notifications = $user->notifications;
+
         return view('Chairperson.Curricula.currCreate', compact('notifications','departments', 'department_id'));
     }
     public function storeCurr(Request $request)
@@ -45,7 +53,9 @@ class ChairCurrController extends Controller
             'department_id' => 'required|integer',
             'effectivity' => 'required|string',
         ]);
+
         Curriculum::create($request->all());
+
         return redirect()->route('chairperson.curr')->with('success', 'Curriculum created successfully.');
     }
     public function editCurr(string $curr_id)
@@ -54,9 +64,12 @@ class ChairCurrController extends Controller
             ->select('departments.*', 'curricula.*')
             ->where('curr_id', '=', $curr_id)
             ->get();
+
         $departments = Department::all();
+        
         $user = Auth::user(); 
         $notifications = $user->notifications;
+
         return view('Chairperson.Curricula.currEdit', [
             'curriculum' => Curriculum::where('curr_id', $curr_id)->first()
         ], compact('notifications','curriculum', 'departments'));

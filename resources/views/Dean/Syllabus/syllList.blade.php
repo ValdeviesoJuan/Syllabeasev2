@@ -20,11 +20,11 @@
         }
 
         body {
-            /* background-image: url("{{ asset('assets/Wave.png') }}");
+            background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
             background-position: top;
             background-attachment: fixed;
-            background-size: contain; */
+            background-size: contain; 
             background-color: #EEEEEE;
         }
     </style>
