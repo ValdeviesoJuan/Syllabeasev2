@@ -3,26 +3,22 @@ php artisan db:seed --class=CollegeSeeder
 php artisan db:seed --class=DepartmentSeeder
 php artisan db:seed --class=AdminUserSeeder
 
-enable prettier >>>>> shift + alt + f 
-
-
-to migrate:refresh specific migration >>> php artisan migrate:refresh --path=database/migrations/<migration_name.php>
+Migrations
+-php artisan migrate:refresh
 
 Every sprint must do:
 -npm install
--copy paste .env
+-copy paste .env.example to .env
 -composer install
 
-1st open the admin assign a curriculum then go to department then assign chairperson then go to college then assign dean.
+To run 
+-Start Apache and MySQL in XAMPP
+-npm run dev (1st Terminal)
+-php artisan serve (2nd Terminal)
 
-then go to chairperson create Create course:D. Then bayanihan team.
+System Flow (Assigning Roles)
+1st - open the admin assign a curriculum  
+2nd - go to admin department then assign chairperson
+3rd - go to admin college then assign dean.
+4th - go to chairperson create Create course Then bayanihan team.
 
-Go to BL and do the shit you want to do
-
-Very Cleared process.
-
-1. Open Admin Create a curriculum.
-2. In Admin page go to department and assign chairperson.
-3. Same page go to college then assign dean.
-4. Chairperson role - Create course and Bayanihan Team
-5. Go to Bayanihan Leader - and do the right thing.
