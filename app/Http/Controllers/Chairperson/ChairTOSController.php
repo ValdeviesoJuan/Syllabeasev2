@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Chairperson;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\BayanihanLeader;
 use App\Models\bayanihanMember;
 use App\Models\Syllabus;
@@ -11,7 +14,6 @@ use App\Models\SyllabusCourseOutcome;
 use App\Models\SyllabusCourseOutlineMidterm;
 use App\Models\Tos;
 use App\Models\TosRows;
-use App\Models\User;
 use App\Notifications\BL_TOSChairApproved;
 use App\Notifications\BL_TOSChairReturned;
 use App\Notifications\BT_TOSChairApproved;
@@ -26,6 +28,7 @@ class ChairTOSController extends Controller
     {
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('Chairperson.Tos.tosList', compact('notifications'));
     }
     public function viewTos($tos_id)
@@ -63,11 +66,15 @@ class ChairTOSController extends Controller
             ->get();
 
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('chairpeople', 'syllabi.department_id', '=', 'chairpeople.department_id')
-            ->join('users', 'users.id', '=', 'chairpeople.user_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('user_roles.entity_type', '=', 'Department')
+            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
             ->first();
+
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('Chairperson.Tos.tosView', compact('notifications', 'chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
     }
     public function approveTos($tos_id)

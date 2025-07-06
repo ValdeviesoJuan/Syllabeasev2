@@ -115,13 +115,13 @@
                         <td>{{ $chair->start_validity }}</td>
                         <td>{{ $chair->end_validity }}</td>
                         <td>
-                            <form action="{{ route('dean.editChair', $chair->chairman_id) }}" method="GET">
+                            <form action="{{ route('dean.editChair', $chair->ur_id) }}" method="GET">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Edit</button>
                             </form>
                         </td>
                         <td>
-                            <form action="{{ route('dean.destroyChair',$chair->chairman_id) }}" method="Post">
+                            <form action="{{ route('dean.destroyChair',$chair->ur_id) }}" method="Post">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="">Delete</button>

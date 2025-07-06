@@ -4,7 +4,7 @@
         <button wire:click="applyFilters"><svg width="34px" class="p-[3px] -mb-3" height="34px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#2468d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg></button>
-        <select wire:model="filters.course_year_level" class="border cursor-pointer focus:outline-none focus:border-blue rounded p-1 w-[12%] ml-6" placeholder="Year level">
+        <select wire:model="filters.course_year_level" class="border cursor-pointer focus:outline-none focus:border-blue rounded p-1 w-[12%] ml-2" placeholder="Year level">
             <option value="" class="">Year level (All)</option>
             <option value="1st Year">1st Year</option>
             <option value="2nd Year">2nd Year</option>
@@ -12,13 +12,18 @@
             <option value="4th Year">4th Year</option>
             <option value="5th Year">5th Year</option>
         </select>
-        <select wire:model="filters.course_semester" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[12%] ml-6" placeholder="Semester">
+        <select wire:model="filters.course_semester" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[12%] ml-2" placeholder="Semester">
             <option value="">Semester (All)</option>
             <option value="1st Semester">1st Semester</option>
             <option value="2nd Semester">2nd Semester</option>
             <option value="Mid Year">Mid Year</option>
         </select>
-        <select wire:model="filters.bg_school_year" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[12%] ml-6" placeholder="School Year">
+        <select wire:model="filters.tos_term" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[10%] ml-2" placeholder="Term">
+            <option value="">Term (All)</option>
+            <option value="Midterm">Midterm</option>
+            <option value="Finals">Finals</option>
+        </select>
+        <select wire:model="filters.bg_school_year" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[12%] ml-2" placeholder="School Year">
             <option value="">School Year (All)</option>
             <option value="2023-2024">2023-2024</option>
             <option value="2024-2025">2024-2025</option>
@@ -29,7 +34,7 @@
             <option value="2029-2030">2029-2030</option>
         </select>
 
-        <select wire:model="filters.tos_status" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[12%] ml-6" placeholder="Semester">
+        <select wire:model="filters.tos_status" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[12%] ml-2" placeholder="Semester">
             <option value="">Status (All)</option>
             <option value="Pending">Pending</option>
             <option value="Approved by Chair">Approved by Chair</option>

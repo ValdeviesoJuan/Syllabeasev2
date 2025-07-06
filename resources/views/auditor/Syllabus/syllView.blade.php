@@ -125,7 +125,7 @@
         </div>
         <div class="flex mt-3 mx-auto">
             <div class="">
-                <a href="{{ route('bayanihanteacher.viewReviewForm', $syll_id) }}" class="m-2 p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">
+                <a href="{{ route('auditor.viewReviewForm', $syll_id) }}" class="m-2 p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">
                     View Syllabus Review Form
                 </a>
             </div>
@@ -176,7 +176,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
+                <span class="font-semibold">Notice: </span>This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
             </div>
         </div>
     </div>
@@ -190,7 +190,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been <span class="font-semibold text-green">approved</span> by the chair and the dean; further edits are no longer permitted.
+                <span class="font-semibold">Notice: </span>This syllabus has already been <span class="font-semibold text-green">approved</span> by the chair and the dean; further edits are no longer permitted.
             </div>
         </div>
     </div>

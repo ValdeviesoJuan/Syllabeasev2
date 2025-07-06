@@ -104,6 +104,7 @@ class AuditorSyllabusController extends Controller
 
         $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->select('syllabi.*')
+            ->orderBy('syllabi.version', 'DESC')
             ->get();
             
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
@@ -127,7 +128,64 @@ class AuditorSyllabusController extends Controller
             'syllabusVersions',
             'feedback'
         ));
-        
     }
-    
+    public function viewReviewForm($syll_id)
+    {
+        $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->where('syllabus_review_forms.syll_id', $syll_id)
+            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->first();
+
+        $srfResults = [];
+
+        for ($i = 1; $i <= 19; $i++) {
+            $srfResults["srf{$i}"] = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
+                ->where('syll_id', $syll_id)
+                ->where('srf_no', $i)
+                ->first();
+        }
+        $srf1 = $srfResults['srf1'];
+        $srf2 = $srfResults['srf2'];
+        $srf3 = $srfResults['srf3'];
+        $srf4 = $srfResults['srf4'];
+        $srf5 = $srfResults['srf5'];
+        $srf6 = $srfResults['srf6'];
+        $srf7 = $srfResults['srf7'];
+        $srf8 = $srfResults['srf8'];
+        $srf9 = $srfResults['srf9'];
+        $srf10 = $srfResults['srf10'];
+        $srf11 = $srfResults['srf11'];
+        $srf12 = $srfResults['srf12'];
+        $srf13 = $srfResults['srf13'];
+        $srf14 = $srfResults['srf14'];
+        $srf15 = $srfResults['srf15'];
+        $srf16 = $srfResults['srf16'];
+        $srf17 = $srfResults['srf17'];
+        $srf18 = $srfResults['srf18'];
+        $srf19 = $srfResults['srf19'];
+
+        return view('auditor.syllabus.reviewForm', compact(
+            'reviewForm',
+            'srf1',
+            'srf2',
+            'srf3',
+            'srf4',
+            'srf5',
+            'srf6',
+            'srf7',
+            'srf8',
+            'srf9',
+            'srf10',
+            'srf11',
+            'srf12',
+            'srf13',
+            'srf14',
+            'srf15',
+            'srf16',
+            'srf18',
+            'srf17',
+            'srf19'
+        ))
+            ->with('success', 'Syllabus submission successful.');
+    }
 }

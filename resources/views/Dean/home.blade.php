@@ -58,7 +58,7 @@
         <div class="flex justify-center align-items-center">
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
-                    <h2 class="font-bold text-4xl text-[#201B50] mb-4">Colleges</h2>
+                    <h2 class="font-bold text-4xl text-[#201B50] mb-4">Departments</h2>
                     <a class="whitespace-nowrap absolute w-50 mr-1.5 hover:scale-105 w-max transition ease-in-out px-4 py-2 font-semibold flex max-w-full float-left bg-blue5 mb-2 text-white rounded-lg hover:bg-blue" href="{{ route('dean.createDepartment') }}">
                         <svg class="mr-2" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#FFF" stroke-width="1.5" stroke-linecap="round" />

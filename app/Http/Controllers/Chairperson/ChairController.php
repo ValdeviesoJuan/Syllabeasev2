@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Mail\BLeader;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Roles;
+use App\Models\UserRole;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanLeader;
 use App\Models\BayanihanMember;
-use App\Models\Chairperson;
 use App\Models\Course;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BTeam;
 use App\Models\Department;
-use App\Models\UserRole;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\BLeaderCreatedMail;
 use App\Mail\BMemberCreatedMail;
@@ -23,10 +23,15 @@ class ChairController extends Controller
 {
     public function index()
     {
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
-
         $users = User::all();
+
+        $chair = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chair->entity_id;
+
         $bgroups = BayanihanGroup::with('BayanihanLeaders', 'BayanihanMembers')
         ->join('courses', 'bayanihan_groups.course_id', '=', 'courses.course_id')
         ->select('courses.*', 'bayanihan_groups.*')
@@ -38,12 +43,14 @@ class ChairController extends Controller
         ->select('users.*', 'bayanihan_members.*')
         ->get()
         ->groupBy('bg_id');
+
         $bleaders = BayanihanLeader::join('users', 'bayanihan_leaders.bg_user_id', '=', 'users.id')
         ->select('users.*', 'bayanihan_leaders.*')
         ->get()
         ->groupBy('bg_id');
 
         $user = Auth::user(); 
+        
         $notifications = $user->notifications;
 
 
@@ -51,10 +58,15 @@ class ChairController extends Controller
     }
     public function bayanihan()
     {
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
-
         $users = User::all();
+        
+        $chair = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chair->entity_id;
+
         $bgroups = BayanihanGroup::with('BayanihanLeaders', 'BayanihanMembers')
         ->join('courses', 'bayanihan_groups.course_id', '=', 'courses.course_id')
         ->select('courses.*', 'bayanihan_groups.*')
@@ -66,28 +78,36 @@ class ChairController extends Controller
         ->select('users.*', 'bayanihan_members.*')
         ->get()
         ->groupBy('bg_id');
+        
         $bleaders = BayanihanLeader::join('users', 'bayanihan_leaders.bg_user_id', '=', 'users.id')
         ->select('users.*', 'bayanihan_leaders.*')
         ->get()
         ->groupBy('bg_id');
+
         $user = Auth::user(); 
         $notifications = $user->notifications;
+
         return view('Chairperson.Bayanihan.btList', compact('notifications','users', 'bgroups', 'bmembers', 'bleaders'));
     }
     public function createBTeam()
     {
         try {
-            // Retrieve the department ID for the logged-in user
-            $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-            $department_id = $chairperson->department_id;
+            // Retrieve the department ID for the logged-in chairperson user
+            $chair = UserRole::where('user_id', Auth::id())
+                ->where('entity_type', '=', 'Department')
+                ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                ->firstOrFail();
+
+            $department_id = $chair->entity_id;
 
             // Retrieve users and courses based on the department ID
-            $users = User::all();
-            $user = Auth::user(); 
-            $notifications = $user->notifications;
             $courses = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
                 ->where('curricula.department_id', $department_id)
                 ->get();
+            
+            $users = User::all();
+            $user = Auth::user(); 
+            $notifications = $user->notifications;
 
             // Return the view with the necessary data
             return view('Chairperson.Bayanihan.btCreate', compact('notifications','users', 'courses'));
@@ -103,8 +123,12 @@ class ChairController extends Controller
             'course_id' => 'required',
         ]);
 
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         // Check if the course belongs to the department through curricula
         $course = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
@@ -133,10 +157,12 @@ class ChairController extends Controller
         $bGroup->course_id = $request->input('course_id');
         $bGroup->save();
 
-        $department = Department::join('chairpeople', 'chairpeople.department_id', '=', 'departments.department_id')
-        ->where('chairpeople.user_id', '=', Auth::user()->id)
-        ->select('departments.*')
-        ->first();
+        $department = Department::join('user_roles', 'user_roles.entity_id', '=', 'departments.department_id')
+            ->where('user_roles.entity_type', '=', 'Department')
+            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->where('user_roles.user_id', '=', Auth::id())
+            ->select('departments.*')
+            ->first();
 
         $leaders = $request->input('bl_user_id');
         foreach ($leaders as $leader) {
@@ -193,8 +219,12 @@ class ChairController extends Controller
             'course_id' => 'required',
         ]);
 
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
+        $chair = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chair->entity_id;
 
         $course = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
             ->where('courses.course_id', $request->input('course_id'))
