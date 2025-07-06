@@ -75,6 +75,8 @@
                             Add new Department
                         </a>
                     </div>
+                </div>
+            </div>
         </div>
         <div class="overflow-x-auto w-full pt-6"> 
             <table class='w-full mt-12 shadow-lg text-sm mt-12 bg-white text-left rtl:text-right text-gray-500 dark:text-gray-400'>

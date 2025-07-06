@@ -8,6 +8,8 @@ use App\Models\BayanihanLeader;
 use App\Models\bayanihanMember;
 use App\Models\Course;
 use App\Models\User;
+use App\Models\UserRole;
+use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -29,10 +31,15 @@ class ChairBTeams extends Component
     ];
     public function render()
     {
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
-
         $users = User::all();
+
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
+
         $bgroups = BayanihanGroup::with('BayanihanLeaders.User', 'BayanihanMembers.User')
             ->join('courses', 'bayanihan_groups.course_id', '=', 'courses.course_id')
             ->select('courses.*', 'bayanihan_groups.*')
@@ -85,6 +92,7 @@ class ChairBTeams extends Component
             ->select('colleges.*', 'departments.*', 'colleges.*', 'courses.*', 'curricula.*')
             ->where('departments.department_id', '=', $department_id)
             ->paginate(10);
+            
         return view('livewire.chair-b-teams', ['bgroups' => $bgroups, 'bleaders' => $bleaders, 'bmembers' => $bmembers, 'courses' => $courses, 'users'=>$users]);
     }
     public function applyFilters()

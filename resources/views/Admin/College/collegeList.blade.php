@@ -145,7 +145,6 @@
 
    Assign Dean
 </a>
-
                     </div>
                 </div>
             </div>
@@ -269,7 +268,7 @@
     </table>
 
     <h1 class="">Dean</h1>
-    <a href="{{ route('createDean') }}">Assign Dean</a>
+    <a href="{{ route('admin.createDean') }}">Assign Dean</a>
 
     <table class="">
         <thead>
@@ -291,12 +290,12 @@
                 <td>{{ $dean->end_validity }}</td>
                 <td>
 
-                    <form action="{{ route('editDean', $dean->dean_id) }}" method="GET">
+                    <form action="{{ route('admin.editDean', $dean->ur_id) }}" method="GET">
                         @csrf
                         <button type="submit" class="btn btn-primary">Edit</button>
                     </form>
 
-                    <form action="{{ route('destroyDean',$dean->dean_id) }}" method="Post">
+                    <form action="{{ route('admin.destroyDean',$dean->ur_id) }}" method="Post">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="">Delete</button>

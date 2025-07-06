@@ -27,7 +27,7 @@
     <div class="p-4 mt-14 flex items-center justify-center">
         <div class="max-w-md bg-gradient-to-r from-[#FFF] to-[#dbeafe] w-[500px] p-6 rounded-lg shadow-lg">
             <img class="edit_user_img text-center mt-4 w-[230px] m-auto mb-2" src="/assets/Assign Dean.png" alt="SyllabEase Logo">
-            <form action="{{ route('storeDean') }}" method="POST">
+            <form action="{{ route('admin.storeDean') }}" method="POST">
                 @csrf
 
                 <div class="grid gap-6 mb-2 md:grid-cols-2">
@@ -65,7 +65,7 @@
                         <div>
                             <label for="end_validity">End of Validity </label>
                         </div>
-                        <input type="date" name="end_validity" id="end_validity" class="form-control px-1 py-[6px] w-[170px] border rounded border-gray" required></input>
+                        <input type="date" name="end_validity" id="end_validity" class="form-control px-1 py-[6px] w-[170px] border rounded border-gray" ></input>
                         @error('end_validity')
                         <span class="" role="alert">
                             <strong class="">{{ $message }}</strong>

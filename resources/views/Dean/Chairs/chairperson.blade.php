@@ -63,7 +63,7 @@
                                     <td class="px-6 py-4">{{ $chair->start_validity }}</td>
                                     <td class="px-6 py-4">{{ $chair->end_validity }}</td>
                                     <td>
-                                        <form action="{{ route('dean.editChair', $chair->chairman_id) }}" method="GET">
+                                        <form action="{{ route('dean.editChair', $chair->ur_id) }}" method="GET">
                                             @csrf
                                             <button type="submit" class="text-green font-medium hover:scale-105 mt-1">
                                                Edit
@@ -71,7 +71,7 @@
                                         </form>
                                     </td>
                                     <td>
-                                        <form action="{{ route('dean.destroyChair',$chair->chairman_id) }}" method="Post">
+                                        <form action="{{ route('dean.destroyChair',$chair->ur_id) }}" method="Post">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red font-medium hover:scale-105 mt-1">

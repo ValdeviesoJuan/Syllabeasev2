@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Mail\BLeader;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanLeader;
 use App\Models\BayanihanMember;
-use App\Models\Chairperson;
 use App\Models\Course;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BTeam;
@@ -47,8 +48,12 @@ class ChairSyllabusController extends Controller
 {
     public function index()
     {
-        $chairperson = Chairperson::where('user_id', Auth::user()->id)->firstOrFail();
-        $department_id = $chairperson->department_id;
+        $chairperson = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'Department')
+            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->firstOrFail();
+
+        $department_id = $chairperson->entity_id;
 
         $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
             ->select('syllabus_instructors.*', 'syllabi.*')
@@ -556,8 +561,10 @@ class ChairSyllabusController extends Controller
         //     ->select('users.*', 'colleges.*')
         //     ->first();
 
-        // $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-        //     ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
+        // $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+        //     ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+        //     ->where('user_roles.entity_type', '=', 'Department')
+        //     ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
         //     ->where('departments.department_id', '=', $syll->department_id)
         //     ->select('users.*', 'departments.*')
         //     ->first();

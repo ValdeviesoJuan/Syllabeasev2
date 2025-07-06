@@ -20,6 +20,7 @@ class BLTos extends Component
         'course_semester' => null,
         'tos_status' => null,
         'bg_school_year' => null,
+        'tos_term' => null,
     ];
     public function render()
     {
@@ -54,9 +55,12 @@ class BLTos extends Component
                 })
                 ->when($this->filters['course_year_level'], function ($query) {
                     $query->where('courses.course_year_level', 'like', '%' . $this->filters['course_year_level']);
-                })
+                })  
                 ->when($this->filters['course_semester'], function ($query) {
                     $query->where('courses.course_semester', 'like', '%' . $this->filters['course_semester']);
+                })
+                ->when($this->filters['tos_term'], function ($query) {
+                    $query->where('tos.tos_term', 'like', '%' . $this->filters['tos_term']);
                 })
                 ->when($this->filters['tos_status'], function ($query) {
                     $query->where('tos.tos_status', 'like', '%' . $this->filters['tos_status']);

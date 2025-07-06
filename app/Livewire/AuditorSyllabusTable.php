@@ -16,7 +16,7 @@ class AuditorSyllabusTable extends Component
         'course_year_level' => null,
         'course_semester' => null,
         'bg_school_year' => null,
-        'department_code' => null,
+        'department_id' => null,
     ];
     public function render()
     {
@@ -34,7 +34,7 @@ class AuditorSyllabusTable extends Component
                 ->orWhere('bayanihan_groups.bg_school_year', 'like', '%' . $this->search . '%')
                 ->orWhere('courses.course_title', 'like', '%' . $this->search . '%')
                 ->orWhere('courses.course_code', 'like', '%' . $this->search . '%')
-                ->orWhere('departments.department_code', 'like', '%' . $this->search . '%');
+                ->orWhere('syllabi.department_id', 'like', '%' . $this->search . '%');
             })
             ->when($this->filters['course_year_level'], function ($query) {
                 $query->where('courses.course_year_level', 'like', '%' .$this->filters['course_year_level']);
@@ -45,8 +45,8 @@ class AuditorSyllabusTable extends Component
             ->when($this->filters['bg_school_year'], function ($query) {
                 $query->where('bayanihan_groups.bg_school_year', 'like', '%' .$this->filters['bg_school_year']);
             })
-            ->when($this->filters['department_code'], function ($query) {
-                $query->where('departments.department_code', 'like', '%' . $this->filters['department_code']);
+            ->when($this->filters['department_id'], function ($query) {
+                $query->where('syllabi.department_id', 'like', '%' . $this->filters['department_id']);
             })
             ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
             ->paginate(10);

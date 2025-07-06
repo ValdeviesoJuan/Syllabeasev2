@@ -67,10 +67,9 @@
     <div class=" min-h-screen shadow-lg">
         <div class="relative">
             <div class="fixed top-0 z-50">
-
                 <nav class="w-screen flex px-6 md:shadow-lg items-center relative bg-blue py-1">
                     <img class="w-48 text-lg font-bold md:py-0 py-4" src="/assets/Sample/syllabease4.png" alt="SyllabEase">
-                    <div class="border-2 border-solid border-white rounded-full text-white mt-4 ml-2">
+                    <div class="border-2 border-solid border-white rounded-full text-white ml-2">
                         <button class="flex p-0.5 relative">
                             <div class="bg-white rounded-full">
                                 <svg fill="#1148b1" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
@@ -348,11 +347,8 @@
         <div class="mt-16">
             @yield('content')
         </div>
-
     </main>
     </div>
         <livewire:scripts />
-
 </body>
-
 </html>

@@ -338,7 +338,7 @@ class BayanihanTeacherSyllabusController extends Controller
         $srf17 = $srfResults['srf17'];
         $srf18 = $srfResults['srf18'];
         $srf19 = $srfResults['srf19'];
-        return view('bayanihanleader.syllabus.reviewForm', compact(
+        return view('bayanihanteacher.syllabus.reviewForm', compact(
             'reviewForm',
             'srf1',
             'srf2',
