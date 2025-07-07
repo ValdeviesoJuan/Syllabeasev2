@@ -109,6 +109,7 @@ class DeanSyllabusController extends Controller
 
         $user = Auth::user();
         $notifications = $user->notifications;
+        
         return view('Dean.Syllabus.syllList', compact('notifications', 'syllabus', 'instructors', 'ApprovedSyllabus', 'RejectedSyllabus'));
     }
     public function viewSyllabus($syll_id)

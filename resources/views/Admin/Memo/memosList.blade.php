@@ -1,8 +1,6 @@
-@extends('layouts.deanSidebar')
-
+@extends('layouts.adminSidebar') 
 @section('content')
-@include('layouts.modal')
-
+@include('layouts.modal') 
 
 <style>
     body {
@@ -26,7 +24,7 @@
     </div>
 
     {{-- Search & Controls --}}
-    <form method="GET" action="{{ route('dean.memo') }}" class="mb-4 flex justify-between items-center">
+    <form method="GET" action="{{ route('admin.memo') }}" class="mb-4 flex justify-between items-center">
         <div class="relative w-64">
             <input type="text" name="search" placeholder="Search.."
                 value="{{ request('search') }}"
@@ -83,7 +81,7 @@
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr onclick="handleRowClick(event, '{{ route('dean.memo.show', $memo->id) }}')"
+                <tr {{--onclick="handleRowClick(event, '{{ route('admin.showMemo', $memo->id) }}')" --}}
                     class="bg-white rounded shadow-sm cursor-pointer hover:bg-gray-100 transition"
                 >
                     <td class="px-2 py-2 w-[15%]">{{ $memo->title }}</td>
@@ -97,14 +95,14 @@
                             @endphp
 
                             {{-- Edit --}}
-                            <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
+                            <button {{--onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"--}}
                                 title="Edit"
                                 class="stop-row-click border-[2px] border-green rounded-full px-3 py-2 inline-flex items-center justify-center hover:bg-green-100 transition">
                                 <iconify-icon icon="mdi:pencil" width="18" height="18" class="text-green"></iconify-icon>
                             </button>
 
                             {{-- Delete --}}
-                            <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
+                            <form action="" method="POST"
                                 onsubmit="return confirm('Are you sure?')" class="inline stop-row-click">
                                 @csrf
                                 @method('DELETE')
@@ -128,7 +126,7 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div onclick="window.location.href='{{ route('dean.memo.show', $memo->id) }}'"
+        <div {{--onclick="window.location.href='{{ route('dean.memo.show', $memo->id) }}'"--}}
             class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
 
             {{-- Title --}}
@@ -197,7 +195,7 @@
 
         <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-[#FFFFFF]">Create New Memo</h2>
 
-        <form id="createMemoForm" action="{{ route('dean.memo.store') }}" method="POST" enctype="multipart/form-data">
+        <form {{--id="createMemoForm" action="{{ route('dean.memo.store') }}"--}} method="POST" enctype="multipart/form-data">
             @csrf
 
             <!-- Title -->
@@ -263,8 +261,8 @@
                 class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
 
         <form id="editMemoForm" method="POST"
-            action="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
-            data-action-template="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
+            {{--action="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
+            data-action-template="{{ route('dean.memo.update', ['id' => '__ID__']) }}"--}}
             enctype="multipart/form-data">
             @csrf
             @method('PUT')

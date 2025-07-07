@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dean;
 
 use App\Http\Controllers\Controller;
-use App\Models\Chairperson as ModelsChairperson;
 use App\Models\Deadline;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

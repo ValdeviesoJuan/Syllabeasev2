@@ -17,26 +17,25 @@ Route::get('/dean/memo/{id}/download/{filename}', [DeanMemoController::class, 'd
 Route::post('/dean/memo/store', [DeanMemoController::class, 'store'])->name('dean.memo.store');
 
 //New Code for memo
-
 Route::get('/dean/memos/{id}/edit', [DeanMemoController::class, 'edit'])->name('dean.memo.edit');
 Route::put('/dean/memos/{id}', [DeanMemoController::class, 'update'])->name('dean.memo.update');
 Route::delete('/dean/memos/{id}', [DeanMemoController::class, 'destroy'])->name('dean.memo.destroy');
-Route::get('/dean/memo/{id}', [App\Http\Controllers\Dean\DeanMemoController::class, 'show'])->name('dean.memo.show');
+Route::get('/dean/memo/{id}', [DeanMemoController::class, 'show'])->name('dean.memo.show');
 
 
-//For chairperson view
+//For chairperson memo view
 Route::middleware(['auth', 'isChair'])->group(function () {
     Route::get('/chair/memo', [ChairMemoController::class, 'index'])->name('chair.memo');
     Route::get('/chair/memo/{id}', [ChairMemoController::class, 'show'])->name('chair.memo.show');
 });
 
-//For bayanihan leader view
+//For bayanihan leader memo view
 Route::middleware(['auth', 'isBL'])->group(function () {
-    Route::get('/bayanihanleader/memo', [App\Http\Controllers\BayanihanLeader\BLMemoController::class, 'index'])->name('bayanihanleader.memo');
+    Route::get('/bayanihanleader/memo', [BLMemoController::class, 'index'])->name('bayanihanleader.memo');
     Route::get('/bayanihanleader/memo/{id}', [BLMemoController::class, 'show'])->name('bayanihanleader.memo.show');
 });
 
-//For bayanihan teacher view memo
+//For bayanihan teacher memo view
 Route::middleware(['auth', 'isBT'])->group(function () {
     Route::get('/bayanihanteacher/memo', [BTMemoController::class, 'index'])->name('bayanihanteacher.memo');
     Route::get('/bayanihanteacher/memo/{id}', [BTMemoController::class, 'show'])->name('bayanihanteacher.memo.show');
@@ -51,17 +50,22 @@ Route::get('/notifications/mark-read/{id}', function ($id) {
     return response()->json(['success' => true]);
 })->name('notifications.markRead');
 
-//New middleware route for notification Dean - BLeader
-use App\Http\Controllers\BayanihanLeader\BLSyllabusController;
-Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
-    Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
-});
+// //New middleware route for notification Dean - BLeader
+// use App\Http\Controllers\BayanihanLeader\BLSyllabusController;
+// Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
+//     Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
+// });
 
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;
 use App\Http\Controllers\Admin\AdminCurrController;
 use App\Http\Controllers\Admin\AdminCourseController;
 use App\Http\Controllers\Admin\AdminDepartmentController;
+use App\Http\Controllers\Admin\AdminSyllabusController;
+use App\Http\Controllers\Admin\AdminTOSController;
+use App\Http\Controllers\Admin\AdminDeadlineController;
+use App\Http\Controllers\Admin\AdminMemoController;
+use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Auth\EditProfileController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderAuditController;
 
@@ -329,7 +333,7 @@ Route::group(['prefix' => 'dean', 'middleware' => ['auth', 'isDean']], function 
     Route::post('/storeDeadline', [DeanDeadlineController::class, 'storeDeadline'])->name('dean.storeDeadline');
     Route::get('/editDeadline/{dl_id}', [DeanDeadlineController::class, 'editDeadline'])->name('dean.editDeadline');
     Route::put('updateDeadline/{dl_id}', [DeanDeadlineController::class, 'updateDeadline'])->name('dean.updateDeadline');
-    Route::delete('/destroyDeadline/{bg_id}', [DeanDeadlineController::class, 'destroyDeadline'])->name('dean.destroyDeadline');
+    Route::delete('/destroyDeadline/{dl_id}', [DeanDeadlineController::class, 'destroyDeadline'])->name('dean.destroyDeadline');
 
     Route::get('/editDeadline', [DeanReportsController::class, 'index'])->name('dean.reports');
 
@@ -388,8 +392,9 @@ Route::prefix('/')->middleware('auth')->group(function () {
     Route::post('updatePassword', [EditProfileController::class, 'updatePassword'])->name('password.update');
 });
 
-//Admin: Department Controller
-Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
+//Admin Controls
+Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function () {
+    //Admin: Department Controller
     Route::get('admin/department', [AdminDepartmentController::class, 'index'])->name('admin.department');
     Route::get('/createDepartment', [AdminDepartmentController::class, 'createDepartment'])->name('admin.createDepartment');
     Route::post('/storeDepartment', [AdminDepartmentController::class, 'storeDepartment'])->name('admin.storeDepartment');
@@ -402,29 +407,8 @@ Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::get('/editChair/{chairman_id}', [AdminDepartmentController::class, 'editChair'])->name('admin.editChair');
     Route::put('/updateChair/{chairman_id}', [AdminDepartmentController::class, 'updateChair'])->name('admin.updateChair');
     Route::delete('/destroyChair/{chairman_id}', [AdminDepartmentController::class, 'destroyChair'])->name('admin.destroyChair');
-});
 
-//Admin: Course Controller
-Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
-    Route::get('admin/course', [AdminCourseController::class, 'index'])->name('admin.course');
-    Route::get('/createCourse', [AdminCourseController::class, 'createCourse'])->name('admin.createCourse');
-    Route::post('/storeCourse', [AdminCourseController::class, 'storeCourse'])->name('admin.storeCourse');
-    Route::get('/editCourse/{course_id}', [AdminCourseController::class, 'editCourse'])->name('admin.editCourse');
-    Route::put('updateCourse/{course_id}', [AdminCourseController::class, 'updateCourse'])->name('admin.updateCourse');
-    Route::delete('/destroyCourse/{course_id}', [AdminCourseController::class, 'destroyCourse'])->name('admin.destroyCourse');
-});
-
-//Admin: Curricula Controller
-Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
-    Route::get('admin/curr', [AdminCurrController::class, 'index'])->name('admin.curr');
-    Route::get('/createCurr', [AdminCurrController::class, 'createCurr'])->name('admin.createCurr');
-    Route::post('/storeCurr', [AdminCurrController::class, 'storeCurr'])->name('admin.storeCurr');
-    Route::get('/editCurr/{curr_id}', [AdminCurrController::class, 'editCurr'])->name('admin.editCurr');
-    Route::put('updateCurr/{curr_id}', [AdminCurrController::class, 'updateCurr'])->name('admin.updateCurr');
-    Route::delete('/destroyCurr/{curr_id}', [AdminCurrController::class, 'destroyCurr'])->name('admin.destroyCurr');
-});
-
-Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
+    //Admin: College Controller
     Route::get('admin/college', [AdminCollegeController::class, 'index'])->name('admin.college');
     Route::get('/createCollege', [AdminCollegeController::class, 'createCollege'])->name('admin.createCollege');
     Route::post('/storeCollege', [AdminCollegeController::class, 'storeCollege'])->name('admin.storeCollege');
@@ -436,10 +420,47 @@ Route::prefix('/')->middleware('isAdmin', 'auth')->group(function () {
     Route::get('/editDean/{dean_id}', [AdminCollegeController::class, 'editDean'])->name('admin.editDean');
     Route::put('updateDean/{dean_id}', [AdminCollegeController::class, 'updateDean'])->name('admin.updateDean');
     Route::delete('/destroyDean/{dean_id}', [AdminCollegeController::class, 'destroyDean'])->name('admin.destroyDean');
-});
 
-//Route for admin
-Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
+    //Admin: Course Controller
+    Route::get('admin/course', [AdminCourseController::class, 'index'])->name('admin.course');
+    Route::get('/createCourse', [AdminCourseController::class, 'createCourse'])->name('admin.createCourse');
+    Route::post('/storeCourse', [AdminCourseController::class, 'storeCourse'])->name('admin.storeCourse');
+    Route::get('/editCourse/{course_id}', [AdminCourseController::class, 'editCourse'])->name('admin.editCourse');
+    Route::put('updateCourse/{course_id}', [AdminCourseController::class, 'updateCourse'])->name('admin.updateCourse');
+    Route::delete('/destroyCourse/{course_id}', [AdminCourseController::class, 'destroyCourse'])->name('admin.destroyCourse');
+
+    //Admin: Curricula Controller
+    Route::get('admin/curr', [AdminCurrController::class, 'index'])->name('admin.curr');
+    Route::get('/createCurr', [AdminCurrController::class, 'createCurr'])->name('admin.createCurr');
+    Route::post('/storeCurr', [AdminCurrController::class, 'storeCurr'])->name('admin.storeCurr');
+    Route::get('/editCurr/{curr_id}', [AdminCurrController::class, 'editCurr'])->name('admin.editCurr');
+    Route::put('updateCurr/{curr_id}', [AdminCurrController::class, 'updateCurr'])->name('admin.updateCurr');
+    Route::delete('/destroyCurr/{curr_id}', [AdminCurrController::class, 'destroyCurr'])->name('admin.destroyCurr');
+
+    //Admin Syllabus Controller
+    Route::get('admin/syllabus', [AdminSyllabusController::class, 'index'])->name('admin.syllabus');
+
+    //Admin TOS Controller
+    Route::get('admin/tos', [AdminTOSController::class, 'index'])->name('admin.tos');
+
+    //Admin: Reports, Memo & Deadline Controller
+    Route::get('admin/deadline', [AdminDeadlineController::class, 'deadline'])->name('admin.deadline');
+    Route::get('/createdeadline', [AdminDeadlineController::class, 'createDeadline'])->name('admin.createDeadline');
+    // Route::post('/storeDeadline', [AdminDeadlineController::class, 'storeDeadline'])->name('admin.storeDeadline');
+    // Route::get('/editDeadline/{dl_id}', [AdminDeadlineController::class, 'editDeadline'])->name('admin.editDeadline');
+    // Route::put('updateDeadline/{dl_id}', [AdminDeadlineController::class, 'updateDeadline'])->name('admin.updateDeadline');
+    // Route::delete('/destroyDeadline/{dl_id}', [AdminDeadlineController::class, 'destroyDeadline'])->name('admin.destroyDeadline');
+
+    Route::get('admin/memos', [AdminMemoController::class, 'index'])->name('admin.memo');
+    // Route::get('/dean/memo/{id}/download/{filename}', [AdminMemoController::class, 'download'])->name('dean.memo.download');
+    // Route::post('/dean/memo/store', [AdminMemoController::class, 'store'])->name('dean.memo.store');
+    // Route::get('/dean/memos/{id}/edit', [AdminMemoController::class, 'edit'])->name('dean.memo.edit');
+    // Route::put('/dean/memos/{id}', [AdminMemoController::class, 'update'])->name('dean.memo.update');
+    // Route::delete('/dean/memos/{id}', [AdminMemoController::class, 'destroy'])->name('dean.memo.destroy');
+    // Route::get('/dean/memo/{id}', [AdminMemoController::class, 'show'])->name('dean.showMemo');
+
+    
+    //Admin: User Management Controls
     Route::get('admin/home', [ManageUser::class, 'index'])->name('admin.home');
     Route::resource('admin', ManageUser::class);
     Route::get('admin/createRole/{user_id}', [ManageUser::class, 'createRole'])->name('admin.createRole');
@@ -450,18 +471,7 @@ Route::prefix('/')->middleware(['isAdmin', 'auth'])->group(function () {
     Route::post('admin/{userid}', [ManageUser::class, 'update']);
 });
 
-//na add ni gelski
-//Auditor
-Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
-    Route::get('/home', [App\Http\Controllers\Auditor\AuditorController::class, 'home'])->name('auditor.home');
-});
-
-//route for auditor
-Route::get('/auditor/home', [AuditorController::class, 'home'])
-    ->middleware(['auth', 'isAuditor'])
-    ->name('auditor.home');
-
-// Grouped auditor routes
+// Grouped Auditor routes
 Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], function () {
     Route::get('/home', [AuditorController::class, 'home'])->name('auditor.home');
 
@@ -481,36 +491,35 @@ Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], fun
 // Route::resource('/admin/curr', AdminCurrController::class);
 // Route::resource('/admin/course', AdminCourseController::class);
 
-Route::resources([
-    '/admin/users' => ManageUser::class,
-    '/admin/college' => AdminCollegeController::class,
-    '/admin/department' => AdminDepartmentController::class,
-    '/admin/curr' => AdminCurrController::class,
-    '/admin/course' => AdminCourseController::class,
-]);
+// Route::resources([
+//     '/admin/users' => ManageUser::class,
+//     '/admin/college' => AdminCollegeController::class,
+//     '/admin/department' => AdminDepartmentController::class,
+//     '/admin/curr' => AdminCurrController::class,
+//     '/admin/course' => AdminCourseController::class,
+// ]);
 
 // Standalone routes (not covered by resource)
 Route::get('/admin/home', [ManageUser::class, 'index'])->name('admin.home'); // optional if same as users.index
-
 Route::get('/admin/audit', [BayanihanLeaderAuditController::class, 'index'])->name('admin.audit');
 Route::get('/admin/reports', [DeanReportsController::class, 'index'])->name('admin.reports');
 
 // Additional methods not covered by resource (custom routes)
-Route::controller(ManageUser::class)->group(function () {
-    Route::get('/admin/roles', 'roles')->name('admin.roles');
-    Route::get('/admin/createRole/{user_id}', 'createRole')->name('admin.createRole');
-    Route::get('/admin/editRoles/{userid}', 'editRoles')->name('admin.editRoles');
-});
+// Route::controller(ManageUser::class)->group(function () {
+//     Route::get('/admin/roles', 'roles')->name('admin.roles');
+//     Route::get('/admin/createRole/{user_id}', 'createRole')->name('admin.createRole');
+//     Route::get('/admin/editRoles/{userid}', 'editRoles')->name('admin.editRoles');
+// });
 
-Route::controller(AdminCollegeController::class)->group(function () {
-    Route::get('/admin/createDean', 'createDean')->name('admin.createDean');
-    Route::get('/admin/editDean/{dean_id}', 'editDean')->name('admin.editDean');
-});
+// Route::controller(AdminCollegeController::class)->group(function () {
+//     Route::get('/admin/createDean', 'createDean')->name('admin.createDean');
+//     Route::get('/admin/editDean/{dean_id}', 'editDean')->name('admin.editDean');
+// });
 
-Route::controller(AdminDepartmentController::class)->group(function () {
-    Route::get('/admin/createChair', 'createChair')->name('admin.createChair');
-    Route::get('/admin/editChair/{chairman_id}', 'editChair')->name('admin.editChair');
-});
+// Route::controller(AdminDepartmentController::class)->group(function () {
+//     Route::get('/admin/createChair', 'createChair')->name('admin.createChair');
+//     Route::get('/admin/editChair/{chairman_id}', 'editChair')->name('admin.editChair');
+// });
 
 // Route::prefix('auditor')->middleware(['auth', 'role:auditor'])->group(function () {
 //     Route::get('/syllabi', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabi.index');

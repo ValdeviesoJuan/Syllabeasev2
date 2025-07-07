@@ -25,13 +25,13 @@ class DeanSyllabusTable extends Component
     public function render()
     {
         $user = Auth::user();
+
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
 
         $college = UserRole::where('user_roles.entity_type', 'College')
             ->where('user_roles.role_id', $deanRoleId)
             ->where('user_roles.user_id', $user->id)
             ->firstOrFail();
-
         $college_id = $college->entity_id;
 
         $departments = Department::where('departments.college_id', $college_id)
