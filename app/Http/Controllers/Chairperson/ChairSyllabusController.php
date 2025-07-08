@@ -247,8 +247,11 @@ class ChairSyllabusController extends Controller
         $bg_school_year = $submitted_syllabus->bg_school_year;
 
         // ✅ Dean Notification & Email
-        $dean = User::join('deans', 'deans.user_id', '=', 'users.id')
-            ->join('colleges', 'colleges.college_id', '=', 'deans.college_id')
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'College')
+            ->where('user_roles.role_id', $deanRoleId)
             ->where('colleges.college_id', '=', $syllabus->college_id)
             ->select('users.*', 'colleges.*')
             ->first();
@@ -555,8 +558,8 @@ class ChairSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
-        // $dean = User::join('deans', 'deans.user_id', '=', 'users.id')
-        //     ->join('colleges', 'colleges.college_id', '=', 'deans.college_id')
+        // $dean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+        //     ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
         //     ->where('colleges.college_id', '=', $syll->college_id)
         //     ->select('users.*', 'colleges.*')
         //     ->first();

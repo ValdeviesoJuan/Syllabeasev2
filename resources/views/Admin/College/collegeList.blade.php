@@ -129,22 +129,22 @@
                     <div class="overflow-hidden">
                         <h2 class="text-3xl text-black font-semibold -mb-[35px]">Dean</h2>
                           
-<a href="{{ route('createDean') }}"
-   class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full float-right"
-   style="background: #d7ecf9;"
-   onmouseover="this.style.background='#c3dff3';"
-   onmouseout="this.style.background='#d7ecf9';">
-   
-   <!-- na add ni gels -->
-   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-       <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
-             stroke-linecap="round" stroke-linejoin="round"/>
-       <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-   </svg>
+                        <a href="{{ route('admin.createDean') }}"
+                            class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full float-right"
+                            style="background: #d7ecf9;"
+                            onmouseover="this.style.background='#c3dff3';"
+                            onmouseout="this.style.background='#d7ecf9';">
+                            
+                            <!-- na add ni gels -->
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                            </svg>
 
-   Assign Dean
-</a>
+                            Assign Dean
+                        </a>
                     </div>
                 </div>
             </div>
@@ -186,7 +186,7 @@
                             <td class="px-2 py-2 text-center" colspan="2">
     <div class="flex items-center justify-center gap-1">
         <!-- Edit Dean Button -->
-        <form action="{{ route('editDean', $dean->dean_id) }}" method="GET">
+        <form action="{{ route('admin.editDean', $dean->ur_id) }}" method="GET">
             @csrf
             <button type="submit"
                 style="border: none; border-radius: 15px; background: transparent; color: #16a34a; font-weight: 600;"
@@ -196,7 +196,7 @@
         </form>
 
         <!-- Delete Dean Button -->
-        <form action="{{ route('destroyDean', $dean->dean_id) }}" method="POST">
+        <form action="{{ route('admin.destroyDean', $dean->ur_id) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit"

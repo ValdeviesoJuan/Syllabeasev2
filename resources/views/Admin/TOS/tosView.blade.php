@@ -1,4 +1,4 @@
-@extends('layouts.BLtos')
+@extends('layouts.adminTos')
 @section('content')
 @include('layouts.modal')
 <!DOCTYPE html>
@@ -14,7 +14,6 @@
             transform: scaleY(-1);
             min-width: '1880'
         }
-
         body {
             background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
@@ -22,7 +21,6 @@
             background-attachment: fixed;
             background-size: contain;
         }
-
         table,
         tr,
         td,
@@ -51,13 +49,13 @@
             </div>
             <div class="flex items-center my-2 justify-center">
                 <div class="bg-blue py-1 px-3 mx-1 text-white hover:scale-105">
-                    <a href="{{ route('bayanihanleader.commentTos', $tos_id) }}">
+                    <a href="{{ route('admin.commentTos', $tos_id) }}">
                         View Comments
                     </a>
                 </div>
 
                 <div class="bg-blue py-1 mx-1 px-2 text-white hover:scale-105">
-                    <a href="{{route('bayanihanleader.replicateTos', $tos_id)}}">
+                    <a href="{{route('admin.replicateTos', $tos_id)}}">
                         Replicate TOS
                     </a>
                 </div>
@@ -95,7 +93,7 @@
             </div>
             <div class="grid mb-3 md:grid-cols-2 mt-6">
                 <div class="bg-blue text-white shadow-lg w-[190px] m-auto float-right ml-[78%] h-12 text-center m-autp rounded-lg hover:scale-105 transition ease-in-out">
-                    <a href="{{ route('bayanihanleader.commentTos', $tos_id) }}">
+                    <a href="{{ route('admin.commentTos', $tos_id) }}">
                         <svg class="ml-5 mt-2.5" xmlns="http://www.w3.org/2000/svg" width="32px" height="32px" viewBox="0 0 24 24" fill="#FFF">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M20.991 4.8C20.991 3.81 20.19 3 19.2 3H4.8C3.81 3 3 3.81 3 4.8V15.6C3 16.59 3.81 17.4 4.8 17.4H17.4L21 21L20.991 4.8ZM19.2 4.8V16.653L18.147 15.6H4.8V4.8H19.2ZM17.4 12H6.6V13.8H17.4V12ZM6.6 9.3H17.4V11.1H6.6V9.3ZM17.4 6.6H6.6V8.4H17.4V6.6Z" fill="#FFF" />
                         </svg>
@@ -113,7 +111,7 @@
                         <path d="M235,240h-80c-8.284,0-15,6.716-15,15c0,8.284,6.716,15,15,15h80c8.284,0,15-6.716,15-15C250,246.716,243.284,240,235,240z   " />
                     </g>
                 </svg>
-                <a href="{{route('bayanihanleader.replicateTos', $tos_id)}}">
+                <a href="{{route('admin.replicateTos', $tos_id)}}">
                     <div class="-mt-[13%] ml-6">
                         Replicate TOS
                     </div>
@@ -123,20 +121,20 @@
     </div>
 
     <!-- If wala pa si all hehe  -->
-    @else
+    {{-- @else
     <div class="flex justify-end mx-auto w-[80%]">
         <div class="bg-blue px-2 py-1 hover:scale-105 m-1 text-white">
-            <a href="{{ route('bayanihanleader.editTos', ['syll_id' => $tos->syll_id, 'tos_id' => $tos_id]) }}">
+            <a href="{{ route('admin.editTos', ['syll_id' => $tos->syll_id, 'tos_id' => $tos_id]) }}">
                 <button class="btn btn-primary">Edit</button>
             </a>
         </div>
 
         <div class="bg-blue px-2 py-1 hover:scale-105 m-1 text-white">
-            <a href="{{ route('bayanihanleader.editTosRow', $tos_id) }}">
+            <a href="{{ route('admin.editTosRow', $tos_id) }}">
                 <button class="btn btn-primary">Edit Cognitive Level</button>
             </a>
         </div>
-        <form action="{{ route('bayanihanleader.submitTos', $tos_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to submit this tos version?');">
+        <form action="{{ route('admin.submitTos', $tos_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to submit this tos version?');">
             @csrf
             @method('PUT')
             <div class="bg-green2 px-2 py-1 hover:bg-green3 hover:text-white my-1 ml-1 text-green">
@@ -145,7 +143,7 @@
                 </button>
             </div>
         </form>
-    </div>
+    </div>--}}
     <!-- <div class="flex m-auto space-x-96 -mb-[2%] mt-4 items-center">
         <div class="bg-blue py-3 px-5 text-white rounded-lg shadow-lg hover:scale-105 transition ease-in-out">
             <a href="{{ route('bayanihanleader.editTosRow', $tos_id) }}">

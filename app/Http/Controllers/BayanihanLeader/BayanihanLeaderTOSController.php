@@ -13,6 +13,7 @@ use App\Models\SyllabusCourseOutlineMidterm;
 use App\Models\Tos;
 use App\Models\TosRows;
 use App\Models\User;
+use App\Models\Roles;
 use App\Notifications\Chair_TOSSubmitted;
 use App\Notifications\TOSSubmitted;
 use Carbon\Carbon;
@@ -22,12 +23,6 @@ use Illuminate\Support\Facades\DB;
 
 class BayanihanLeaderTOSController extends Controller
 {
-    public function editTosRow($tos_id)
-    {
-        $user = Auth::user();
-        $notifications = $user->notifications;
-        return view('bayanihanleader.tos.tosEditRow', compact('tos_id', 'notifications'));
-    }
     public function index()
     {
         $myGroup = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
@@ -107,9 +102,12 @@ class BayanihanLeaderTOSController extends Controller
             ->select('tos.*')
             ->get();
 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('chairpeople', 'syllabi.department_id', '=', 'chairpeople.department_id')
-            ->join('users', 'users.id', '=', 'chairpeople.user_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
             ->first();
         return view('bayanihanleader.tos.tosView', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
     }
@@ -129,8 +127,11 @@ class BayanihanLeaderTOSController extends Controller
         $tos->tos_status = 'Pending';
         $tos->save();
 
-        $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-            ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
             ->where('departments.department_id', '=', $tos->department_id)
             ->select('users.*', 'departments.*')
             ->first();
@@ -214,9 +215,12 @@ class BayanihanLeaderTOSController extends Controller
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('chairpeople', 'syllabi.department_id', '=', 'chairpeople.department_id')
-            ->join('users', 'users.id', '=', 'chairpeople.user_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
             ->first();
         return view('bayanihanleader.tos.tosComment', compact('chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
     }
@@ -426,8 +430,11 @@ class BayanihanLeaderTOSController extends Controller
         }
 
         // Send email to Chairperson(s)
-        $chairpersons = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-            ->where('chairpeople.department_id', $tos->department_id)
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chairpersons = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('user_roles.entity_id', $tos->department_id)
             ->select('users.*')
             ->get();
 

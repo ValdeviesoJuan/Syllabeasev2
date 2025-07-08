@@ -2,15 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\UserRole;
-use App\Models\Roles;
 use App\Models\BayanihanGroup;
+use App\Models\College;
+use App\Models\Department;
 use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 
-class ChairSyllabusTable extends Component
+class AdminSyllabusTable extends Component
 {
     use WithPagination;
     public $search = '';
@@ -19,28 +18,19 @@ class ChairSyllabusTable extends Component
         'course_semester' => null,
         'status' => null,
         'bg_school_year' => null,
+        'department_id' => null,
+        'college_id' => null,
     ];
     public function render()
     {
-        $chairperson = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
+        $colleges = College::all();
 
-        $department_id = $chairperson->entity_id;
+        $departments = Department::all();
 
-        // $syllabi = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        // ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-        // ->where('syllabi.department_id', '=', $department_id)
-        // ->whereNotNull('syllabi.chair_submitted_at')
-            if ($department_id) {
-                $syllabi = BayanihanGroup::join('syllabi', function ($join) {
+        $syllabi = BayanihanGroup::join('syllabi', function ($join) {
                         $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
                         ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND chair_submitted_at IS NOT NULL)'));
                     })
-                    // ->where('syllabi.status', 'Pending')
-                    ->where('syllabi.department_id', '=', $department_id)
-                    // ->whereNotNull('syllabi.chair_submitted_at')
                     ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
                     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
                     ->where(function ($query){
@@ -49,7 +39,9 @@ class ChairSyllabusTable extends Component
                         ->orWhere('bayanihan_groups.bg_school_year', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_title', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_code', 'like', '%' . $this->search . '%')
-                        ->orWhere('syllabi.status', 'like', '%' . $this->search . '%');
+                        ->orWhere('syllabi.status', 'like', '%' . $this->search . '%')
+                        ->orWhere('syllabi.department_id', 'like', '%' . $this->search . '%')
+                        ->orWhere('syllabi.college_id', 'like', '%' . $this->search . '%');
                     })
                     ->when($this->filters['course_year_level'], function ($query) {
                         $query->where('courses.course_year_level', 'like', '%' .$this->filters['course_year_level']);
@@ -63,13 +55,16 @@ class ChairSyllabusTable extends Component
                     ->when($this->filters['bg_school_year'], function ($query) {
                         $query->where('bayanihan_groups.bg_school_year', 'like', '%' .$this->filters['bg_school_year']);
                     })
+                    ->when($this->filters['department_id'], function ($query) {
+                        $query->where('syllabi.department_id', 'like', '%' .$this->filters['department_id']);
+                    })
+                    ->when($this->filters['college_id'], function ($query) {
+                        $query->where('syllabi.college_id', 'like', '%' .$this->filters['college_id']);
+                    })
                     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
                     ->paginate(10);
-            } else {
-                $syllabi = [];
-            }
 
-        return view('livewire.chair-syllabus-table', ['syllabi' => $syllabi, 'filters' => $this->filters]);
+        return view('livewire.admin-syllabus-table', ['syllabi' => $syllabi, 'filters' => $this->filters, 'departments' => $departments, 'colleges' => $colleges]);
     }
     public function applyFilters()
     {

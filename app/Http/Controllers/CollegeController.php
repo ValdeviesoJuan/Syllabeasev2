@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\College;
 use App\Models\Dean;
 use App\Models\User;
-
-
+use App\Models\UserRole;
+use App\Models\Roles;
 use Illuminate\Http\Request;
 
 class CollegeController extends Controller
@@ -18,10 +18,14 @@ class CollegeController extends Controller
     {
         $colleges = College::all();
 
-        $deans = Dean::join('colleges', 'deans.college_id', '=', 'colleges.college_id')
-        ->join('users', 'deans.user_id', '=', 'users.id')
-        ->select('users.*', 'deans.*', 'colleges.*')
-        ->get();
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $deans = UserRole::join('colleges', 'user_roles.entity_id', '=', 'colleges.college_id')
+            ->join('users', 'user_roles.user_id', '=', 'users.id')
+            ->where('user_roles.entity_type', 'College')
+            ->where('user_roles.role_id', $deanRoleId)
+            ->select('users.*', 'user_roles.*', 'colleges.*')
+            ->get();
+            
         return view('admin.college.collegeList', compact('colleges', 'deans'));
     }
 

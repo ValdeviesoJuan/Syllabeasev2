@@ -1,6 +1,4 @@
-<!-- @-extends('layouts.deanNav') -->
 @extends('layouts.deanSidebar')
-
 @section('content')
 @include('layouts.modal')
 @vite('resources/css/app.css')

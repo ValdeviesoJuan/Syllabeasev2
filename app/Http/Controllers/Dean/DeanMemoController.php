@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Memo; // Ensure you have a Memo model
+use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MemoNotification;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +25,7 @@ class DeanMemoController extends Controller
                         ->orWhere('description', 'like', "%{$search}%");
         })->latest()->get();
 
-        $users = \App\Models\User::select('email')->get();
+        $users = User::select('email')->get();
 
         return view('Dean.Memo.memos', compact('notifications', 'memos', 'users'));
     }

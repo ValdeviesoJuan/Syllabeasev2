@@ -159,10 +159,6 @@
                 </li>
         </div>
 
-
-
-
-
         <div class="h-full px-3 pb-4 overflow-y-auto bg-blue dark:bg-gray-800 ">
 
             <ul class="space-y-2 font-">
@@ -196,6 +192,21 @@
                         <span class="ms-3">Syllabus</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.tos') }}" class="{{request()->route()->getName() == 'admin.tos' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
+                        <svg class="w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 45.973 45.972" xml:space="preserve">
+                            <g>
+                                <g>
+                                    <path d="M44.752,20.914L25.935,2.094c-0.781-0.781-1.842-1.22-2.946-1.22c-1.105,0-2.166,0.439-2.947,1.22L1.221,20.914
+            c-1.191,1.191-1.548,2.968-0.903,4.525c0.646,1.557,2.165,2.557,3.85,2.557h2.404v13.461c0,2.013,1.607,3.642,3.621,3.642h3.203
+            V32.93c0-0.927,0.766-1.651,1.692-1.651h6.223c0.926,0,1.673,0.725,1.673,1.651v12.168h12.799c2.013,0,3.612-1.629,3.612-3.642
+            V27.996h2.411c1.685,0,3.204-1,3.85-2.557C46.3,23.882,45.944,22.106,44.752,20.914z" />
+                                </g>
+                            </g>
+                        </svg>
+                        <span class="ms-3">TOS</span>
+                    </a>
+                </li>
 
                 <li>
                     <a href="{{ route('admin.college') }}" class="{{request()->route()->getName() == 'admin.college' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
@@ -215,7 +226,7 @@
 
                 <li>
                     <a href="{{ route('admin.department') }}" class="{{request()->route()->getName() == 'admin.department' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                    <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 24 24" version="1.1">
+                        <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 24 24" version="1.1">
                             <title>department_svg</title>
                             <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                 <g id="Development" transform="translate(-768.000000, -48.000000)" fill-rule="nonzero">
@@ -252,45 +263,7 @@
                         <!-- <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
                     </a>
                 </li>
-                
-                <li>
-                    <a href="{{ route('admin.departments') }}" class="{{request()->route()->getName() == 'admin.departments' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 24 24" version="1.1">
-                            <title>department_svg</title>
-                            <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                <g id="Development" transform="translate(-768.000000, -48.000000)" fill-rule="nonzero">
-                                    <g id="department_svg" transform="translate(768.000000, 48.000000)">
-                                        <path d="M24,0 L24,24 L0,24 L0,0 L24,0 Z M12.5934901,23.257841 L12.5819402,23.2595131 L12.5108777,23.2950439 L12.4918791,23.2987469 L12.4918791,23.2987469 L12.4767152,23.2950439 L12.4056548,23.2595131 C12.3958229,23.2563662 12.3870493,23.2590235 12.3821421,23.2649074 L12.3780323,23.275831 L12.360941,23.7031097 L12.3658947,23.7234994 L12.3769048,23.7357139 L12.4804777,23.8096931 L12.4953491,23.8136134 L12.4953491,23.8136134 L12.5071152,23.8096931 L12.6106902,23.7357139 L12.6232938,23.7196733 L12.6232938,23.7196733 L12.6266527,23.7031097 L12.609561,23.275831 C12.6075724,23.2657013 12.6010112,23.2592993 12.5934901,23.257841 L12.5934901,23.257841 Z M12.8583906,23.1452862 L12.8445485,23.1473072 L12.6598443,23.2396597 L12.6498822,23.2499052 L12.6498822,23.2499052 L12.6471943,23.2611114 L12.6650943,23.6906389 L12.6699349,23.7034178 L12.6699349,23.7034178 L12.678386,23.7104931 L12.8793402,23.8032389 C12.8914285,23.8068999 12.9022333,23.8029875 12.9078286,23.7952264 L12.9118235,23.7811639 L12.8776777,23.1665331 C12.8752882,23.1545897 12.8674102,23.1470016 12.8583906,23.1452862 L12.8583906,23.1452862 Z M12.1430473,23.1473072 C12.1332178,23.1423925 12.1221763,23.1452606 12.1156365,23.1525954 L12.1099173,23.1665331 L12.0757714,23.7811639 C12.0751323,23.7926639 12.0828099,23.8018602 12.0926481,23.8045676 L12.108256,23.8032389 L12.3092106,23.7104931 L12.3186497,23.7024347 L12.3186497,23.7024347 L12.3225043,23.6906389 L12.340401,23.2611114 L12.337245,23.2485176 L12.337245,23.2485176 L12.3277531,23.2396597 L12.1430473,23.1473072 Z" id="MingCute" fill-rule="nonzero">
-                        
-                        </path>
-                                        <path d="M12,3 C10.3431,3 9,4.34315 9,6 C9,7.30622 9.83481,8.41746 11,8.82929 L11,11 L8,11 C6.34315,11 5,12.3431 5,14 L5,15.1707 C3.83481,15.5825 3,16.6938 3,18 C3,19.6569 4.34315,21 6,21 C7.65685,21 9,19.6569 9,18 C9,16.6938 8.16519,15.5825 7,15.1707 L7,14 C7,13.4477 7.44772,13 8,13 L16,13 C16.5523,13 17,13.4477 17,14 L17,15.1707 C15.8348,15.5825 15,16.6938 15,18 C15,19.6569 16.3431,21 18,21 C19.6569,21 21,19.6569 21,18 C21,16.6938 20.1652,15.5825 19,15.1707 L19,14 C19,12.3431 17.6569,11 16,11 L13,11 L13,8.82929 C14.1652,8.41746 15,7.30622 15,6 C15,4.34315 13.6569,3 12,3 Z" id="路径" fill="#FFF">
-                        
-                        </path>
-                                    </g>
-                                </g>
-                            </g>
-                        </svg>
-                        <span class="ms-3">Department</span>
-                    </a>
-                </li>
-            
-                <li>
-                    <a href="{{ route('admin.chairs') }}" class="{{request()->route()->getName() == 'admin.chairs' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="_x32_" width="800px" height="800px" viewBox="0 0 512 512" xml:space="preserve">
-                            <style type="text/css">
-                            <![CDATA[
-                                .st0{fill:#FFF;}
-                            ]]>
-                            </style>
-                            <g>
-                                <path class="st0" d="M147.57,320.188c-0.078-0.797-0.328-1.531-0.328-2.328v-6.828c0-3.25,0.531-6.453,1.594-9.5   c0,0,17.016-22.781,25.063-49.547c-8.813-18.594-16.813-41.734-16.813-64.672c0-5.328,0.391-10.484,0.938-15.563   c-11.484-12.031-27-18.844-44.141-18.844c-35.391,0-64.109,28.875-64.109,73.75c0,35.906,29.219,74.875,29.219,74.875   c1.031,3.047,1.563,6.25,1.563,9.5v6.828c0,8.516-4.969,16.266-12.719,19.813l-46.391,18.953   C10.664,361.594,2.992,371.5,0.852,383.156l-0.797,10.203c-0.406,5.313,1.406,10.547,5.031,14.438   c3.609,3.922,8.688,6.125,14.016,6.125H94.93l3.109-39.953l0.203-1.078c3.797-20.953,17.641-38.766,36.984-47.672L147.57,320.188z"/>
-                                <path class="st0" d="M511.148,383.156c-2.125-11.656-9.797-21.563-20.578-26.531l-46.422-18.953   c-7.75-3.547-12.688-11.297-12.688-19.813v-6.828c0-3.25,0.516-6.453,1.578-9.5c0,0,29.203-38.969,29.203-74.875   c0-44.875-28.703-73.75-64.156-73.75c-17.109,0-32.625,6.813-44.141,18.875c0.563,5.063,0.953,10.203,0.953,15.531   c0,22.922-7.984,46.063-16.781,64.656c8.031,26.766,25.078,49.563,25.078,49.563c1.031,3.047,1.578,6.25,1.578,9.5v6.828   c0,0.797-0.266,1.531-0.344,2.328l11.5,4.688c20.156,9.219,34,27.031,37.844,47.984l0.188,1.094l3.094,39.969h75.859   c5.328,0,10.406-2.203,14-6.125c3.625-3.891,5.438-9.125,5.031-14.438L511.148,383.156z"/>
-                                <path class="st0" d="M367.867,344.609l-56.156-22.953c-9.375-4.313-15.359-13.688-15.359-23.969v-8.281   c0-3.906,0.625-7.797,1.922-11.5c0,0,35.313-47.125,35.313-90.594c0-54.313-34.734-89.234-77.594-89.234   c-42.844,0-77.594,34.922-77.594,89.234c0,43.469,35.344,90.594,35.344,90.594c1.266,3.703,1.922,7.594,1.922,11.5v8.281   c0,10.281-6.031,19.656-15.391,23.969l-56.156,22.953c-13.047,5.984-22.344,17.984-24.906,32.109l-2.891,37.203h139.672h139.672   l-2.859-37.203C390.211,362.594,380.914,350.594,367.867,344.609z"/>
-                            </g>
-                            </svg>
-                        <span class="ms-3">Chairperson</span>
-                    </a>
-                </li>
+    
                 <li>
                     <button type="button" class="flex items-center w-full p-2 text-base text-white transition duration-75 rounded-lg group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
                         <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -310,31 +283,14 @@
                     </button>
                     <ul id="dropdown-example" class="hidden py-2 space-y-2">
                         <li>
-                            <a href="{{ route('admin.programOutcome') }}" class="{{request()->route()->getName() == 'admin.programOutcome' ? 'bg-blue4' : ''}} flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Outcomes</a>
+                            <a href="{{ route('admin.programOutcome') }}" class="{{request()->route()->getName() == 'admin.programOutcome' ? 'bg-blue4' : ''}}flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Outcomes</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.poe') }}" class="{{request()->route()->getName() == 'admin.poe' ? 'bg-blue4' : ''}} flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Educational Objectives</a>
+                            <a href="{{ route('admin.poe') }}" class="{{request()->route()->getName() == 'admin.poe' ? 'bg-blue4' : ''}}flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Educational Objectives</a>
                         </li>
                     </ul>
                 </li>
-                <li>
-                    <a href="{{ route('admin.curricula') }}" class="{{request()->route()->getName() == 'admin.curricula' ? 'bg-blue4' : ''}} flex items-center p-2 text-white  text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" inkscape:export-filename="curr.svg" inkscape:export-xdpi="79.62088" inkscape:export-ydpi="79.62088" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                            <defs id="defs1" />
-                            <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(-15.755283,-77.661276)">
-                                <rect style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.15923;stroke-linecap:round" id="rect1-8" width="121.78162" height="125.76481" x="15.755283" y="77.66127" ry="16.047787" />
-                                <rect style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.15923;stroke-linecap:round" id="rect1-8-8" width="121.78162" height="125.76481" x="73.511841" y="131.43463" ry="16.047787" inkscape:transform-center-x="56.561599" inkscape:transform-center-y="-68.909554" />
-                                <text xml:space="preserve" style="font-weight:bold;font-size:67.9802px;font-family:Octarine;-inkscape-font-specification:'Octarine, Bold';fill:#2468d2;fill-opacity:1;fill-rule:evenodd;stroke-width:0.470121;stroke-linecap:round" x="25.558954" y="182.51872" id="text2" transform="scale(0.97174614,1.0290753)">
-                                    <tspan sodipodi:role="line" id="tspan2" style="fill:#2468d2;fill-opacity:1;stroke-width:0.470121" x="25.558954" y="182.51872">Curr</tspan>
-                                </text>
-                                <rect style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.0569156;stroke-linecap:round" id="rect1-8-8-2" width="49.685493" height="39.384407" x="109.55991" y="111.74243" ry="5.0255122" inkscape:transform-center-x="23.07648" inkscape:transform-center-y="-21.579661" />
-                            </g>
-                        </svg>
-
-                        <span class="flex-1 ms-3 whitespace-nowrap">Curricula</span>
-                        <!-- <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
-                    </a>
-                </li>
+                            
                 <li>
                     <a href="{{ route('admin.course') }}" class="{{request()->route()->getName() == 'admin.course' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" sodipodi:docname="program.svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -352,6 +308,7 @@
                         <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
                     </a>
                 </li>
+
                 <ul class="pt-4 mt-4 space-y-2 font- border-t border-white dark:border-gray-700"></ul>
                 <li>
                     <a href="{{ route('admin.deadline') }}" class="{{request()->route()->getName() == 'admin.deadline' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
@@ -360,27 +317,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.reports') }}" class="{{request()->route()->getName() == 'admin.reports' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" width="800px" height="800px" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <style>
-                                    .cls-1 {
-                                        fill: none;
-                                    }
-                                </style>
-                            </defs>
-                            <title>report</title>
-                            <rect x="15" y="20" width="2" height="4"></rect>
-                            <rect x="20" y="18" width="2" height="6"></rect>
-                            <rect x="10" y="14" width="2" height="10"></rect>
-                            <path d="M25,5H22V4a2,2,0,0,0-2-2H12a2,2,0,0,0-2,2V5H7A2,2,0,0,0,5,7V28a2,2,0,0,0,2,2H25a2,2,0,0,0,2-2V7A2,2,0,0,0,25,5ZM12,4h8V8H12ZM25,28H7V7h3v3H22V7h3Z"></path>
-                            <rect id="_Transparent_Rectangle_" data-name="<Transparent Rectangle>" class="cls-1" width="32" height="32"></rect>
-                        </svg>
-                        <span class="ms-3">Reports</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.memo') }}" class="{{ request()->route()->getName() == 'admin.memo' ? 'bg-blue4' : '' }} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
+                    <a href="{{ route('admin.memo') }}" class="{{request()->route()->getName() == 'admin.memo' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 4C4 2.895 4.895 2 6 2H14L20 8V20C20 21.105 19.105 22 18 22H6C4.895 22 4 21.105 4 20V4Z" stroke="white" stroke-width="2" fill="none"/>
                             <path d="M14 2V8H20" stroke="white" stroke-width="2" fill="none"/>
@@ -388,25 +325,6 @@
                         <span class="ms-3">Memo</span>
                     </a>
                 </li>
-                <ul class="pt-4 mt-4 space-y-2 font- border-t border-white dark:border-gray-700"></ul>
-                <li>
-                    <a href="{{ route('admin.course') }}" class="{{request()->route()->getName() == 'admin.course' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" sodipodi:docname="program.svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                            <sodipodi:namedview id="namedview1" pagecolor="#505050" bordercolor="#eeeeee" borderopacity="1" inkscape:showpageshadow="0" inkscape:pageopacity="0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#505050" inkscape:document-units="mm" />
-                            <defs id="defs1" />
-                            <g id="layer1" transform="translate(-15.755283,-77.661276)">
-                                <rect style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.231;stroke-linecap:round" id="rect1" width="179.53818" height="179.53816" x="15.755282" y="77.66127" ry="22.909351" />
-                                <text xml:space="preserve" style="font-weight:bold;font-size:141.022px;font-family:Octarine;-inkscape-font-specification:'Octarine, Bold';fill:#2468d2;fill-opacity:1;fill-rule:evenodd;stroke-width:0.975245;stroke-linecap:round" x="44.760868" y="222.98555" id="text2" transform="scale(1.0315405,0.96942389)">
-                                    <tspan id="tspan2" style="fill:#2468d2;fill-opacity:1;stroke-width:0.975245" x="44.760868" y="222.98555">C</tspan>
-                                </text>
-                            </g>
-                        </svg>
-
-                        <span class="flex-1 ms-3 whitespace-nowrap">Course</span>
-                        <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
-                    </a>
-
-            </ul>
             <!-- <div class="absolute bottom-0 flex w-[225px] px-3 mb-5 justify-between items-center p-2 text-white rounded-lg dark:text-white bg-blue4 dark:hover:bg-gray-700 group">
                 <div class="w-8 h-8 bg-yellow border rounded-full text-white text-sm flex justify-center items-center">
                     {{ Str::upper(substr(Auth::user()->firstname, 0, 1)) . Str::upper(substr(Auth::user()->lastname, 0, 1)) }}
