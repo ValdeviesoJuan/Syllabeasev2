@@ -80,18 +80,18 @@
                 <td>{{$syllabus->dean_approved_at}}</td>
                 <td>Version {{$syllabus->version}}</td>
                 <td class="mr-[200px]">
-                <button class="
-                    {{ $syllabus->status === 'Pending' ? 'w-[80%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Approved by Chair' ? 'w-[80%]  bg-emerald-300 text-emerald-600 border-2 border-emerald-500  rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Returned by Chair' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}
-                    {{ $syllabus->status === 'Approved by Dean' ? 'w-[80%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Returned by Dean' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
-                    {{$syllabus->status}}
+                    <button class="
+                        {{ $syllabus->status === 'Pending' ? 'w-[80%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
+                        {{ $syllabus->status === 'Approved by Chair' ? 'w-[80%]  bg-emerald-300 text-emerald-600 border-2 border-emerald-500  rounded-lg' : '' }}
+                        {{ $syllabus->status === 'Returned by Chair' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}
+                        {{ $syllabus->status === 'Approved by Dean' ? 'w-[80%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
+                        {{ $syllabus->status === 'Returned by Dean' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
+                        {{$syllabus->status}}
                     </button>
                 </td>
                 <td>
                     <div>
-                        <form class="" action="" method="GET">
+                        <form class="" action="{{ route('admin.viewSyllabus', $syllabus->syll_id) }}" method="GET">
                             @csrf
                             <div class="p-4">
                                 <button class="bg-blue5 w-[80%] hover:bg-blue3 py-1 rounded-lg text-lg text-white cursor-pointer font-semibold shadow-lg" type="submit">View</button>

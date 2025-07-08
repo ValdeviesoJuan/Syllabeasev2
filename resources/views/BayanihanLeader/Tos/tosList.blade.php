@@ -15,7 +15,6 @@
             transform: scaleY(-1);
             min-width: '1880'
         }
-
         body {
             background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;

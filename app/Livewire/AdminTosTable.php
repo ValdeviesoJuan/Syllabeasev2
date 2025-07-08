@@ -16,6 +16,7 @@ class AdminTosTable extends Component
     public $filters = [
         'course_year_level' => null,
         'course_semester' => null,
+        'tos_term' => null,
         'tos_status' => null,
         'bg_school_year' => null,
         'department_id' => null,
@@ -46,6 +47,7 @@ class AdminTosTable extends Component
                         ->orWhere('bayanihan_groups.bg_school_year', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_title', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_code', 'like', '%' . $this->search . '%')
+                        ->orWhere('tos.tos_term', 'like', '%' . $this->search . '%')
                         ->orWhere('syllabi.status', 'like', '%' . $this->search . '%')
                         ->orWhere('departments.department_code', 'like', '%' . $this->search . '%')
                         ->orWhere('departments.department_name', 'like', '%' . $this->search . '%')
@@ -57,6 +59,9 @@ class AdminTosTable extends Component
                 })
                 ->when($this->filters['course_semester'], function ($query) {
                     $query->where('courses.course_semester', 'like', '%' . $this->filters['course_semester']);
+                })
+                ->when($this->filters['tos_term'], function ($query) {
+                    $query->where('tos.tos_term', 'like', '%' . $this->filters['tos_term']);
                 })
                 ->when($this->filters['tos_status'], function ($query) {
                     $query->where('tos.tos_status', 'like', '%' . $this->filters['tos_status']);

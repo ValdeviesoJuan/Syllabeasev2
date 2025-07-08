@@ -11,12 +11,10 @@ use App\Models\Roles;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanLeader;
 use App\Models\BayanihanMember;
-use App\Models\Chairperson;
 use App\Models\Course;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BTeam;
 use App\Models\College;
-use App\Models\Dean;
 use App\Models\Department;
 use App\Models\POE;
 use App\Models\ProgramOutcome;
@@ -234,11 +232,14 @@ class DeanSyllabusController extends Controller
         $bg_school_year = $submitted_syllabus->bg_school_year;
 
         // Notification for the Chair 
-        $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-        ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
-        ->where('departments.department_id', '=', $syllabus->department_id)
-        ->select('users.*', 'departments.*')
-        ->first();
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('departments.department_id', '=', $syllabus->department_id)
+            ->select('users.*', 'departments.*')
+            ->first();
 
         $chair->notify(new Chair_SyllabusDeanReturned($course_code, $bg_school_year, $syll_id));
 
@@ -281,11 +282,14 @@ class DeanSyllabusController extends Controller
         $bg_school_year = $submitted_syllabus->bg_school_year;
 
         // Notification for the Chair 
-        $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-        ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
-        ->where('departments.department_id', '=', $syllabus->department_id)
-        ->select('users.*', 'departments.*')
-        ->first();
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('departments.department_id', '=', $syllabus->department_id)
+            ->select('users.*', 'departments.*')
+            ->first();
         $chair->notify(new Chair_SyllabusDeanApproved($course_code, $bg_school_year, $syll_id));
 
         // Notification for Bayanihan Members 

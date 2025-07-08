@@ -7,6 +7,7 @@ use App\Models\BayanihanGroup;
 use App\Models\BayanihanLeader;
 use App\Models\BayanihanMember;
 use App\Models\User;
+use App\Models\Roles;
 use App\Models\Syllabus;
 use App\Models\College;
 use App\Models\POE;
@@ -403,17 +404,24 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('colleges.college_id', 'departments.department_id', 'courses.course_id', 'curricula.curr_id')
             ->first();
 
-        $dean = User::join('deans', 'deans.user_id', '=', 'users.id')
-            ->join('colleges', 'colleges.college_id', '=', 'deans.college_id')
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'College')
+            ->where('user_roles.role_id', $deanRoleId)
             ->where('colleges.college_id', '=', $info->college_id)
             ->select('users.firstname', 'users.lastname', 'users.*')
             ->first();
 
-        $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-            ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
+        $chairRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
             ->where('departments.department_id', '=', $info->department_id)
             ->select('users.*', 'departments.*')
             ->first();
+
         $syllabus = new Syllabus();
         $syllabus->bg_id = $request->input('bg_id');
         $syllabus->syll_class_schedule = $request->input('syll_class_schedule');
@@ -441,8 +449,6 @@ class BayanihanLeaderSyllabusController extends Controller
             $instructor->save();
         }
 
-
-
         return redirect()->route('bayanihanleader.home')->with('success', 'Syllabus created successfully.');
     }
     public function editSyllabus($syll_id)
@@ -463,6 +469,7 @@ class BayanihanLeaderSyllabusController extends Controller
         $users = User::all();
         $user = Auth::user(); 
         $notifications = $user->notifications;
+        
         return view('BayanihanLeader.Syllabus.syllEdit', compact('notifications', 'bGroups', 'instructors', 'syllabus', 'users', 'syll_id'));
     }
     public function updateSyllabus(Request $request, $syll_id)
@@ -514,17 +521,20 @@ class BayanihanLeaderSyllabusController extends Controller
         $syllabus->status = 'Pending';
         $syllabus->save();
 
-        $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-        ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
-        ->where('departments.department_id', '=', $syllabus->department_id)
-        ->select('users.*', 'departments.*')
-        ->first();
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('departments.department_id', '=', $syllabus->department_id)
+            ->select('users.*', 'departments.*')
+            ->first();
         
         $submitted_syllabus = Syllabus::where('syll_id', $syll_id)
-        ->join('bayanihan_groups', 'bayanihan_groups.bg_id', 'syllabi.bg_id')
-        ->join('courses', 'courses.course_id', 'bayanihan_groups.course_id')
-        ->select('bayanihan_groups.bg_school_year', 'courses.course_code')
-        ->first();
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', 'syllabi.bg_id')
+            ->join('courses', 'courses.course_id', 'bayanihan_groups.course_id')
+            ->select('bayanihan_groups.bg_school_year', 'courses.course_code')
+            ->first();
         $course_code = $submitted_syllabus->course_code;
         $bg_school_year= $submitted_syllabus->bg_school_year;
         $chair->notify(new Chair_SyllabusSubmittedtoChair($course_code, $bg_school_year, $syll_id));

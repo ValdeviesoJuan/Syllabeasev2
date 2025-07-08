@@ -283,10 +283,10 @@
                     </button>
                     <ul id="dropdown-example" class="hidden py-2 space-y-2">
                         <li>
-                            <a class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Outcomes</a>
+                            <a href="{{ route('admin.programOutcome') }}" class="{{request()->route()->getName() == 'admin.programOutcome' ? 'bg-blue4' : ''}}flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Outcomes</a>
                         </li>
                         <li>
-                            <a class="flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Educational Objectives</a>
+                            <a href="{{ route('admin.poe') }}" class="{{request()->route()->getName() == 'admin.poe' ? 'bg-blue4' : ''}}flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Educational Objectives</a>
                         </li>
                     </ul>
                 </li>
@@ -314,26 +314,6 @@
                     <a href="{{ route('admin.deadline') }}" class="{{request()->route()->getName() == 'admin.deadline' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" xmlns="http://www.w3.org/2000/svg" fill="#FFF" width="800px" height="800px" viewBox="0 0 24 24"><path d="M20,3a1,1,0,0,0,0-2H4A1,1,0,0,0,4,3H5.049c.146,1.836.743,5.75,3.194,8-2.585,2.511-3.111,7.734-3.216,10H4a1,1,0,0,0,0,2H20a1,1,0,0,0,0-2H18.973c-.105-2.264-.631-7.487-3.216-10,2.451-2.252,3.048-6.166,3.194-8Zm-6.42,7.126a1,1,0,0,0,.035,1.767c2.437,1.228,3.2,6.311,3.355,9.107H7.03c.151-2.8.918-7.879,3.355-9.107a1,1,0,0,0,.035-1.767C7.881,8.717,7.227,4.844,7.058,3h9.884C16.773,4.844,16.119,8.717,13.58,10.126ZM12,13s3,2.4,3,3.6V20H9V16.6C9,15.4,12,13,12,13Z"/></svg>
                         <span class="ms-3">Deadline</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" width="800px" height="800px" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <style>
-                                    .cls-1 {
-                                        fill: none;
-                                    }
-                                </style>
-                            </defs>
-                            <title>report</title>
-                            <rect x="15" y="20" width="2" height="4"></rect>
-                            <rect x="20" y="18" width="2" height="6"></rect>
-                            <rect x="10" y="14" width="2" height="10"></rect>
-                            <path d="M25,5H22V4a2,2,0,0,0-2-2H12a2,2,0,0,0-2,2V5H7A2,2,0,0,0,5,7V28a2,2,0,0,0,2,2H25a2,2,0,0,0,2-2V7A2,2,0,0,0,25,5ZM12,4h8V8H12ZM25,28H7V7h3v3H22V7h3Z"></path>
-                            <rect id="_Transparent_Rectangle_" data-name="<Transparent Rectangle>" class="cls-1" width="32" height="32"></rect>
-                        </svg>
-                        <span class="ms-3">Reports</span>
                     </a>
                 </li>
                 <li>

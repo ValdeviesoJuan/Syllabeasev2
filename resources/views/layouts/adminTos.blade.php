@@ -85,7 +85,7 @@
                                 </svg>
                             </div>
                             <div class="mt mx-1 text-[13px]">
-                                <a href="{{ route('home') }}">B Leader</a>
+                                <a href="{{ route('home') }}">Admin</a>
                             </div>
                         </button>
                     </div>
@@ -104,7 +104,7 @@
 
                     <div id="cm" class="md:px-2 ml-auto md:flex md:space-x-3 absolute md:relative top-full left-0 right-0">
                         <!-- history button -->
-                        <a href="{{ route('bayanihanleader.viewTosAudit', $tos_id) }}" method="post" class="hover:bg-blue3 rounded-full cursor-pointer w-8 h-8 mx-1 flex justify-center md:inline-flex items-center justify-center">
+                        <a href="{{ route('admin.viewTosAudit', $tos_id) }}" method="post" class="hover:bg-blue3 rounded-full cursor-pointer w-8 h-8 mx-1 flex justify-center md:inline-flex items-center justify-center">
                             <svg width="25px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 5.67541V3C3 2.44772 2.55228 2 2 2C1.44772 2 1 2.44772 1 3V7C1 8.10457 1.89543 9 3 9H7C7.55229 9 8 8.55229 8 8C8 7.44772 7.55229 7 7 7H4.52186C4.54218 6.97505 4.56157 6.94914 4.57995 6.92229C5.621 5.40094 7.11009 4.22911 8.85191 3.57803C10.9074 2.80968 13.173 2.8196 15.2217 3.6059C17.2704 4.3922 18.9608 5.90061 19.9745 7.8469C20.9881 9.79319 21.2549 12.043 20.7247 14.1724C20.1945 16.3018 18.9039 18.1638 17.0959 19.4075C15.288 20.6513 13.0876 21.1909 10.9094 20.9247C8.73119 20.6586 6.72551 19.605 5.27028 17.9625C4.03713 16.5706 3.27139 14.8374 3.06527 13.0055C3.00352 12.4566 2.55674 12.0079 2.00446 12.0084C1.45217 12.0088 0.995668 12.4579 1.04626 13.0078C1.25994 15.3309 2.2082 17.5356 3.76666 19.2946C5.54703 21.3041 8.00084 22.5931 10.6657 22.9188C13.3306 23.2444 16.0226 22.5842 18.2345 21.0626C20.4464 19.541 22.0254 17.263 22.6741 14.6578C23.3228 12.0526 22.9963 9.30013 21.7562 6.91897C20.5161 4.53782 18.448 2.69239 15.9415 1.73041C13.4351 0.768419 10.6633 0.756291 8.14853 1.69631C6.06062 2.47676 4.26953 3.86881 3 5.67541Z" fill="#ffffff" />
                                 <path d="M12 5C11.4477 5 11 5.44771 11 6V12.4667C11 12.4667 11 12.7274 11.1267 12.9235C11.2115 13.0898 11.3437 13.2344 11.5174 13.3346L16.1372 16.0019C16.6155 16.278 17.2271 16.1141 17.5032 15.6358C17.7793 15.1575 17.6155 14.546 17.1372 14.2698L13 11.8812V6C13 5.44772 12.5523 5 12 5Z" fill="#ffffff" />
@@ -135,13 +135,13 @@
                             @foreach($tosVersions as $tosVersion)
 
                             @php
-                            $currentRouteMatches = request()->route()->getName() === 'bayanihanleader.viewTos' &&
+                            $currentRouteMatches = request()->route()->getName() === 'admin.viewTos' &&
                             request()->route('tos_id') == $tosVersion->tos_id;
 
                             $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'bg-white';
                             @endphp
 
-                            <a href="{{ route('bayanihanleader.viewTos', $tosVersion->tos_id) }}" class="">
+                            <a href="{{ route('admin.viewTos', $tosVersion->tos_id) }}" class="">
                                 <div class="p-2 flex justify-between hover:bg-gray3 rounded {{ $bgColorClass }}">
                                     <div class="flex flex-row">
                                         Version {{ $tosVersion->tos_version }}
@@ -152,7 +152,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <form action="{{ route('bayanihanleader.destroyTos', $tosVersion->tos_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this tos version?');">
+                                        <form action="{{ route('admin.destroyTos', $tosVersion->tos_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this tos version?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class=""><svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -170,7 +170,7 @@
                         </div>
                         <!-- comment button -->
                         <a onclick="dropDownComment()" id="modeButton" class="hover:bg-blue2 bg-blue3 rounded-full cursor-pointer w-[180px] px-2 h- flex justify-center md:inline-flex items-center justify-center">
-                            @if(request()->route()->getName() == 'bayanihanleader.commentTos')
+                            @if(request()->route()->getName() == 'admin.commentTos')
                             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
@@ -182,7 +182,7 @@
                             @endif
 
                             <div id="modeText" class="mx-2 text-white text-sm">
-                                @if(request()->route()->getName() == 'bayanihanleader.viewTos')
+                                @if(request()->route()->getName() == 'admin.viewTos')
                                 View Mode
                                 @else
                                 Comment Mode
@@ -198,7 +198,7 @@
 
                         <!-- Comment Dropdown -->
                         <div id="dropDownComment" class="hidden mt-1 transition duration-300 md:absolute top-full right-[90px] md:w-[200px] bg-white bg-opacity-90 md:shadow-lg md:rounded">
-                            <a href="{{ route('bayanihanleader.viewTos', $tos_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow hover:border hover:border-gray3">
+                            <a href="{{ route('admin.viewTos', $tos_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow hover:border hover:border-gray3">
                                 <div class="mx-2 my-2">
                                     <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z" stroke="#454545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -209,7 +209,7 @@
                                     View Mode
                                 </div>
                             </a>
-                            <a href="{{ route('bayanihanleader.commentTos', $tos_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">
+                            <a href="{{ route('admin.commentTos', $tos_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">
                                 <div class="mx-2 my-2">
                                     <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#454545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -357,9 +357,6 @@
                                         <div>
                                             {{ Auth::user()->email }}
                                         </div>
-                                        <div class="text-blue underline underline-offset-4">
-                                            <a href="{{ route('profile.edit') }}">My Profile</a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -370,7 +367,7 @@
             </div>
         </div>
         <div class="fixed ml-5">
-            <a href="{{route('bayanihanleader.tos')}}">
+            <a href="{{route('admin.tos')}}">
                 <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 10L3.29289 10.7071L2.58579 10L3.29289 9.29289L4 10ZM21 18C21 18.5523 20.5523 19 20 19C19.4477 19 19 18.5523 19 18L21 18ZM8.29289 15.7071L3.29289 10.7071L4.70711 9.29289L9.70711 14.2929L8.29289 15.7071ZM3.29289 9.29289L8.29289 4.29289L9.70711 5.70711L4.70711 10.7071L3.29289 9.29289ZM4 9L14 9L14 11L4 11L4 9ZM21 16L21 18L19 18L19 16L21 16ZM14 9C17.866 9 21 12.134 21 16L19 16C19 13.2386 16.7614 11 14 11L14 9Z" fill="#ffffff" />
                 </svg>
@@ -389,11 +386,11 @@
 </body>
 <script>
     const routes = {
-        '/bayanihanleader/viewTos': {
+        '/admin/viewTos': {
             modeName: 'Editing',
             icon: 'edit'
         },
-        '/bayanihanleader/commentTos': {
+        '/admin/commentTos': {
             modeName: 'Commenting',
             icon: 'comment'
         }

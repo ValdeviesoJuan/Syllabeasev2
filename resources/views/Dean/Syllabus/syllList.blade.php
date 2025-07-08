@@ -39,7 +39,6 @@
             <livewire:dean-syllabus-table />         
         </div>
         <livewire:scripts />
-
 </body>
 
 </html>

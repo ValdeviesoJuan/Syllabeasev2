@@ -202,14 +202,14 @@ class BayanihanTeacherSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
-        // $dean = User::join('deans', 'deans.user_id', '=', 'users.id')
-        //     ->join('colleges', 'colleges.college_id', '=', 'deans.college_id')
+        // $dean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+        //     ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
         //     ->where('colleges.college_id', '=', $syll->college_id)
         //     ->select('users.*', 'colleges.*')
         //     ->first();
 
-        // $chair = User::join('chairpeople', 'chairpeople.user_id', '=', 'users.id')
-        //     ->join('departments', 'departments.department_id', '=', 'chairpeople.department_id')
+        // $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+        //     ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
         //     ->where('departments.department_id', '=', $syll->department_id)
         //     ->select('users.*', 'departments.*')
         //     ->first();

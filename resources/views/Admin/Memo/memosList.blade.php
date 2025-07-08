@@ -126,7 +126,7 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div {{--onclick="window.location.href='{{ route('dean.memo.show', $memo->id) }}'"--}}
+        <div onclick="window.location.href='{{ route('admin.showMemo', $memo->id) }}'"
             class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
 
             {{-- Title --}}

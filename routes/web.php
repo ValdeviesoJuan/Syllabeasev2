@@ -65,7 +65,9 @@ use App\Http\Controllers\Admin\AdminSyllabusController;
 use App\Http\Controllers\Admin\AdminTOSController;
 use App\Http\Controllers\Admin\AdminDeadlineController;
 use App\Http\Controllers\Admin\AdminMemoController;
-use App\Http\Controllers\Admin\AdminReportsController;
+use App\Http\Controllers\Admin\AdminPOController;
+use App\Http\Controllers\Admin\AdminPOEController;
+use App\Http\Controllers\Admin\AdminAuditController;
 use App\Http\Controllers\Auth\EditProfileController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderAuditController;
 
@@ -205,7 +207,6 @@ Route::group(['prefix' => 'bayanihanleader', 'middleware' => ['auth', 'isBL']], 
     Route::get('/syllabus/viewReviewForm/{syll_id}', [BayanihanLeaderSyllabusController::class, 'viewReviewForm'])->name('bayanihanleader.viewReviewForm');
 
     Route::get('/syllabus/replicate/{syll_id}', [BayanihanLeaderSyllabusController::class, 'replicateSyllabus'])->name('bayanihanleader.replicateSyllabus');
-
     Route::get('/syllabus/duplicate/{syll_id}/{target_bg_id}', [BayanihanLeaderSyllabusController::class, 'duplicateSyllabus'])->name('bayanihanleader.duplicateSyllabus');
 
     // Row Edit 
@@ -439,11 +440,24 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
 
     //Admin Syllabus Controller
     Route::get('admin/syllabus', [AdminSyllabusController::class, 'index'])->name('admin.syllabus');
+    Route::get('/admin/syllabus/{syll_id}', [AdminSyllabusController::class, 'viewSyllabus'])->name('admin.viewSyllabus');
+    Route::get('/admin/commentSyllabus/{syll_id}', [AdminSyllabusController::class, 'commentSyllabus'])->name('admin.commentSyllabus');
+    Route::get('admin/destroySyllabus/{syll_id}', [AdminSyllabusController::class, 'destroySyllabus'])->name('admin.destroySyllabus');
+    Route::get('/admin/viewReviewForm/{syll_id}', [AdminSyllabusController::class, 'viewReviewForm'])->name('admin.viewReviewForm');
+
+    //Admin Syllabus Audit Trail
+    Route::get('/syllabus/auditTrail/{syll_id}', [AdminAuditController::class, 'viewSyllabusAudit'])->name('admin.viewSyllabusAudit');
 
     //Admin TOS Controller
     Route::get('admin/tos', [AdminTOSController::class, 'index'])->name('admin.tos');
+    Route::get('/admin/viewTos/{tos_id}', [AdminTOSController::class, 'viewTos'])->name('admin.viewTos');
+    Route::get('/admin/commentTos/{tos_id}', [AdminTOSController::class, 'commentTos'])->name('admin.commentTos');
+    Route::get('/admin/destroyTos/{tos_id}', [AdminTOSController::class, 'destroyTos'])->name('admin.destroyTos');
 
-    //Admin: Reports, Memo & Deadline Controller
+    //Admin TOS Audit Trail
+    Route::get('/tos/auditTrail/{tos_id}', [AdminAuditController::class, 'viewTosAudit'])->name('admin.viewTosAudit');
+
+    //Admin: Memo & Deadline Controller
     Route::get('admin/deadline', [AdminDeadlineController::class, 'deadline'])->name('admin.deadline');
     Route::get('/createdeadline', [AdminDeadlineController::class, 'createDeadline'])->name('admin.createDeadline');
     // Route::post('/storeDeadline', [AdminDeadlineController::class, 'storeDeadline'])->name('admin.storeDeadline');
@@ -452,14 +466,19 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     // Route::delete('/destroyDeadline/{dl_id}', [AdminDeadlineController::class, 'destroyDeadline'])->name('admin.destroyDeadline');
 
     Route::get('admin/memos', [AdminMemoController::class, 'index'])->name('admin.memo');
-    // Route::get('/dean/memo/{id}/download/{filename}', [AdminMemoController::class, 'download'])->name('dean.memo.download');
+    Route::get('/admin/memo/{id}', [AdminMemoController::class, 'show'])->name('dean.showMemo');
+    Route::get('/admin/memo/{id}/download/{filename}', [AdminMemoController::class, 'download'])->name('admin.downloadMemo');
     // Route::post('/dean/memo/store', [AdminMemoController::class, 'store'])->name('dean.memo.store');
     // Route::get('/dean/memos/{id}/edit', [AdminMemoController::class, 'edit'])->name('dean.memo.edit');
     // Route::put('/dean/memos/{id}', [AdminMemoController::class, 'update'])->name('dean.memo.update');
     // Route::delete('/dean/memos/{id}', [AdminMemoController::class, 'destroy'])->name('dean.memo.destroy');
-    // Route::get('/dean/memo/{id}', [AdminMemoController::class, 'show'])->name('dean.showMemo');
 
-    
+    //Admin: PO Controller
+    Route::get('/admin/programOutcome', [AdminPOController::class, 'index'])->name('admin.programOutcome');
+
+    //Admin: POE Controller
+    Route::get('/admin/poe', [AdminPOEController::class, 'index'])->name('admin.poe');
+
     //Admin: User Management Controls
     Route::get('admin/home', [ManageUser::class, 'index'])->name('admin.home');
     Route::resource('admin', ManageUser::class);

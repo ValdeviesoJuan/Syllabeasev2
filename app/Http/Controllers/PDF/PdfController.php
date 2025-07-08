@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PDF;
 
 use App\Http\Controllers\Controller;
+use App\Models\Roles;
 use App\Models\BayanihanLeader;
 use App\Models\bayanihanMember;
 use App\Models\POE;
@@ -75,9 +76,12 @@ class PDFController extends Controller
             ->select('tos.*')
             ->get();
 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('chairpeople', 'syllabi.department_id', '=', 'chairpeople.department_id')
-            ->join('users', 'users.id', '=', 'chairpeople.user_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
             ->first();
             
         return view('PDF.tosPDF', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
@@ -212,8 +216,8 @@ class PDFController extends Controller
     //         ->get();
 
     //     $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-    //         ->join('chairpeople', 'syllabi.department_id', '=', 'chairpeople.department_id')
-    //         ->join('users', 'users.id', '=', 'chairpeople.user_id')
+    //         ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+    //         ->join('users', 'users.id', '=', 'user_roles.user_id')
     //         ->first();
 
     //     $data = [
@@ -359,9 +363,12 @@ class PDFController extends Controller
             ->select('tos.*')
             ->get();
 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('chairpeople', 'syllabi.department_id', '=', 'chairpeople.department_id')
-            ->join('users', 'users.id', '=', 'chairpeople.user_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
             ->first();
 
         $data = [
