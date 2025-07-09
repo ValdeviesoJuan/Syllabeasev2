@@ -62,23 +62,25 @@ background-size: contain;
 
                     <p class="font-semibold text-xl text-center mb-4">Cognitive Level</p>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="">
-                            <p class="">Knowledge</p>
-                            <input type="number" name="col_1_per" id="col_1_per" class="percentage-input border w-max border-[#a8a29e] rounded w-[400px] p-2"  required>
+                        <div>
+                            <p>Knowledge (Max 50%)</p>
+                            <input type="number" name="col_1_per" id="col_1_per" class="cognitive-input border border-[#a8a29e] rounded w-[400px] p-2" min="0" max="50" value="25" required>
                         </div>
-                        <div class="">
+                        <div>
                             <p>Comprehension</p>
-                            <input type="number" name="col_2_per" id="col_2_per" class="percentage-input border w-max border-[#a8a29e] rounded w-[400px] p-2" required>
+                            <input type="number" name="col_2_per" id="col_2_per" class="cognitive-input border border-[#a8a29e] rounded w-[400px] p-2" min="0" value="25" >
                         </div>
-                        <div class="">
-                            <p>Application/ Analysis</p>
-                            <input type="number" name="col_3_per" id="col_3_per" class="percentage-input border w-max border-[#a8a29e] rounded w-[400px] p-2" required>
+                        <div>
+                            <p>Application / Analysis</p>
+                            <input type="number" name="col_3_per" id="col_3_per" class="cognitive-input border border-[#a8a29e] rounded w-[400px] p-2" min="0" value="25" >
                         </div>
-                        <div class="">
-                            <p>Synthesis/ Evaluation</p>
-                            <input type="number" name="col_4_per" id="col_4_per" class="percentage-input border w-max border-[#a8a29e] rounded w-[400px] p-2" required>
+                        <div>
+                            <p>Synthesis / Evaluation</p>
+                            <input type="number" name="col_4_per" id="col_4_per" class="cognitive-input border border-[#a8a29e] rounded w-[400px] p-2" min="0" value="25" >
                         </div>
                     </div>
+
+
                     <div id="feedback" class="text-red-500 font-bold mt-8"></div>
                     <div id="currentTotal" class="font-bold mt-2"></div>
                     <div class="text-center">
@@ -91,30 +93,62 @@ background-size: contain;
 </body>
 
 <script>
-                const percentageInputs = document.querySelectorAll('.percentage-input');
-                const feedbackDiv = document.getElementById('feedback');
-                const currentTotalDiv = document.getElementById('currentTotal');
+    const inputs = {
+        knowledge: document.getElementById('col_1_per'),
+        comprehension: document.getElementById('col_2_per'),
+        application: document.getElementById('col_3_per'),
+        synthesis: document.getElementById('col_4_per')
+    };
 
-                percentageInputs.forEach(input => {
-                    input.addEventListener('input', updateTotal);
-                });
+    const feedbackDiv = document.getElementById('feedback');
+    const currentTotalDiv = document.getElementById('currentTotal');
 
-                function updateTotal() {
-                    let total = 0;
-
-                    percentageInputs.forEach(input => {
-                        total += parseInt(input.value) || 0;
-                    });
-
-                    if (total !== 100) {
-                        feedbackDiv.textContent = 'Total should be 100%';
-                        feedbackDiv.classList.add('text-red-500');
-                        currentTotalDiv.textContent = `Current Total: ${total}%`;
-                    } else {
-                        feedbackDiv.textContent = ''; 
-                        feedbackDiv.classList.remove('text-red-500');
-                        currentTotalDiv.textContent = ``;
-                    }
+    Object.values(inputs).forEach(input => {
+        input.addEventListener('input', () => {
+            // Cap knowledge at 50%
+            if (input.id === 'col_1_per') {
+                const val = parseFloat(input.value) || 0;
+                if (val > 50) {
+                    alert('Knowledge should not exceed 50% as per CITL policy.');
+                    input.value = 50;
                 }
-            </script>
+            }
+
+            // Calculate total of all filled fields
+            let total = 0;
+            Object.values(inputs).forEach(inp => {
+                total += parseFloat(inp.value) || 0;
+            });
+
+            // Show total
+            currentTotalDiv.textContent = `Current Total: ${total.toFixed(2)}%`;
+
+            // Show warning if not 100%
+            if (total !== 100) {
+                feedbackDiv.textContent = 'Total should be 100%';
+                feedbackDiv.classList.add('text-red-500');
+            } else {
+                feedbackDiv.textContent = '';
+                feedbackDiv.classList.remove('text-red-500');
+            }
+        });
+    });
+     const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(e) {
+        let total = 0;
+        Object.values(inputs).forEach(inp => {
+            total += parseFloat(inp.value) || 0;
+        });
+
+        if (total !== 100) {
+            e.preventDefault();
+            feedbackDiv.textContent = 'Cannot create TOS. Total must be exactly 100%.';
+            feedbackDiv.classList.add('text-red-500');
+        }
+    });
+</script>
+
+
+
 </html>
