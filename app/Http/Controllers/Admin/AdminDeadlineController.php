@@ -5,121 +5,128 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Deadline;
+use App\Models\User;
 use App\Models\Roles;
 use App\Models\UserRole;
+use App\Models\College;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Notifications\DeadlineSetNotification;
 
 class AdminDeadlineController extends Controller
 {
     public function deadline()
     {
-        $deadlines = Deadline::all();
+        $deadlines = Deadline::join('colleges', 'colleges.college_id', '=', 'deadlines.college_id')
+            ->select('deadlines.*', 'colleges.*')
+            ->get();
 
         return view('admin.deadline.dllist', compact('deadlines'));
     }
     public function createDeadline()
     {
-        return view('admin.deadline.dlcreate');
+        $colleges = College::where('colleges.college_status','=','Active')->get();
+
+        return view('admin.deadline.dlcreate', ['colleges' => $colleges]);
     }
-    // public function storeDeadline(Request $request)
-    // {
-    //     $request->validate([
-    //         'dl_syll' => 'required',
-    //         'dl_tos_midterm' => 'nullable',
-    //         'dl_tos_final' => 'nullable',
-    //         'dl_school_year' => 'required',
-    //         'dl_semester' => 'required',
-    //     ]);
+    public function storeDeadline(Request $request)
+    {
+         try {
+            $user_id = Auth::id();
 
-    //     $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+            $validated = $request->validate([
+                'dl_syll'         => 'required|date',
+                'dl_tos_midterm'  => 'required|date',
+                'dl_tos_final'    => 'required|date',
+                'dl_school_year'  => 'required|string',
+                'dl_semester'     => 'required|string',
+                'college_id'      => 'required|exists:colleges,college_id',
+            ]);
 
-    //     $dean = UserRole::where('user_id', $user_id)
-    //         ->where('entity_type', '=', 'College')
-    //         ->where('role_id', '=', $deanRoleId)
-    //         ->firstOrFail();
+            // ✅ Check for existing deadline
+            $existingDeadline = Deadline::where([
+                'dl_school_year' => $validated['dl_school_year'],
+                'dl_semester'    => $validated['dl_semester'],
+                'college_id'     => $validated['college_id'],
+            ])->first();
 
-    //     $college_id = $dean->entity_id;
+            if ($existingDeadline) {
+                return redirect()
+                    ->route('admin.createDeadline')
+                    ->withInput()
+                    ->with('error', 'Deadline for that school year and semester already exists.');
+            }
 
-    //     $request->merge(['user_id' => $user_id]);
-    //     $request->merge(['college_id' => $college_id]);
+            // ✅ Save new deadline
+            $validated['user_id'] = $user_id;
+            $deadline = Deadline::create($validated);
 
-    //     $existingDeadline = Deadline::where([
-    //         'dl_school_year' => $request->input('dl_school_year'),
-    //         'college_id' => $college_id,
-    //         'dl_semester' => $request->input('dl_semester'),
-    //     ])->first();
+            // ✅ Notify Bayanihan Leaders (role_id = 4)
+            $bayanihanLeaders = User::whereHas('userRoles', function ($query) {
+                $query->where('role_id', 4);
+            })->get();
 
-    //     if ($existingDeadline) {
-    //         return redirect()->route('dean.createDeadline')->with('error', 'Deadline for that school year and semester already exist.');
-    //     }
+            foreach ($bayanihanLeaders as $bl) {
+                $bl->notify(new DeadlineSetNotification($deadline));
+            }
 
-    //     $deadline = Deadline::create($request->all());
+            return redirect()
+                ->route('admin.deadline')
+                ->with('success', 'Deadline set successfully.');
 
-    //     // 🔔 Notify Bayanihan Leaders (role_id = 4)
-    //     $bayanihanLeaders = User::whereHas('roles', function($q) {
-    //         $q->where('user_roles.role_id', 4);
-    //     })->get();
+        } catch (\Exception $e) {
+            // Optional: log the error
+            // \Log::error('Failed to store deadline: ' . $e->getMessage());
 
-    //     foreach ($bayanihanLeaders as $bl) {
-    //         $bl->notify(new DeadlineSetNotification($deadline));
-    //     }
-
-    //     return redirect()->route('dean.deadline')->with('success', 'Deadline set successfully.');
-    // }
-    // public function editDeadline(string $dl_id)
-    // {
-    //     if ($dl_id) {
-    //         $deadline = Deadline::where('deadlines.dl_id', $dl_id)->first();
-    //     } else {
-    //         $deadline = null;
-    //     }
-    //     $user = Auth::user(); 
-    //     $notifications = $user->notifications;
-    //     return view('Dean.Deadline.dlEdit', compact('notifications','deadline'));
-    // }
-    // public function updateDeadline(Request $request, $id)
-    // {   
-    //     $user_id = Auth::user()->id;
+            return redirect()
+                ->route('admin.createDeadline')
+                ->withInput()
+                ->with('error', 'An unexpected error occurred: ' . $e->getMessage());
+        }
+    }
+    public function editDeadline(string $dl_id)
+    {
+        if ($dl_id) {
+            $deadline = Deadline::where('deadlines.dl_id', $dl_id)->first();
+        } else {
+            $deadline = null;
+        }
         
-    //     $request->validate([
-    //         'dl_syll' => 'required',
-    //         'dl_tos_midterm' => 'nullable',
-    //         'dl_tos_final' => 'nullable',
-    //         'dl_school_year' => 'required',
-    //         'dl_semester' => 'required',
-    //     ]);
+        $colleges = College::where('colleges.college_status','=','Active')->get();
 
-    //     $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        return view('admin.deadline.dledit', compact('deadline', 'colleges'));
+    }
+    public function updateDeadline(Request $request, $id)
+    {   
+        $user_id = Auth::user()->id;
+        
+        $request->validate([
+            'dl_syll' => 'required',
+            'dl_tos_midterm' => 'nullable',
+            'dl_tos_final' => 'nullable',
+            'dl_school_year' => 'required',
+            'dl_semester' => 'required',
+            'college_id' => 'required',
+        ]);
 
-    //     $dean = UserRole::where('user_id', $user_id)
-    //         ->where('entity_type', '=', 'College')
-    //         ->where('role_id', '=', $deanRoleId)
-    //         ->firstOrFail();
+        $request->merge(['user_id' => $user_id]);
 
-    //     $college_id = $dean->entity_id;
+        $deadline = Deadline::findOrFail($id);
+        $deadline->update($request->all());
 
-    //     $request->merge(['user_id' => $user_id]);
-    //     $request->merge(['college_id' => $college_id]);
+        return redirect()->route('admin.deadline')->with('success', 'Deadline updated successfully.');
+    }
+    public function destroyDeadline($id)
+    {
+        $deadline = Deadline::findOrFail($id);
 
-    //     $deadline = Deadline::findOrFail($id);
-    //     $deadline->update($request->all());
+        DB::table('notifications')
+            ->where('type', \App\Notifications\DeadlineSetNotification::class)
+            ->whereJsonContains('data->deadline_id', $deadline->dl_id)
+            ->delete();
 
-    //     return redirect()->route('dean.deadline')->with('success', 'Deadline updated successfully.');
-    // }
-    // public function destroyDeadline($id)
-    // {
-    //     // Find the deadline first
-    //     $deadline = Deadline::findOrFail($id);
+        $deadline->delete();
 
-    //     // Delete related notifications
-    //     DB::table('notifications')
-    //         ->where('type', \App\Notifications\DeadlineSetNotification::class)
-    //         ->whereJsonContains('data->deadline_id', $deadline->dl_id)
-    //         ->delete();
-
-    //     // Delete the deadline itself
-    //     $deadline->delete();
-
-    //     return redirect()->route('dean.deadline')->with('success', 'Deadline and related notifications deleted successfully.');
-    // }
+        return redirect()->route('admin.deadline')->with('success', 'Deadline and related notifications deleted successfully.');
+    }
 }

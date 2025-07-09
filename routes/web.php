@@ -460,10 +460,10 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     //Admin: Memo & Deadline Controller
     Route::get('admin/deadline', [AdminDeadlineController::class, 'deadline'])->name('admin.deadline');
     Route::get('/createdeadline', [AdminDeadlineController::class, 'createDeadline'])->name('admin.createDeadline');
-    // Route::post('/storeDeadline', [AdminDeadlineController::class, 'storeDeadline'])->name('admin.storeDeadline');
-    // Route::get('/editDeadline/{dl_id}', [AdminDeadlineController::class, 'editDeadline'])->name('admin.editDeadline');
-    // Route::put('updateDeadline/{dl_id}', [AdminDeadlineController::class, 'updateDeadline'])->name('admin.updateDeadline');
-    // Route::delete('/destroyDeadline/{dl_id}', [AdminDeadlineController::class, 'destroyDeadline'])->name('admin.destroyDeadline');
+    Route::post('/storeDeadline', [AdminDeadlineController::class, 'storeDeadline'])->name('admin.storeDeadline');
+    Route::get('/editDeadline/{dl_id}', [AdminDeadlineController::class, 'editDeadline'])->name('admin.editDeadline');
+    Route::put('updateDeadline/{dl_id}', [AdminDeadlineController::class, 'updateDeadline'])->name('admin.updateDeadline');
+    Route::delete('/destroyDeadline/{dl_id}', [AdminDeadlineController::class, 'destroyDeadline'])->name('admin.destroyDeadline');
 
     Route::get('admin/memos', [AdminMemoController::class, 'index'])->name('admin.memo');
     Route::get('/admin/memo/{id}', [AdminMemoController::class, 'show'])->name('dean.showMemo');
@@ -475,9 +475,21 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
 
     //Admin: PO Controller
     Route::get('/admin/programOutcome', [AdminPOController::class, 'index'])->name('admin.programOutcome');
+    Route::get('/programOutcome/createPo', [AdminPOController::class, 'createPo'])->name('admin.createPo');
+    Route::post('/programOutcome/storePo', [AdminPOController::class, 'storePo'])->name('admin.storePo');
+    Route::get('/programOutcome/editPo/{department_id}', [AdminPOController::class, 'editPo'])->name('admin.editPo');
+    Route::put('/programOutcome/updatePo/{po_id}', [AdminPOController::class, 'updatePo'])->name('admin.updatePo');
+    Route::delete('/programOutcome/destroyPo/{po_id}', [AdminPOController::class, 'destroyPo'])->name('admin.destroyPo');
 
     //Admin: POE Controller
     Route::get('/admin/poe', [AdminPOEController::class, 'index'])->name('admin.poe');
+    // Route::get('/createPoe', [AdminPOEController::class, 'createPoe'])->name('admin.createPoe');
+    // Route::post('/poe/storePoe', [AdminPOEController::class, 'storePoe'])->name('admin.storePoe');
+    // Route::get('/poe/editPoe/{department_id}', [AdminPOEController::class, 'editPoe'])->name('admin.editPoe');
+    // Route::put('/poe/updatePoe/{poe_id}', [AdminPOEController::class, 'updatePoe'])->name('admin.updatePoe');
+    // Route::delete('/poe/destroyPoe/{poe_id}', [AdminPOEController::class, 'destroyPoe'])->name('admin.destroyPoe');
+
+    
 
     //Admin: User Management Controls
     Route::get('admin/home', [ManageUser::class, 'index'])->name('admin.home');

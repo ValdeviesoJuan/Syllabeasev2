@@ -55,33 +55,35 @@
 
                 <div class="grid gap-[8%] md:grid-cols-4">
                     @foreach($deadlines as $dl)
-                    <div class="role_form m-4 p-4 w-[350px] bg-gradient-to-r from-[#FFF] to-[#dbeafe] h-[300px] rounded-xl transform hover:scale-105 transition duration-500 shadow-lg">
-                        <div class="text-center font-bold text-2xl mb-4 text-sePrimary">Deadline</div>
-                        <div class="text-blue"><label class="text-left text-black" for="">School Year: </label>
-                            {{$dl->dl_school_year}}</div>
-                        <div class="text-blue"><label class="text-left text-black" for="">Semester: </label>
-                            {{$dl->dl_semester}}</div>
-                        <div class="text-blue"><label class="text-left text-black" for="">Syllabus Deadline: </label>
-                            {{$dl->dl_syll}}</div>
-                        <div class="text-blue"><label class="text-left text-black" for="">TOS Midterm Deadline: </label>
-                            {{$dl->dl_tos_midterm}}</div>
-                        <div class="text-blue"><label class="text-left text-black" for="">TOS Final Deadline: </label>
-                            {{$dl->dl_tos_final}}</div>
-                        <div class="text-center">
-                            <form action="" method="GET">
-                                @csrf
-                            <button type="submit" class="btn btn-danger px-14 text-white bg-blue font-semibold hover:bg-[#2563eb] shadow-lg p-1 rounded-lg mt-6">Edit</button>
-                            </form>
-                            <form action="" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger px-12 mt-4 text-[#6b7280] bg-white font-semibold hover:text-black shadow-lg p-1 rounded-lg">Delete</button>
-                            </form>
+                        <div class="role_form m-4 p-4 w-[350px] bg-gradient-to-r from-[#FFF] to-[#dbeafe] h-[330px] rounded-xl transform hover:scale-105 transition duration-500 shadow-lg">
+                            <div class="text-center font-bold text-2xl mb-4 text-sePrimary">Deadline</div>
+                            <div class="text-blue"><label class="text-left text-black" for="">College Assigned: </label>
+                                {{$dl->college_code}}</div>
+                            <div class="text-blue"><label class="text-left text-black" for="">School Year: </label>
+                                {{$dl->dl_school_year}}</div>
+                            <div class="text-blue"><label class="text-left text-black" for="">Semester: </label>
+                                {{$dl->dl_semester}}</div>
+                            <div class="text-blue"><label class="text-left text-black" for="">Syllabus Deadline: </label>
+                                {{$dl->dl_syll}}</div>
+                            <div class="text-blue"><label class="text-left text-black" for="">TOS Midterm Deadline: </label>
+                                {{$dl->dl_tos_midterm}}</div>
+                            <div class="text-blue"><label class="text-left text-black" for="">TOS Final Deadline: </label>
+                                {{$dl->dl_tos_final}}</div>
+                            <div class="text-center">
+                                <form action="{{ route('admin.editDeadline', $dl->dl_id) }}" method="GET">
+                                    @csrf
+                                <button type="submit" class="btn btn-danger px-14 text-white bg-blue font-semibold hover:bg-[#2563eb] shadow-lg p-1 rounded-lg mt-6">Edit</button>
+                                </form>
+                                <form action="{{ route('admin.destroyDeadline', $dl->dl_id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger px-12 mt-4 text-[#6b7280] bg-white font-semibold hover:text-black shadow-lg p-1 rounded-lg">Delete</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
-                    
+                    @endforeach
                 </div>
+                
             </div>
         </div>
     </div>

@@ -54,6 +54,17 @@ class User extends Authenticatable  implements Auditable
 
     public function roles()
     {
-        return $this->belongsToMany(\App\Models\UserRole::class, 'user_roles', 'user_id', 'role_id');
+        return $this->hasManyThrough(
+            \App\Models\Roles::class,        // Final model you want
+            \App\Models\UserRole::class,     // Intermediate model
+            'user_id',                       // Foreign key on UserRole
+            'role_id',                       // Foreign key on Role
+            'id',                            // Local key on User
+            'role_id'                        // Local key on UserRole
+        );
+    }
+    public function userRoles()
+    {
+        return $this->hasMany(\App\Models\UserRole::class, 'user_id');
     }
 }

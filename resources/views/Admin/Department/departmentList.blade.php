@@ -58,7 +58,6 @@
         </div>
     </div>
 
-
     <div>
         <div class="p-4 shadow-lg bg-white border-dashed rounded-lg dark:border-gray-700 mt-14">
             <div class="" id="whole">
@@ -66,21 +65,20 @@
                     <h2 class="text-4xl mb-4 flex text-left text-black font-semibold leadi ml-2 ">Chairperson</h2>
                 </div>
                 <a href="{{ route('admin.createChair') }}"
-   class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
-   style="background: #d7ecf9;"
-   onmouseover="this.style.background='#c3dff3';"
-   onmouseout="this.style.background='#d7ecf9';">
+                    class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                    style="background: #d7ecf9;"
+                    onmouseover="this.style.background='#c3dff3';"
+                    onmouseout="this.style.background='#d7ecf9';">
 
-    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-         xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-    </svg>
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                    </svg>
 
-    Assign Chairperson
-</a>
-
+                    Assign Chairperson
+                </a>
                 <livewire:admin-chairperson-table />
             </div>
         </div>

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use App\Models\Roles;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,6 +14,8 @@ class AdminUserTable extends Component
     public $roles_filters;
     public function render()
     {
+        $roles = Roles::all();
+
         $users = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
         ->where(function($query){
             $query->where('users.id', 'like', '%' . $this->search . '%')
@@ -29,10 +32,11 @@ class AdminUserTable extends Component
         ->when($this->roles_filters, function ($query) {
             $query->where('user_roles.role_id', 'like', '%' .$this->roles_filters);
         })
-        ->distinct()
+            ->distinct()
             ->select('users.*')
             ->paginate(10);
-        return view('livewire.admin-user-table', ['users' => $users]);
+            
+        return view('livewire.admin-user-table', ['users' => $users, 'roles' => $roles]);
     }
     public function applyFilters()
     {

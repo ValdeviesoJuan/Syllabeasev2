@@ -9,7 +9,6 @@ use Livewire\WithPagination;
 
 class AdminDepartmentTable extends Component
 {
-
     use WithPagination;
     public $search = '';
 
