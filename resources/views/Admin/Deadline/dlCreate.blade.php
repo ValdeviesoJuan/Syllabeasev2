@@ -27,7 +27,7 @@
     <div class="flex flex-col justify-center mb-20">
         <div class="relative mt-[100px] flex flex-col bg-gradient-to-r from-[#FFF] to-[#dbeafe] p-12 px-8 md:space-y-0 rounded-xl shadow-lg p-3 mx-auto border border-white bg-white">
             <img class="edit_user_img text-center mt-6 w-[400px] m-auto mb-2" src="/assets/Set Syllabus and TOS Deadline.png" alt="SyllabEase Logo">
-            <form class="" action="{{-- route('admin.storeDeadline') --}}" method="POST">
+            <form class="" action="{{ route('admin.storeDeadline') }}" method="POST">
                 @csrf
                 <div class="m-4 ">
                     <div>
@@ -49,9 +49,9 @@
                 </div>
                 <div class="m-4 ">
                     <div>
-                        <label class="" for="dl_school_year">School Year<span class="text-red">*</span></label>
+                        <label class="" for="school_year">School Year<span class="text-red">*</span></label>
                     </div>
-                    <select name="dl_school_year" id="dl_school_year" class="select1 w-full px-1 py-[6px] border rounded border-[#a3a3a3]" required>
+                    <select name="dl_school_year" id="school_year" class="select1 w-full px-1 py-[6px] border rounded border-[#a3a3a3]" required>
                         <option value="2023-2024">2023-2024</option>
                         <option value="2024-2025">2024-2025</option>
                         <option value="2025-2026">2025-2026</option>
@@ -63,13 +63,22 @@
                 </div>
                 <div class="m-4 ">
                     <div>
-                        <label class="" for="dl_semester">Semester<span class="text-red">*</span></label>
+                        <label class="" for="semester">Semester<span class="text-red">*</span></label>
                     </div>
-                    <select name="dl_semester" id="bg_school_year" class="select1 w-full px-1 py-[6px] border rounded border-[#a3a3a3]" required>
+                    <select name="dl_semester" id="semester" class="select1 w-full px-1 py-[6px] border rounded border-[#a3a3a3]" required>
                         <option value="1st Semester">1st Semester</option>
                         <option value="2nd Semester">2nd Semester</option>
                         <option value="Mid Year">Mid Year</option>
-
+                    </select>
+                </div>
+                <div class="m-4 ">
+                    <div>
+                        <label class="" for="college">College Assigned<span class="text-red">*</span></label>
+                    </div>
+                    <select name="college_id" id="college" class="select1 w-full px-1 py-[6px] border rounded border-[#a3a3a3]" required>
+                        @foreach ($colleges as $college)
+                            <option value="{{$college->college_id}}">{{ $college->college_code }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="text-center">

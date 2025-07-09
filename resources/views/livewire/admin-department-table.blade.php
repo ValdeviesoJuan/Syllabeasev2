@@ -26,7 +26,7 @@
 
             <tbody class="divide-y divide-[#e5e7eb] bg-white">
                 @foreach ($departments as $department)
-                <tr  class="hover:bg-gray4 dark:hover:bg-gray-600">
+                <tr class="hover:bg-gray4 dark:hover:bg-gray-600">
                     <td class="px-6 py-4 font-bold">
                         <div class="flex items-center space-x-3">
                             <div>
@@ -54,53 +54,40 @@
                     <td class="px-6 py-4">
                         @if($department->department_status === 'Active')
                             <span class="dot" style="color: {{ $department->department_status === 'Active' ? 'rgb(8, 230, 8)' : 'rgb(255, 35, 35)' }}; font-size: 25px;">&bull;</span>                                        
-                            @else
-                    </div>
-                                            <span class="dot" style="color: rgb(255, 35, 35); font-size: 25px;">&bull;</span>
-                                        @endif
-                                        {{ $department->department_status }}
-                                    </td>
-{{-- 
-                                    <td>
-                                        @if($department->department_status === 'active')
-                                            <span style="color: green; font-size: 14px;">&bull;</span>
-                                        @else
-                                            <span style="color: red; font-size: 14px;">&bull;</span>
-                                        @endif
-                                        {{ $department->department_status }}
-                                    </td> --}}
-                                <div class="m-auto mt-2">
-                                    <td class="text-center">
-                                        <form action="{{ route('admin.editDepartment', $department->department_id) }}" method="GET">
-                                            @csrf
-                                            <button type="submit" class="text-green font-medium hover:scale-105 mt-5">
-                                                Edit
-                                            </button>
-                                        </form>
-                                    </td>
+                        @else
+                            <span class="dot" style="color: rgb(255, 35, 35); font-size: 25px;">&bull;</span>
+                        @endif
+                            {{ $department->department_status }}
+                    </td>
+                    <div class="m-auto mt-2">
+                        <td class="text-center">
+                            <form action="{{ route('admin.editDepartment', $department->department_id) }}" method="GET">
+                                @csrf
+                                <button type="submit" class="text-green font-medium hover:scale-105 mt-5">
+                                    Edit 
+                                </button>
+                            </form>
+                        </td>
 
-                                    <td>
-                                        <form action="{{ route('admin.destroyDepartment',$department->department_id) }}" method="Post">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red font-medium hover:scale-105 mt-5"> 
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
-                                </div>
-                                </tr>
-                                @endforeach
-                            </tbody>
-             
-            </table>
-                <div class="mt-5 mb-6">
-                        <div class="flex justify-center">
-                            <span class="text-gray-600 text-sm">Page {{ $departments->currentPage() }} of {{ $departments->lastPage() }}</span>
-                        </div>
-                            {{ $departments->links() }} 
-                        </div>
-          
+                        <td>
+                            <form action="{{ route('admin.destroyDepartment',$department->department_id) }}" method="Post">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red font-medium hover:scale-105 mt-5"> 
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </div>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <div class="mt-5 mb-6">
+            <div class="flex justify-center">
+                <span class="text-gray-600 text-sm">Page {{ $departments->currentPage() }} of {{ $departments->lastPage() }}</span>
+            </div>
+            {{ $departments->links() }} 
         </div>
     </div>
 </div>

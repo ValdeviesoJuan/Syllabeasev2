@@ -10,11 +10,9 @@
         <div class="float-right -mt-[15px]">
             <select wire:model="roles_filters" class="form-control border w-80 border-sePrimary rounded p-1 bg-gray-200 px-2" name="roleFilter" id="roleFilter" placeholder="Year level">
                 <option value="">Roles</option>
-                <option value="1">Admins</option>
-                <option value="2">Deans</option>
-                <option value="3">Chairperson</option>
-                <option value="4">Bayanihan Leaders</option>
-                <option value="5">Bayanihan Teachers</option>
+                @foreach ($roles as $role)
+                    <option value="{{$role->role_id}}">{{$role->role_name}}</option>
+                @endforeach
             </select>
             <button wire:click="applyFilters" class="bg-blue text-white p-1 mt-3 px-2 hover:drop-shadow-md rounded font-semibold">Apply Filters</button>
         </div>
@@ -67,43 +65,33 @@
                             <p>{{ $user->email }}</p>
                         </td>
                         <td class="flex justify-center">
-                            <!-- <form action="{{ route('admin.edit', $user->id) }}" method="GET">
-                                @csrf
-                                <button type="submit" class="btn btn-primary text-black hover:text-white text-sm px-2 py-1 hover:bg-blue rounded-lg">Edit Details</button>
-                            </form>
-
-                            <form action="{{ route('admin.editRoles', $user->id) }}" method="GET">
-                                @csrf
-                                <button type="submit" class="btn btn-primary text-black px-2 hover:text-white text-sm py-1 hover:bg-blue rounded-lg">Edit Roles</button>
-                            </form> -->
-
-                        <div class="m-auto flex inline space-x-4">
-                            <button type="button" class="-mt-1 text-green font-medium text-sm edit-btn hover:scale-110 rounded-full">
-                               Edit
-                                <span class="ml-1 fas fa-angle-down rounded w-10"></span>
-                            </button>
-
-                            <ul class="dropdown-menu absolute hidden bg-white rounded shadow-lg">
-                                <li class="px-1 py-1 hover:bg-blue rounded">
-                                    <a href="{{ route('admin.edit', $user->id) }}" class="dropdown-item text-black  hover:text-white">
-                                        Edit Details
-                                    </a>
-                                </li>
-                                <li class="px-1 py-1 hover:bg-blue rounded">
-                                    <a href="{{ route('admin.editRoles', $user->id) }}" class="dropdown-item text-black hover:bg-blue hover:text-white">
-                                        Edit Roles
-                                    </a>
-                                </li>
-                            </ul>
-
-                            <form action="{{ route('admin.destroy',$user->id) }}" method="Post">
-                                @csrf
-                                @method('DELETE')
-                                <button class="mt-3 text-red font-medium  hover:text-white hover:scale-110 text-sm rounded-lg" type="submit" class="">
-                                    Delete
+                            <div class="m-auto flex inline space-x-4">
+                                <button type="button" class="-mt-1 text-green font-medium text-sm edit-btn hover:scale-110 rounded-full">
+                                    Edit
+                                    <span class="ml-1 fas fa-angle-down rounded w-10"></span>
                                 </button>
-                            </form>
-                        </div>
+
+                                <ul class="dropdown-menu absolute hidden bg-white rounded shadow-lg">
+                                    <li class="px-1 py-1 hover:bg-blue rounded">
+                                        <a href="{{ route('admin.edit', $user->id) }}" class="dropdown-item text-black  hover:text-white">
+                                            Edit Details
+                                        </a>
+                                    </li>
+                                    <li class="px-1 py-1 hover:bg-blue rounded">
+                                        <a href="{{ route('admin.editRoles', $user->id) }}" class="dropdown-item text-black hover:bg-blue hover:text-white">
+                                            Edit Roles
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                <form action="{{ route('admin.destroy',$user->id) }}" method="Post">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="mt-3 text-red font-medium  hover:text-white hover:scale-110 text-sm rounded-lg" type="submit" class="">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                         
                     </tr>
