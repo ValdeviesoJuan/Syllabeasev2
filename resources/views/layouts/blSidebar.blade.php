@@ -21,7 +21,6 @@
 </script>
 
 <body>
-
     <nav class="fixed top-0 z-50 w-full bg-white border- shadow border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
             <div class="flex items-center justify-between">
@@ -59,41 +58,41 @@
                                 </div>
                             </button>
                         </div>
-                            <div class="flex">
-                                <div class="hidden max-h-[500px] overflow-y-auto px-3 pb-2  w-[400px] z-50 hidden my-4 text-base list-none bg-[#f3f4f6] rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-notif">
-                                    <div class="mt-1 flex flex-row">
-                                        <div class="mr-12">
-                                            <div class="font-semibold text-lg my-2">
-                                                NOTIFICATION
-                                            </div>
+                        <div class="flex">
+                            <div class="hidden max-h-[500px] overflow-y-auto px-3 pb-2  w-[400px] z-50 hidden my-4 text-base list-none bg-[#f3f4f6] rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-notif">
+                                <div class="mt-1 flex flex-row">
+                                    <div class="mr-12">
+                                        <div class="font-semibold text-lg my-2">
+                                            NOTIFICATION
                                         </div>
-                                    </div>
-                                    <div class="">
-                                        @foreach ($notifications as $notification)
-                                        <div class="flex items-center bg-white mb-3 cursor-pointer px-2 py-2 hover:bg-gray4 shadow rounded my-1">
-                                            <!-- User Initial -->
-                                            <div class="pr-1">
-                                                <div class="bg-yellow rounded-full text-xl font-medium w-12 h-12 px-2 flex items-center justify-center text-white mr-3">
-                                                    <div>{{ $notification->data['for'] ?? 'User' }}</div>
-                                                </div>
-                                            </div>
-
-                                            <!-- date and time -->
-                                            <div>
-                                                <div>
-                                                    <a href="{{ $notification->data['action_url'] ?? '#' }}" class="hover:text-blue">
-                                                            <span class="font-semibold">
-                                                                {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
-                                                            </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
-                                                </div>
-                                                <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
-                                            </div>
-                                        </div>
-                                        @endforeach
-
                                     </div>
                                 </div>
+                                <div class="">
+                                    @foreach ($notifications as $notification)
+                                    <div class="flex items-center bg-white mb-3 cursor-pointer px-2 py-2 hover:bg-gray4 shadow rounded my-1">
+                                        <!-- User Initial -->
+                                        <div class="pr-1">
+                                            <div class="bg-yellow rounded-full text-xl font-medium w-12 h-12 px-2 flex items-center justify-center text-white mr-3">
+                                                <div>{{ $notification->data['for'] ?? 'User' }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- date and time -->
+                                        <div>
+                                            <div>
+                                                <a href="{{ $notification->data['action_url'] ?? '#' }}" class="hover:text-blue">
+                                                        <span class="font-semibold">
+                                                            {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
+                                                        </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
+                                            </div>
+                                            <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+
+                                </div>
                             </div>
+                        </div>
                     </div>
 
                     <div class="flex items-center ms-3">
@@ -150,7 +149,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </nav>
@@ -268,18 +266,11 @@
                         <span class="ms-3">Memo</span>
                     </a>
                 </li>
-
-               
-            </ul>
-            
-                
-
             </ul>
         </div>
     </aside>
     <div class="p-4 sm:ml-64">
         @yield('content')
-</div>
-
+    </div>
 </body>
 </html>

@@ -377,14 +377,17 @@ class BayanihanLeaderSyllabusController extends Controller
 
         //add: Only show bg groups that they leads
         $instructors = User::all();
+
         $user = Auth::user(); 
         $notifications = $user->notifications;
+
         return view('BayanihanLeader.Syllabus.syllCreate', compact('notifications', 'bGroups', 'instructors'));
     }
 
     public function storeSyllabus(Request $request)
     {
         $request->validate([
+            'effectivity_date' => 'required',
             'syll_class_schedule' => 'required',
             'syll_bldg_rm' => 'required',
             'syll_ins_consultation' => 'required',
@@ -392,10 +395,12 @@ class BayanihanLeaderSyllabusController extends Controller
             'syll_course_description' => 'required',
             'bg_id' => "required"
         ]);
+
         $existingSyllabus = Syllabus::where('bg_id', $request->input('bg_id'))->first();
         if ($existingSyllabus) {
             return redirect()->route('bayanihanleader.syllabus')->with('error', 'Syllabus already exists for this bayanihan group.');
         }
+
         $info = College::join('departments', 'departments.college_id', '=', 'colleges.college_id')
             ->join('curricula', 'curricula.department_id', '=', 'departments.department_id')
             ->join('courses', 'courses.curr_id', '=', 'curricula.curr_id')
@@ -424,6 +429,7 @@ class BayanihanLeaderSyllabusController extends Controller
 
         $syllabus = new Syllabus();
         $syllabus->bg_id = $request->input('bg_id');
+        $syllabus->effectivity_date = $request->input('effectivity_date');
         $syllabus->syll_class_schedule = $request->input('syll_class_schedule');
         $syllabus->syll_bldg_rm = $request->input('syll_bldg_rm');
         $syllabus->syll_ins_consultation = $request->input('syll_ins_consultation');
@@ -475,6 +481,7 @@ class BayanihanLeaderSyllabusController extends Controller
     public function updateSyllabus(Request $request, $syll_id)
     {
         $request->validate([
+            'effectivity_date' => 'required',
             'syll_class_schedule' => 'required',
             'syll_bldg_rm' => 'required',
             'syll_ins_consultation' => 'required',
@@ -490,6 +497,7 @@ class BayanihanLeaderSyllabusController extends Controller
         }
 
         $syllabus->bg_id = $request->input('bg_id');
+        $syllabus->effectivity_date = $request->input('effectivity_date');
         $syllabus->syll_class_schedule = $request->input('syll_class_schedule');
         $syllabus->syll_bldg_rm = $request->input('syll_bldg_rm');
         $syllabus->syll_ins_consultation = $request->input('syll_ins_consultation');
@@ -537,6 +545,7 @@ class BayanihanLeaderSyllabusController extends Controller
             ->first();
         $course_code = $submitted_syllabus->course_code;
         $bg_school_year= $submitted_syllabus->bg_school_year;
+        
         $chair->notify(new Chair_SyllabusSubmittedtoChair($course_code, $bg_school_year, $syll_id));
 
         // Send email to the chair

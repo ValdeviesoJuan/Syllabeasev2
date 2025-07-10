@@ -1,5 +1,4 @@
 @extends('layouts.blSidebar')
-
 @section('content')
 <div class="mt-16 max-w-4xl mx-auto bg-white p-6 shadow rounded-lg dark:bg-gray-800">
 

@@ -2,8 +2,6 @@
 @extends('layouts.blSidebar')
 @section('content')
 @include('layouts.modal')
-
-
 <!DOCTYPE html>
 <html lang="en">
     <head>

@@ -57,7 +57,6 @@
                                 name="effectivity_date" 
                                 id="effectivity_date" 
                                 class="border border-[#a8a29e] rounded p-[5px] w-[390px]" 
-                                value="{{ old('effectivity_date') }}" 
                                 required
                             >
                             @error('effectivity_date')
