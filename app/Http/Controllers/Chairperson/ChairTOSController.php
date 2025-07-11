@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Chairperson;
 
 use App\Http\Controllers\Controller;
+use App\Models\BayanihanGroupUsers;
 use App\Models\User;
 use App\Models\UserRole;
-use App\Models\Roles;
-use App\Models\BayanihanLeader;
-use App\Models\bayanihanMember;
+use App\Models\Roles; 
 use App\Models\Syllabus;
 use App\Models\SyllabusCotCoM;
 use App\Models\SyllabusCourseOutcome;
@@ -48,19 +47,22 @@ class ChairTOSController extends Controller
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
             ->get();
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->get();
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
@@ -82,7 +84,7 @@ class ChairTOSController extends Controller
         $tos = Tos::find($tos_id);
 
         if (!$tos) {
-            return redirect()->route('bayanihanleader.tos')->with('error', 'Tos not found.');
+            return redirect()->route('chairperson.tos')->with('error', 'Tos not found.');
         }
         $tos->chair_approved_at = Carbon::now();
         $tos->tos_status = 'Approved by Chair';
@@ -98,16 +100,16 @@ class ChairTOSController extends Controller
         $bg_school_year = $submitted_tos->bg_school_year;
 
         // Notification for Bayanihan Members 
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $submitted_tos->bg_id)->get();
-        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_tos->bg_id)->get();
+        $ = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'leader')->get();
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'member')->get();
         foreach ($bayanihan_leaders as $leader) {
-            $user = User::find($leader->bg_user_id);
+            $user = User::find($leader->user_id);
             if ($user) {
                 $user->notify(new BL_TOSChairApproved($course_code, $bg_school_year, $tos_id));
             }
         }
         foreach ($bayanihan_members as $member) {
-            $user = User::find($member->bm_user_id);
+            $user = User::find($member->user_id);
             if ($user) {
                 $user->notify(new BT_TOSChairApproved($course_code, $bg_school_year, $tos_id));
             }
@@ -120,7 +122,7 @@ class ChairTOSController extends Controller
         $tos = Tos::find($tos_id);
 
         if (!$tos) {
-            return redirect()->route('bayanihanleader.tos')->with('error', 'Tos not found.');
+            return redirect()->route('chairperson.tos')->with('error', 'Tos not found.');
         }
         $tos->chair_returned_at = Carbon::now();
         $tos->tos_status = 'Returned by Chair';
@@ -136,16 +138,16 @@ class ChairTOSController extends Controller
         $bg_school_year = $submitted_tos->bg_school_year;
 
         // Notification for Bayanihan Members 
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $submitted_tos->bg_id)->get();
-        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_tos->bg_id)->get();
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'leader')->get();
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'member')->get();
         foreach ($bayanihan_leaders as $leader) {
-            $user = User::find($leader->bg_user_id);
+            $user = User::find($leader->user_id);
             if ($user) {
                 $user->notify(new BL_TOSChairReturned($course_code, $bg_school_year, $tos_id));
             }
         }
         foreach ($bayanihan_members as $member) {
-            $user = User::find($member->bm_user_id);
+            $user = User::find($member->user_id);
             if ($user) {
                 $user->notify(new BT_TOSChairReturned($course_code, $bg_school_year, $tos_id));
             }
@@ -165,24 +167,29 @@ class ChairTOSController extends Controller
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
             ->get();
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->get();
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
+            
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('Chairperson.Tos.tosComment', compact('notifications', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
     }
 }

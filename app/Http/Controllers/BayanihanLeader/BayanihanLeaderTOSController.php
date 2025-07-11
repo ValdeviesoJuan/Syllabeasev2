@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\BayanihanLeader;
 
 use App\Http\Controllers\Controller;
-use App\Models\BayanihanLeader;
-use App\Models\bayanihanMember;
+use App\Models\BayanihanGroupUsers;
 use App\Models\Course;
 use App\Models\Syllabus;
 use App\Models\SyllabusCotCoM;
@@ -25,18 +24,13 @@ class BayanihanLeaderTOSController extends Controller
 {
     public function index()
     {
-        $myGroup = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+        $myGroup = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('bayanihan_groups.bg_id')
             ->first();
-        if ($myGroup) {
-            // $toss = Tos::leftJoin('syllabus_course_outcomes', 'tos.syll_id', '=', 'syllabus_course_outcomes.syll_id')
-            //     ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            //     ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
-            //     ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            //     ->select('tos.*', 'syllabus_course_outcomes.*', 'courses.*', 'bayanihan_groups.*')
-            //     ->get();
 
+        if ($myGroup) {
             $toss = Tos::join('bayanihan_groups', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
                 ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
                 ->join('courses', 'courses.course_id', '=', 'tos.course_id')
@@ -53,8 +47,10 @@ class BayanihanLeaderTOSController extends Controller
         } else {
             $toss = [];
         }
+
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('bayanihanleader.tos.tosList', compact('notifications', 'toss'));
     }
     public function createTos($syll_id)
@@ -64,18 +60,14 @@ class BayanihanLeaderTOSController extends Controller
             ->select('syllabi.*', 'courses.*', 'bayanihan_groups.*')
             ->where('syllabi.syll_id', $syll_id)
             ->first();
+            
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('bayanihanleader.tos.tosCreate', compact('notifications', 'syllabus', 'syll_id'));
     }
     public function viewTos($tos_id)
     {
-        // $toss = Tos::leftJoin('syllabus_course_outcomes', 'tos.syll_id', '=', 'syllabus_course_outcomes.syll_id')
-        // ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-        // ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
-        // ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        // ->select('tos.*', 'syllabus_course_outcomes.*', 'courses.*', 'bayanihan_groups.*')
-        // ->get();
         $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
@@ -85,19 +77,22 @@ class BayanihanLeaderTOSController extends Controller
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
             ->get();
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
+            ->get();
+            
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
@@ -109,6 +104,7 @@ class BayanihanLeaderTOSController extends Controller
             ->where('user_roles.entity_type', 'Department')
             ->where('user_roles.role_id', $chairRoleId)
             ->first();
+
         return view('bayanihanleader.tos.tosView', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
     }
     public function destroyTos(Tos $tos_id)
@@ -162,32 +158,30 @@ class BayanihanLeaderTOSController extends Controller
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
             ->get();
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
+            ->get();
+            
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('bayanihanleader.tos.tosEdit', compact('notifications', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'syllabus', 'syll_id'));
     }
 
     public function commentTos($tos_id)
     {
-        // $toss = Tos::leftJoin('syllabus_course_outcomes', 'tos.syll_id', '=', 'syllabus_course_outcomes.syll_id')
-        // ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-        // ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
-        // ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        // ->select('tos.*', 'syllabus_course_outcomes.*', 'courses.*', 'bayanihan_groups.*')
-        // ->get();
         $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
@@ -199,22 +193,26 @@ class BayanihanLeaderTOSController extends Controller
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
             ->get();
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->get();
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
+            
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
             ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
@@ -222,6 +220,7 @@ class BayanihanLeaderTOSController extends Controller
             ->where('user_roles.entity_type', 'Department')
             ->where('user_roles.role_id', $chairRoleId)
             ->first();
+
         return view('bayanihanleader.tos.tosComment', compact('chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
     }
     public function storeTos(Request $request, $syll_id)

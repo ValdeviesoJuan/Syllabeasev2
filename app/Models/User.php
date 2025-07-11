@@ -67,4 +67,9 @@ class User extends Authenticatable  implements Auditable
     {
         return $this->hasMany(\App\Models\UserRole::class, 'user_id');
     }
+
+    public function bayanihanGroupUsers()
+    {
+        return $this->hasMany(BayanihanGroupUsers::class);
+    }
 }

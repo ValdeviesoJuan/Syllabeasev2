@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\BayanihanLeader;
 
 use App\Http\Controllers\Controller;
-use App\Models\BayanihanGroup;
-use App\Models\BayanihanLeader;
-use App\Models\BayanihanMember;
+use App\Models\BayanihanGroup; 
 use App\Models\User;
 use App\Models\Roles;
 use App\Models\Syllabus;
@@ -33,6 +31,7 @@ use Illuminate\View\View;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SyllabusSubmittedNotification;
+use App\Models\BayanihanGroupUsers;
 
 use function Laravel\Prompts\select;
 
@@ -40,11 +39,12 @@ class BayanihanLeaderSyllabusController extends Controller
 {
     public function index()
     {
-        $myDepartment = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $myDepartment = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
             ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
             ->join('departments', 'departments.department_id', '=', 'curricula.department_id')
-            ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('departments.department_id')
             ->first();
 
@@ -52,27 +52,14 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('syllabus_instructors.*', 'syllabi.*')
             ->get();
 
-        // $syllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        //     ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-        //     ->where('syllabi.department_id', '=', $myDepartment->department_id)
-        //     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-        //     ->get();
         if ($myDepartment) {
-            // $syllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-            //     ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-            //     ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-            //     ->where('syllabi.department_id', '=', $myDepartment->department_id)
-            //     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-            //     ->get();
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
                     ->whereRaw('syllabi.version = (SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id)');
             })
-                ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-                ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+                ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
+                ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+                ->where('bayanihan_group_users.bg_role', '=', 'leader')
                 ->where('syllabi.department_id', '=', $myDepartment->department_id)
                 ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
                 ->leftJoin('deadlines', function ($join) {
@@ -85,17 +72,6 @@ class BayanihanLeaderSyllabusController extends Controller
         } else {
             $syllabus = [];
         }
-
-        // $syll = College::join('departments', 'departments.college_id', '=', 'colleges.college_id')
-        //     ->join('curricula', 'departments.department_id', '=', 'curricula.department_id')
-        //     ->join('courses', 'courses.curr_id', '=', 'curricula.curr_id')
-        //     ->join('bayanihan_groups', 'bayanihan_groups.course_id', '=', 'courses.course_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('bayanihan_members', 'bayanihan_members.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-        //     ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*')
-        //     ->get();
 
         $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
             ->select('users.*', 'syllabus_instructors.*')
@@ -112,7 +88,7 @@ class BayanihanLeaderSyllabusController extends Controller
     {
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
-            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') // Corrected
+            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id')
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -192,19 +168,21 @@ class BayanihanLeaderSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
-            ->get();
         // $syllabusComments = SyllabusComment::join('users', 'users.id', '=', 'syllabus_comments.user_id')
         // ->where('syllabus_comments.syll_id', '=', $syll_id)
         // ->select('users.*', 'syllabus_comments.*')
@@ -292,11 +270,13 @@ class BayanihanLeaderSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
+
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('poes.*')
             ->get();
+
         $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
             ->get();
 
@@ -328,19 +308,21 @@ class BayanihanLeaderSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
-            ->get();
         // $syllabusComments = SyllabusComment::join('users', 'users.id', '=', 'syllabus_comments.user_id')
         // ->where('syllabus_comments.syll_id', '=', $syll_id)
         // ->select('users.*', 'syllabus_comments.*')
@@ -370,8 +352,9 @@ class BayanihanLeaderSyllabusController extends Controller
     public function createSyllabus()
     {
         $bGroups = BayanihanGroup::join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-            ->join('bayanihan_leaders', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+            ->join('bayanihan_group_users', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('bayanihan_groups.*', 'courses.*')
             ->get();
 
@@ -465,8 +448,9 @@ class BayanihanLeaderSyllabusController extends Controller
         $syllabus = Syllabus::find($syll_id);
 
         $bGroups = BayanihanGroup::join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-            ->join('bayanihan_leaders', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+            ->join('bayanihan_group_users', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('bayanihan_groups.*', 'courses.*')
             ->get();
 

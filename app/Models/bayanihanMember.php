@@ -13,7 +13,7 @@ class bayanihanMember extends Model implements Auditable
 
     protected $primarykey = 'bm_id';
     protected $fillable = [
-        'bg_user_id',
+        'bm_user_id',
         'bg_id',
     ];
     public function user()
