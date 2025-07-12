@@ -226,6 +226,20 @@ class DeanController extends Controller
 
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
 
+        // ⚠️ 1. Check if the user already holds a chairperson role in any department
+        $userHasChairRole = UserRole::where('role_id', $chairRoleId)
+            ->where('entity_type', 'Department')
+            ->where('user_id', $request->user_id)
+            ->where(function ($q) use ($request) {
+                $q->whereNull('end_validity')
+                ->orWhere('end_validity', '>', $request->start_validity);
+            })
+            ->exists();
+
+        if ($userHasChairRole) {
+            return back()->with('error', 'This user is already assigned as chair in another department.');
+        }
+
         DB::transaction(function () use ($request, $chairRoleId) {
 
             /* ------------------------------------------------------------
@@ -241,22 +255,16 @@ class DeanController extends Controller
                     ->update(['end_validity' => $request->start_validity]);
 
             /* ------------------------------------------------------------
-            | Create or update the new chair assignment
+            | Create new chair assignment (Saves past Chair assignment for historical tracking)
             |-------------------------------------------------------------*/
-            UserRole::updateOrCreate(
-                [
-                    // Uniqueness criteria
-                    'role_id'     => $chairRoleId,
-                    'entity_type' => 'Department',
-                    'entity_id'   => $request->department_id,
-                ],
-                [
-                    // Data to set / update
-                    'user_id'        => $request->user_id,
-                    'start_validity' => $request->start_validity,
-                    'end_validity'   => $request->end_validity,
-                ]
-            );
+            UserRole::create([
+                'role_id'        => $chairRoleId,
+                'entity_type'    => 'Department',
+                'entity_id'      => $request->department_id,
+                'user_id'        => $request->user_id,
+                'start_validity' => $request->start_validity,
+                'end_validity'   => $request->end_validity,
+            ]);
         });
 
         return redirect()->route('dean.chairs')->with('success', 'Chair created successfully.');
@@ -291,37 +299,53 @@ class DeanController extends Controller
     {   
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
 
-        $chair = UserRole::where('ur_id', $ur_id)
-            ->where('role_id', $chairRoleId)
-            ->where('entity_type', 'Department')
-            ->firstOrFail();
-
         $request->validate([
             'user_id' => 'required',
             'department_id' => 'required',
             'start_validity' => 'required|date',
             'end_validity' => 'required|date|after:start_validity',
         ]);
-        
-        /* ─── Close any overlapping chair assignment for this department ─── */
-        UserRole::where('role_id',     $chairRoleId)
+
+        // 🔒 Check if the user already holds a chairperson role in another department
+        $userHasAnotherChair = UserRole::where('role_id', $chairRoleId)
             ->where('entity_type', 'Department')
-            ->where('entity_id',   $request->department_id)
-            ->where(function ($q) use ($request, $ur_id) {
+            ->where('user_id', $request->user_id)
+            ->where('ur_id', '!=', $ur_id) // exclude the current record
+            ->where(function ($q) use ($request) {
                 $q->whereNull('end_validity')
                 ->orWhere('end_validity', '>', $request->start_validity);
             })
-            ->where('ur_id', '!=', $ur_id)   // don’t overwrite the record we’re updating
-            ->update(['end_validity' => $request->start_validity]);
-            
-         /* ─── Update this chairperson role ─── */
-        $chair->update([
-            'user_id'        => $request->user_id,
-            'entity_id'      => $request->department_id,
-            'start_validity' => $request->start_validity,
-            'end_validity'   => $request->end_validity,
-        ]);
+            ->exists();
+
+        if ($userHasAnotherChair) {
+            return back()->with('error', 'This user is already assigned as chair in another department.');
+        }
         
+        DB::transaction(function () use ($request, $chairRoleId, $ur_id) {
+            $chair = UserRole::where('ur_id', $ur_id)
+                ->where('role_id', $chairRoleId)
+                ->where('entity_type', 'Department')
+                ->firstOrFail();
+
+            /* ─── Close any overlapping chair assignment for this department ─── */
+            UserRole::where('role_id',     $chairRoleId)
+                ->where('entity_type', 'Department')
+                ->where('entity_id',   $request->department_id)
+                ->where('ur_id', '!=', $ur_id)
+                ->where(function ($q) use ($request) {
+                    $q->whereNull('end_validity')
+                    ->orWhere('end_validity', '>', $request->start_validity);
+                })
+                ->update(['end_validity' => $request->start_validity]);
+            
+            $chair->update([
+                'user_id'        => $request->user_id,
+                'entity_id'      => $request->department_id,
+                'start_validity' => $request->start_validity,
+                'end_validity'   => $request->end_validity,
+            ]);
+        });
+
         return redirect()->route('dean.chairs')->with('success', 'Chair Information Updated');
     }
     public function destroyChair(string $ur_id)
@@ -333,8 +357,7 @@ class DeanController extends Controller
 
         $chair->delete();
 
-        return redirect()->route('dean.chairs')
-            ->with('success', 'Chair deleted successfully.');
+        return redirect()->route('dean.chairs')->with('success', 'Chair deleted successfully.');
     }
    
 }
