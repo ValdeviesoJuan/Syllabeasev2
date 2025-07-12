@@ -167,7 +167,7 @@ class AdminDepartmentController extends Controller
                     ->update(['end_validity' => $request->start_validity]);
 
             /* ------------------------------------------------------------
-            | Create or update the new chair assignment
+            | Create or new chair assignment
             |-------------------------------------------------------------*/
             UserRole::create([
                 'role_id'        => $chairRoleId,

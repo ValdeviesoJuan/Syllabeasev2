@@ -100,7 +100,7 @@ class ChairTOSController extends Controller
         $bg_school_year = $submitted_tos->bg_school_year;
 
         // Notification for Bayanihan Members 
-        $ = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'leader')->get();
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'leader')->get();
         $bayanihan_members = BayanihanGroupUsers::where('bg_id', $submitted_tos->bg_id)->where('bg_role', 'member')->get();
         foreach ($bayanihan_leaders as $leader) {
             $user = User::find($leader->user_id);

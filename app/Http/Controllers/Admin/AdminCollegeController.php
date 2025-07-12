@@ -106,26 +106,43 @@ class AdminCollegeController extends Controller
         ]);
 
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
-        
-        // End any currently active dean assignment on this college
-        UserRole::where('role_id', $deanRoleId)
+
+        // ⚠️ 1. Check if the user already holds a dean role in any college
+        $userHasDeanRole = UserRole::where('role_id', $deanRoleId)
             ->where('entity_type', 'College')
-            ->where('entity_id', $request->college_id)
+            ->where('user_id', $request->user_id)
             ->where(function ($q) use ($request) {
                 $q->whereNull('end_validity')
                 ->orWhere('end_validity', '>', $request->start_validity);
             })
-            ->update(['end_validity' => $request->start_validity]);
+            ->exists();
 
-        // Create new dean assignment
-        UserRole::create([
-            'user_id'        => $request->user_id,
-            'role_id'        => $deanRoleId,
-            'entity_type'    => 'College',
-            'entity_id'      => $request->college_id,
-            'start_validity' => $request->start_validity,
-            'end_validity'   => $request->end_validity,
-        ]);
+        if ($userHasDeanRole) {
+            return back()->with('error', 'This user is already assigned as dean in another college.');
+        }
+
+        DB::transaction(function () use ($request, $deanRoleId) {
+        
+            // End any currently active dean assignment on this college
+            UserRole::where('role_id', $deanRoleId)
+                    ->where('entity_type', 'College')
+                    ->where('entity_id', $request->college_id)
+                    ->where(function ($q) use ($request) {
+                        $q->whereNull('end_validity')
+                        ->orWhere('end_validity', '>', $request->start_validity);
+                    })
+                    ->update(['end_validity' => $request->start_validity]);
+
+            // Create new dean assignment
+            UserRole::create([
+                'user_id'        => $request->user_id,
+                'role_id'        => $deanRoleId,
+                'entity_type'    => 'College',
+                'entity_id'      => $request->college_id,
+                'start_validity' => $request->start_validity,
+                'end_validity'   => $request->end_validity,
+            ]);
+        });
 
         // Send email to the assigned Dean
         $user = User::findOrFail($request->user_id);
@@ -152,11 +169,6 @@ class AdminCollegeController extends Controller
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
 
-        $dean = UserRole::where('ur_id', $ur_id)
-            ->where('role_id', $deanRoleId)
-            ->where('entity_type', 'College')
-            ->firstOrFail();
-
         $request->validate([
             'user_id' => 'required|string',
             'college_id' => 'required|string',
@@ -164,12 +176,45 @@ class AdminCollegeController extends Controller
             'end_validity' => 'nullable|date|after:start_validity',
         ]);
 
-        $dean->update([
-            'user_id' =>  $request->input('user_id'),
-            'entity_id' =>  $request->input('college_id'),
-            'start_validity' =>  $request->input('start_validity'),
-            'end_validity' =>  $request->input('end_validity'),
-        ]);
+        // ⚠️ 1. Check if the user already holds a dean role in any college
+        $userHasDeanRole = UserRole::where('role_id', $deanRoleId)
+            ->where('entity_type', 'College')
+            ->where('user_id', $request->user_id)
+            ->where('ur_id', '!=', $ur_id) 
+            ->where(function ($q) use ($request) {
+                $q->whereNull('end_validity')
+                ->orWhere('end_validity', '>', $request->start_validity);
+            })
+            ->exists();
+
+        if ($userHasDeanRole) {
+            return back()->with('error', 'This user is already assigned as dean in another college.');
+        }
+        
+        DB::transaction(function () use ($request, $deanRoleId, $ur_id) {
+            $dean = UserRole::where('ur_id', $ur_id)
+                ->where('role_id', $deanRoleId)
+                ->where('entity_type', 'College')
+                ->firstOrFail();
+
+            /* ─── Close any overlapping chair assignment for this department ─── */
+            UserRole::where('role_id',     $deanRoleId)
+                ->where('entity_type', 'Department')
+                ->where('entity_id',   $request->department_id)
+                ->where('ur_id', '!=', $ur_id) // don’t overwrite the record we’re updating
+                ->where(function ($q) use ($request) {
+                    $q->whereNull('end_validity')
+                    ->orWhere('end_validity', '>', $request->start_validity);
+                })  
+                ->update(['end_validity' => $request->start_validity]);
+
+            $dean->update([
+                'user_id'        => $request->user_id,
+                'entity_id'      => $request->department_id,
+                'start_validity' => $request->start_validity,
+                'end_validity'   => $request->end_validity,
+            ]);
+        });
 
         return redirect()->route('admin.college')->with('success', 'College Information Updated');
     }
