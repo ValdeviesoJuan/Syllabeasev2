@@ -60,16 +60,20 @@
 
 <body class="p-6 bg-gray-100">
 
-	<div class="flex justify-end mb-6 px-4">
-            <form action="{{ route('syllabus.template') }}" method="GET">
-            @csrf
-                <button id="doneBtn" type="button" class="bg-yellow hover:scale-105 transition ease-in-out text-white px-4 py-2 rounded-lg shadow">
-                    Done
-                </button>
-            </form>
-    </div>
 
-    
+    <div class="flex justify-between mb-6 px-4">
+        <button id="undoBtn" class="bg-gray-300 hover:scale-105 transition ease-in-out text-black px-4 py-2 rounded-lg shadow">
+            Undo
+        </button>
+
+        <form action="{{ route('syllabus.template') }}" method="GET">
+            @csrf
+            <button id="doneBtn" type="button" class="bg-yellow hover:scale-105 transition ease-in-out text-white px-4 py-2 rounded-lg shadow">
+                Done
+            </button>
+        </form>
+    </div>
+        
 
     <div class="grid-container">
         @php
@@ -162,7 +166,7 @@
     </div>
 
     <div id="saveModal"
-            class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            class="fixed inset-0 flex items-center justify-center bg-white/10 backdrop-blur-sm hidden">
         <div class="bg-white w-80 p-6 rounded-lg shadow-lg z-50">  <!-- <- z‑index -->
             <h2 class="text-lg font-bold mb-4">Save Template</h2>
 
@@ -189,6 +193,41 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
 
+            // ───────── Undo Feature ─────────
+            const undoBtn = document.getElementById('undoBtn');
+            const historyStack = [];
+
+            function captureLayout() {
+                const snapshot = {};
+                document.querySelectorAll('.section').forEach(sec => {
+                    snapshot[sec.id] = {
+                        col: +sec.dataset.col,
+                        row: +sec.dataset.row,
+                        colSpan: +sec.dataset.colSpan,
+                        rowSpan: +sec.dataset.rowSpan
+                    };
+                });
+                historyStack.push(snapshot);
+            }
+
+            function applyLayout(snapshot) {
+                Object.entries(snapshot).forEach(([id, pos]) => {
+                    const el = document.getElementById(id);
+                    if (el) applyPos(el, pos);
+                });
+            }
+
+            if (undoBtn) {
+                undoBtn.addEventListener('click', () => {
+                    if (historyStack.length > 0) {
+                        const last = historyStack.pop();
+                        applyLayout(last);
+                    } else {
+                        alert("Nothing to undo.");
+                    }
+                });
+            }
+
         /* ───────── 1 · Initial numeric coords (unchanged) ───────── */
         const layout = {
             "college-name":   { col: 1, row: 1, colSpan: 2, rowSpan: 1 },
@@ -203,8 +242,8 @@
 
         const grid      = document.querySelector(".grid-container");
         const sections  = document.querySelectorAll(".section");
-        let   dragSrc   = null;   // element being dragged
-        let   gapRect   = null;   // {col,row,colSpan,rowSpan}
+        let   dragSrc   = null;
+        let   gapRect   = null;
 
         Object.entries(layout).forEach(([id,pos]) => {
             const el = document.getElementById(id);
@@ -218,20 +257,15 @@
             el.dataset.row      = pos.row;
             el.dataset.colSpan  = pos.colSpan;
             el.dataset.rowSpan  = pos.rowSpan;
-            /* Let grid determine width/height */
             el.style.width = el.style.height = "";
         }
 
-        /* ───────── 2 · Column / row pixel grids (now fr‑aware) ───────── */
-        /** turns “2fr 2fr 3fr” OR “292px 292px 438px” → cumulative pixel edges */
         function trackEnds(templateProp, totalPx) {
             const parts = templateProp.split(/\s+/);
             const pxParts = parts.filter(p => p.endsWith('px'));
-            /* All tracks resolved to px → easy */
             if (pxParts.length === parts.length) {
                 let acc = 0; return parts.map(p => acc += parseFloat(p));
             }
-            /* Tracks are fr units → convert proportionally */
             const frTotal = parts.reduce((s,p)=>s+parseFloat(p),0);
             let acc=0;
             return parts.map(p => acc += totalPx * (parseFloat(p)/frTotal));
@@ -253,7 +287,7 @@
         function colFromX(clientX) {
             const rect = grid.getBoundingClientRect();
             const x = clientX - rect.left;
-            const lines = getColLines();          // [px,px,px]
+            const lines = getColLines();
             if (x < 0 || x > lines.at(-1)) return null;
             if (x <= lines[0]) return 1;
             if (x <= lines[1]) return 2;
@@ -262,15 +296,14 @@
         function rowFromY(clientY) {
             const rect = grid.getBoundingClientRect();
             const y = clientY - rect.top;
-            const lines = getRowLines();          // variable length
+            const lines = getRowLines();
             if (y < 0 || y > lines.at(-1)) return null;
             for (let i = 0; i < lines.length; i++) {
-            if (y <= lines[i]) return i + 1;    // 1‑based
+            if (y <= lines[i]) return i + 1;
             }
             return null;
         }
 
-        /* ───────── 3 · Highlight overlay (unchanged) ───────── */
         const hi = Object.assign(document.createElement("div"), {
             style: `
             position:absolute;pointer-events:none;display:none;
@@ -290,7 +323,6 @@
         }
         const hideHi = () => hi.style.display="none";
 
-        /* ───────── 4 · Occupancy grid (unchanged) ───────── */
         function getRows() { return getRowLines().length; }
         function buildOcc(exclude=null) {
             const occ = Array.from({length:getRows()+1},() => Array(4).fill(false));
@@ -303,7 +335,6 @@
             return occ;
         }
 
-        /* ───────── 5 · Drag logic (unchanged) ───────── */
         sections.forEach(sec=>{
             const btn = sec.querySelector(".handle button"); if(!btn) return;
             btn.style.cursor="move"; sec.draggable=true;
@@ -318,10 +349,10 @@
             });
             sec.addEventListener("dragleave",()=>sec.classList.remove("drag-over"));
 
-            /* swap section ↔ section */
             sec.addEventListener("drop",e=>{
             e.preventDefault(); sec.classList.remove("drag-over");
             if(dragSrc===sec) return;
+            captureLayout();
             const srcPos={col:dragSrc.dataset.col,row:dragSrc.dataset.row,
                             colSpan:dragSrc.dataset.colSpan,rowSpan:dragSrc.dataset.rowSpan};
             const tgtPos={col:sec.dataset.col,row:sec.dataset.row,
@@ -330,13 +361,11 @@
             });
         });
 
-        /* ─── grid dragover: find & highlight a gap ─── */
         grid.addEventListener("dragover",e=>{
             if(!dragSrc) return; e.preventDefault();
             const col=colFromX(e.clientX),row=rowFromY(e.clientY);
             if(!col||!row) {hideHi();gapRect=null;return;}
 
-            /* skip if cursor over another section */
             const elUnder = document.elementFromPoint(e.clientX,e.clientY);
             if(elUnder && elUnder.closest(".section") && elUnder.closest(".section")!==dragSrc){
             hideHi();gapRect=null;return;
@@ -345,11 +374,9 @@
             const occ = buildOcc(dragSrc);
             if(occ[row][col]) {hideHi();gapRect=null;return;}
 
-            /* find max right span */
             let maxCS=0; for(let c=col;c<=3 && !occ[row][c];c++) maxCS++;
             if(maxCS===0){hideHi();gapRect=null;return;}
 
-            /* find max downward span */
             let maxRS=0,rows=getRows(),go=true;
             for(let r=row;r<=rows&&go;r++){
             for(let c=col;c<col+maxCS;c++){ if(occ[r][c]){go=false;break;} }
@@ -363,101 +390,80 @@
         grid.addEventListener("drop",e=>{
             e.preventDefault(); hideHi();
             if(dragSrc && gapRect){
+            captureLayout();
             applyPos(dragSrc,gapRect);
             }
             dragSrc=null; gapRect=null;
         });
 
-        /* ───────── 6 · Resize block (unchanged) ───────── */
         interact('.section').resizable({
   edges : { left:true, right:true, top:true, bottom:true },
-
   listeners : {
     move (ev) {
       const tgt = ev.target;
-
-      /* live width / height with minimums */
       let w = ev.rect.width,  h = ev.rect.height;
       if (w < 150) w = 150;
       if (h < 60 ) h = 60 ;
       tgt.style.width  = w + 'px';
       tgt.style.height = h + 'px';
-
-      /* translate when pulling left / top edges */
       const dx = (parseFloat(tgt.dataset.dx) || 0) + ev.deltaRect.left;
       const dy = (parseFloat(tgt.dataset.dy) || 0) + ev.deltaRect.top;
       tgt.style.transform = `translate(${dx}px, ${dy}px)`;
       tgt.dataset.dx = dx; tgt.dataset.dy = dy;
     },
-
     async end (ev) {
       const tgt = ev.target;
-
-      /* 1.  Final rectangle in page‑coords ----------------------- */
       const dx = parseFloat(tgt.dataset.dx) || 0;
       const dy = parseFloat(tgt.dataset.dy) || 0;
-
-      /*  undo transform so getBoundingClientRect() is accurate   */
       tgt.style.transform = '';
       delete tgt.dataset.dx; delete tgt.dataset.dy;
-
-      /*  temporarily shift the element physically so BCR matches */
       const prevPosition = tgt.style.position || '';
       tgt.style.position = 'absolute';
       tgt.style.left = (tgt.offsetLeft + dx) + 'px';
       tgt.style.top  = (tgt.offsetTop  + dy) + 'px';
-
       const box = tgt.getBoundingClientRect();
       const colStart = colFromX(box.left  + 1);
       const colEnd   = colFromX(box.right - 1);
       const rowStart = rowFromY(box.top   + 1);
       const rowEnd   = rowFromY(box.bottom- 1);
-
-      /* 2.  Sanity‑check boundaries ----------------------------- */
       if (!colStart || !rowStart || !colEnd || !rowEnd) {
         tgt.style.position = prevPosition;
         tgt.style.left = tgt.style.top = '';
         return;
       }
-
-      /* 3.  Snap to the grid ------------------------------------ */
+      captureLayout();
       applyPos(tgt, {
         col     : colStart,
         row     : rowStart,
         colSpan : colEnd - colStart + 1,
         rowSpan : rowEnd - rowStart + 1
       });
-
-      /* 4.  Clean‑up: erase temp styles and explicit px size ---- */
       tgt.style.position = prevPosition;
       tgt.style.left = tgt.style.top = '';
       tgt.style.width = tgt.style.height = '';
     }
   },
-
   modifiers : [
     interact.modifiers.restrictEdges({ outer:'parent', endOnly:true })
   ],
   inertia : true
 });
 
-        /* ──────────────────────────────────────────────────────────
-        7.  DONE / SAVE   (new overwrite‑aware logic)
-        ────────────────────────────────────────────────────────── */
+        /* The remaining save modal logic is untouched */
         const doneBtn   = document.getElementById('doneBtn');
         const saveModal = document.getElementById('saveModal');
         const modCancel = document.getElementById('modCancel');
         const modSave   = document.getElementById('modSave');
         const tplName   = document.getElementById('tplName');
 
-        const editIdx  = localStorage.getItem('editingIndex');   // null when creating
+        const editIdx  = localStorage.getItem('editingIndex');
         const editing  = JSON.parse(localStorage.getItem('editingTemplate') || 'null');
         if (editing) tplName.value = editing.name || '';
 
         doneBtn.addEventListener('click', async e => {
         e.preventDefault();
         if (editIdx !== null) {
-            await saveTemplate(editing.name);        // overwrite, keep name
+            await saveTemplate(editing.name);
         } else {
             saveModal.classList.remove('hidden');
             tplName.focus();
@@ -491,12 +497,12 @@
         }
         localStorage.setItem('templates', JSON.stringify(templates));
 
-        /* redirect back to list page */
-        window.location.href = "{{ route('bayanihanleader.createTemplate') }}";  /* adjust if needed */
+        window.location.href = "{{ route('bayanihanleader.createTemplate') }}";
         }
 
         });
     </script>
+
 
 
 </body>
