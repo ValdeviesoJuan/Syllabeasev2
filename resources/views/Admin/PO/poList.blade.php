@@ -1,7 +1,6 @@
 @extends('layouts.adminSidebar')
 @section('content')
 @include('layouts.modal')
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,32 +28,36 @@
             <h1 class="font-semibold text-xl flex justify-center pt-5">Program Outcomes</h1>
             <div>
                 <p class="ml-5 tracking-wide text-lg">
-                    <br>Upon completion of the <span class="font-bold">{{ $department_name }}</span> program, graduates are able to:
+                    <br>Upon completion of the <span class="font-bold">{{ $department->department_name }}</span> program, graduates are able to:
                 </p>
                 <div class="mb-10 pb-10">
-                    @foreach ($programOutcomes as $programOutcome)
-                    <div class="ml-20 flex items-center tracking-wide leading-relaxed">
-                        <p>{{ $programOutcome->po_letter }} : {{ $programOutcome->po_description }}</p>
-                        <form action="{{-- route('admin.destroyPo', $programOutcome->po_id) --}}" method="Post">
-                            @csrf
-                            @method('DELETE')
-                            <div class="w-10 color-sePrimary deleteButtonContainer">
-                                <button class="w-6 inline-flex items-center ml-2 deleteButton" style="display: none;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 30 30">
-                                        <path d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    @endforeach
+                    @forelse ($programOutcomes as $programOutcome)
+                        <div class="ml-20 flex items-center tracking-wide leading-relaxed">
+                            <p>{{ $programOutcome->po_letter }} : {{ $programOutcome->po_description }}</p>
+                            <form action="{{ route('admin.destroyPo', $programOutcome->po_id) }}" method="Post">
+                                @csrf
+                                @method('DELETE')
+                                <div class="w-10 color-sePrimary deleteButtonContainer">
+                                    <button class="w-6 inline-flex items-center ml-2 deleteButton" style="display: none;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 30 30">
+                                            <path d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @empty
+                        <div class="ml-20 text-gray text-lg italic mt-4">
+                            No program outcomes have been added to this department.
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
     </div>
     <div>
         <div class="ml-10 mt-2 pt-2 w-max hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded-lg hover:bg-blue">
-            <form action="{{-- route('admin.createPo') --}}" method="GET">
+            <form action="{{ route('admin.createPo', $department->department_id) }}" method="GET">
                 @csrf
                 <button type="submit" class="flex  px-5   text-ml">
                     <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,7 +72,7 @@
             </form>
         </div>
         <div class="ml-10 mt-2 pt-2 w-max hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded-lg hover:bg-blue">
-            <form action="{{-- route('admin.editPo', $department_id) --}}" method="GET">
+            <form action="{{ route('admin.editPo', $department->department_id) }}" method="GET">
                 @csrf
                 <button type="submit" class="flex  px-5   text-ml">
                     <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,7 +82,6 @@
                     <div class="px-2">
                         Edit Program Outcome
                     </div>
-
                 </button>
             </form>
         </div>
