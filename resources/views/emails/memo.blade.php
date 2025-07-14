@@ -4,38 +4,45 @@
     <meta charset="UTF-8">
     <title>New Memo Notification</title>
 </head>
-<body style="font-family: Georgia, 'Times New Roman', serif; background-color: #f1f8ff; padding: 20px; margin: 0;">
-    <table width="100%" cellspacing="0" cellpadding="0" 
-           style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <!-- Slim Blue Header -->
+<body>
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <!-- Logo at Top -->
         <tr>
-            <td style="background-color: #007BFF; padding: 6px 16px; color: white; text-align: center;">
-                <h3 style="margin: 0; font-weight: normal; font-size: 16px;">New Memo Notification</h3>
+            <td style="text-align: left;">
+                <img src="https://i.imgur.com/e6DsGLI.png" alt="SyllabEase Logo" style="max-width: 200px;">
+            </td>
+        </tr>
+
+        <!-- Title -->
+        <tr>
+            <td>
+                <h3>New Memo Notification</h3>
             </td>
         </tr>
 
         <!-- Main Content -->
         <tr>
-            <td style="padding: 20px;">
-                <h4 style="color: #004085; margin-top: 0; font-size: 17px;">{{ $memo->title }}</h4>
-                <p style="font-size: 14px; color: #333; line-height: 1.6; margin: 8px 0;">
-                    {{ $memo->description }}
-                </p>
-                <p style="font-size: 14px; color: #333; margin-top: 12px;">
-                    <strong style="color: #007BFF;">Date:</strong> 
+            <td>
+                <h4>{{ $memo->title }}</h4>
+                <p>{{ $memo->description }}</p>
+                <p>
+                    <strong>Date:</strong> 
                     {{ $memo->date ? $memo->date->format('F d, Y') : 'N/A' }}
                 </p>
+                <p>You can view or download the memo from the system.</p>
+            </td>
+        </tr>
 
-                <!-- Notice Box -->
-                <div style="background-color: #fff3cd; border-left: 6px solid #FFC107; padding: 12px; margin-top: 20px; color: #856404; font-size: 13px;">
-                    You can view or download the memo from the system.
-                </div>
+        <!-- Automated Notice -->
+        <tr>
+            <td>
+                <p>This is an automated email. Please do not reply to this email.</p>
             </td>
         </tr>
 
         <!-- Footer -->
         <tr>
-            <td style="background-color: #f7f7f7; padding: 10px; text-align: center; color: #555; font-size: 12px;">
+            <td style="text-align: center;">
                 <small>&copy; {{ date('Y') }} Bayanihan System. All rights reserved.</small>
             </td>
         </tr>

@@ -4,49 +4,60 @@
     <meta charset="UTF-8">
     <title>Bayanihan Member Assignment</title>
 </head>
-<body style="font-family: Georgia, 'Times New Roman', serif; background-color: #f1f8ff; padding: 20px; margin: 0;">
-    <table width="100%" cellspacing="0" cellpadding="0" 
-           style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-        <!-- Slim Blue Header -->
+<body>
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <!-- Logo at Top -->
         <tr>
-            <td style="background-color: #007BFF; padding: 6px 16px; color: white; text-align: center;">
-                <h3 style="margin: 0; font-weight: normal; font-size: 16px;">Bayanihan Member Assignment</h3>
+            <td style="text-align: left;">
+                <img src="https://i.imgur.com/e6DsGLI.png" alt="SyllabEase Logo" style="max-width: 200px;">
+            </td>
+        </tr>
+
+        <!-- Title -->
+        <tr>
+            <td>
+                <h3>Bayanihan Member Assignment</h3>
             </td>
         </tr>
 
         <!-- Main Content -->
         <tr>
-            <td style="padding: 20px;">
-                <h4 style="color: #004085; margin-top: 0; font-size: 17px;">Hello {{ $user->firstname }},</h4>
+            <td>
+                <h4>Hello {{ $user->firstname }},</h4>
 
-                <p style="font-size: 14px; color: #333; line-height: 1.6; margin: 8px 0;">
-                    You’ve been added as a <strong style="color: #FFC107;">Bayanihan Member</strong> for the course <strong>{{ $bGroup->course_id }}</strong>.
+                <p>
+                    You’ve been added as a <strong>Bayanihan Member</strong> for the course <strong>{{ $bGroup->course_id }}</strong>.
                 </p>
 
-                <table cellpadding="0" cellspacing="0" style="margin: 12px 0; font-size: 14px; color: #333;">
+                <table cellpadding="0" cellspacing="0">
                     <tr>
-                        <td><strong style="color: #007BFF;">School Year:</strong></td>
+                        <td><strong>School Year:</strong></td>
                         <td style="padding-left: 10px;">{{ $bGroup->bg_school_year }}</td>
                     </tr>
                     <tr>
-                        <td><strong style="color: #007BFF;">Assigned by:</strong></td>
+                        <td><strong>Assigned by:</strong></td>
                         <td style="padding-left: 10px;">{{ $chairperson->firstname }} {{ $chairperson->lastname }}</td>
                     </tr>
                     <tr>
-                        <td><strong style="color: #007BFF;">Department:</strong></td>
+                        <td><strong>Department:</strong></td>
                         <td style="padding-left: 10px;">{{ $department->department_name }}</td>
                     </tr>
                 </table>
 
-                <div style="background-color: #e6f0ff; border-left: 6px solid #007BFF; padding: 12px; margin-top: 20px; color: #004085; font-size: 13px;">
-                    Welcome to the Bayanihan Team!
-                </div>
+                <p>Welcome to the Bayanihan Team!</p>
+            </td>
+        </tr>
+
+        <!-- Automated Notice -->
+        <tr>
+            <td>
+                <p>This is an automated email. Please do not reply to this email.</p>
             </td>
         </tr>
 
         <!-- Footer -->
         <tr>
-            <td style="background-color: #f7f7f7; padding: 10px; text-align: center; color: #555; font-size: 12px;">
+            <td style="text-align: center;">
                 <small>&copy; {{ date('Y') }} Bayanihan System. All rights reserved.</small>
             </td>
         </tr>

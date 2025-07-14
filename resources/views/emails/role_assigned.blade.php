@@ -4,47 +4,48 @@
     <meta charset="UTF-8">
     <title>New Role Assignment</title>
 </head>
-<body style="font-family: Georgia, 'Times New Roman', serif; background-color: #f1f8ff; padding: 20px; margin: 0;">
-    <table width="100%" cellspacing="0" cellpadding="0"
-           style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px;
-                  overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-
-        <!-- Slim Blue Header -->
+<body>
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <!-- Logo at Top -->
         <tr>
-            <td style="background-color: #007BFF; padding: 6px 16px; color: white; text-align: center;">
-                <h3 style="margin: 0; font-weight: normal; font-size: 16px;">Role Assignment</h3>
+            <td style="text-align: left;">
+                <img src="https://i.imgur.com/e6DsGLI.png" alt="SyllabEase Logo" style="max-width: 200px;">
+            </td>
+        </tr>
+
+        <!-- Title -->
+        <tr>
+            <td>
+                <h3>Role Assignment</h3>
             </td>
         </tr>
 
         <!-- Body -->
         <tr>
-            <td style="padding: 20px;">
-                <p style="font-size: 14px; color: #333; line-height: 1.6;">
-                    Hello {{ $user->firstname }} {{ $user->lastname }},
-                </p>
+            <td>
+                <p>Hello {{ $user->firstname }} {{ $user->lastname }},</p>
 
-                <p style="font-size: 14px; color: #333;">
-                    You have been assigned a new role in <strong>SyllabEase</strong>:
-                </p>
+                <p>You have been assigned a new role in <strong>SyllabEase</strong>:</p>
 
-                <p style="font-size: 14px; color: #333; margin: 15px 0;">
-                    <strong style="color: #007BFF;">Role:</strong> {{ $roleName }}
-                </p>
+                <p><strong>Role:</strong> {{ $roleName }}</p>
 
-                <p style="font-size: 14px; color: #333;">
-                    If you have questions or believe this was an error, please contact the administrator.
-                </p>
+                <p>If you have questions or believe this was an error, please contact the administrator.</p>
 
-                <p style="font-size: 13px; color: #555; margin-top: 30px;">
-                    Thank you,<br>
-                    <strong>The SyllabEase Team</strong>
-                </p>
+                <p>Thank you,<br>
+                <strong>The SyllabEase Team</strong></p>
+            </td>
+        </tr>
+
+        <!-- Automated Notice -->
+        <tr>
+            <td>
+                <p>This is an automated email. Please do not reply to this email.</p>
             </td>
         </tr>
 
         <!-- Footer -->
         <tr>
-            <td style="background-color: #f7f7f7; padding: 10px; text-align: center; color: #555; font-size: 12px;">
+            <td style="text-align: center;">
                 <small>&copy; {{ date('Y') }} SyllabEase. All rights reserved.</small>
             </td>
         </tr>
