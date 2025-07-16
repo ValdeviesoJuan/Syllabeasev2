@@ -53,6 +53,14 @@
             background-color:rgb(120, 122, 124); /* optional: light gray highlight */
         }
 
+        #undoBtn {
+            background-color: #c7c8ccff; /* light gray (Tailwind gray-100) */
+            color: #111827;   /* dark gray (Tailwind gray-900) */
+        }    
+
+        #undoBtn:hover {
+            background-color: #e5e7eb; /* slightly darker gray on hover (Tailwind gray-200) */
+        }
 
     
     </style>
@@ -61,8 +69,8 @@
 <body class="p-6 bg-gray-100">
 
 
-    <div class="flex justify-between mb-6 px-4">
-        <button id="undoBtn" class="bg-gray-300 hover:scale-105 transition ease-in-out text-black px-4 py-2 rounded-lg shadow">
+    <div class="sticky top-0 z-50 bg-white flex justify-between mb-6 px-4 py-2">
+        <button id="undoBtn" class="bg-gray-100 hover:scale-105 transition ease-in-out text-black px-4 py-2 rounded-lg shadow">
             Undo
         </button>
 
@@ -70,7 +78,7 @@
             @csrf
             <button id="doneBtn" type="button" class="bg-yellow hover:scale-105 transition ease-in-out text-white px-4 py-2 rounded-lg shadow">
                 Done
-            </button>
+            </button>   
         </form>
     </div>
         
@@ -191,276 +199,309 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-            // ───────── Undo Feature ─────────
-            const undoBtn = document.getElementById('undoBtn');
-            const historyStack = [];
+    const undoBtn = document.getElementById('undoBtn');
+    const historyStack = [];
 
-            function captureLayout() {
-                const snapshot = {};
-                document.querySelectorAll('.section').forEach(sec => {
-                    snapshot[sec.id] = {
-                        col: +sec.dataset.col,
-                        row: +sec.dataset.row,
-                        colSpan: +sec.dataset.colSpan,
-                        rowSpan: +sec.dataset.rowSpan
-                    };
-                });
-                historyStack.push(snapshot);
-            }
+    function captureLayout() {
+        const snapshot = {};
+        document.querySelectorAll('.section').forEach(sec => {
+            snapshot[sec.id] = {
+                col: +sec.dataset.col,
+                row: +sec.dataset.row,
+                colSpan: +sec.dataset.colSpan,
+                rowSpan: +sec.dataset.rowSpan
+            };
+        });
+        historyStack.push(snapshot);
+    }
 
-            function applyLayout(snapshot) {
-                Object.entries(snapshot).forEach(([id, pos]) => {
-                    const el = document.getElementById(id);
-                    if (el) applyPos(el, pos);
-                });
-            }
-
-            if (undoBtn) {
-                undoBtn.addEventListener('click', () => {
-                    if (historyStack.length > 0) {
-                        const last = historyStack.pop();
-                        applyLayout(last);
-                    } else {
-                        alert("Nothing to undo.");
-                    }
-                });
-            }
-
-        /* ───────── 1 · Initial numeric coords (unchanged) ───────── */
-        const layout = {
-            "college-name":   { col: 1, row: 1, colSpan: 2, rowSpan: 1 },
-            "syllabus":       { col: 3, row: 1, colSpan: 1, rowSpan: 1 },
-            "vision-mission": { col: 1, row: 2, colSpan: 1, rowSpan: 4 },
-            "course-desc":    { col: 2, row: 2, colSpan: 2, rowSpan: 1 },
-            "course-outcomes":{ col: 2, row: 3, colSpan: 2, rowSpan: 1 },
-            "course-outline": { col: 2, row: 4, colSpan: 2, rowSpan: 1 },
-            "course-reqs":    { col: 2, row: 5, colSpan: 2, rowSpan: 1 },
-            "signatures":     { col: 1, row: 6, colSpan: 3, rowSpan: 1 },
-        };
-
-        const grid      = document.querySelector(".grid-container");
-        const sections  = document.querySelectorAll(".section");
-        let   dragSrc   = null;
-        let   gapRect   = null;
-
-        Object.entries(layout).forEach(([id,pos]) => {
+    function applyLayout(snapshot) {
+        Object.entries(snapshot).forEach(([id, pos]) => {
             const el = document.getElementById(id);
             if (el) applyPos(el, pos);
         });
+    }
 
-        function applyPos(el, pos) {
-            el.style.gridColumn = `${pos.col} / span ${pos.colSpan}`;
-            el.style.gridRow    = `${pos.row} / span ${pos.rowSpan}`;
-            el.dataset.col      = pos.col;
-            el.dataset.row      = pos.row;
-            el.dataset.colSpan  = pos.colSpan;
-            el.dataset.rowSpan  = pos.rowSpan;
-            el.style.width = el.style.height = "";
-        }
-
-        function trackEnds(templateProp, totalPx) {
-            const parts = templateProp.split(/\s+/);
-            const pxParts = parts.filter(p => p.endsWith('px'));
-            if (pxParts.length === parts.length) {
-                let acc = 0; return parts.map(p => acc += parseFloat(p));
+    if (undoBtn) {
+        undoBtn.addEventListener('click', () => {
+            if (historyStack.length > 0) {
+                const last = historyStack.pop();
+                applyLayout(last);
+            } else {
+                alert("Nothing to undo.");
             }
-            const frTotal = parts.reduce((s,p)=>s+parseFloat(p),0);
-            let acc=0;
-            return parts.map(p => acc += totalPx * (parseFloat(p)/frTotal));
-        }
+        });
+    }
 
-        function getColLines() {
-            return trackEnds(
-                getComputedStyle(grid).gridTemplateColumns,
-                grid.getBoundingClientRect().width
-            );
-        }
-        function getRowLines() {
-            return trackEnds(
-                getComputedStyle(grid).gridTemplateRows,
-                grid.getBoundingClientRect().height
-            );
-        }
+    const defaultLayout = {
+        "college-name":   { col: 1, row: 1, colSpan: 2, rowSpan: 1 },
+        "syllabus":       { col: 3, row: 1, colSpan: 1, rowSpan: 1 },
+        "vision-mission": { col: 1, row: 2, colSpan: 1, rowSpan: 4 },
+        "course-desc":    { col: 2, row: 2, colSpan: 2, rowSpan: 1 },
+        "course-outcomes":{ col: 2, row: 3, colSpan: 2, rowSpan: 1 },
+        "course-outline": { col: 2, row: 4, colSpan: 2, rowSpan: 1 },
+        "course-reqs":    { col: 2, row: 5, colSpan: 2, rowSpan: 1 },
+        "signatures":     { col: 1, row: 6, colSpan: 3, rowSpan: 1 },
+    };
 
-        function colFromX(clientX) {
-            const rect = grid.getBoundingClientRect();
-            const x = clientX - rect.left;
-            const lines = getColLines();
-            if (x < 0 || x > lines.at(-1)) return null;
-            if (x <= lines[0]) return 1;
-            if (x <= lines[1]) return 2;
-            return 3;
+    const grid = document.querySelector(".grid-container");
+    const sections = document.querySelectorAll(".section");
+
+    function applyPos(el, pos) {
+        el.style.gridColumn = `${pos.col} / span ${pos.colSpan}`;
+        el.style.gridRow = `${pos.row} / span ${pos.rowSpan}`;
+        el.dataset.col = pos.col;
+        el.dataset.row = pos.row;
+        el.dataset.colSpan = pos.colSpan;
+        el.dataset.rowSpan = pos.rowSpan;
+        el.style.width = el.style.height = "";
+    }
+
+    const editIdx = localStorage.getItem('editingIndex');
+    const editing = JSON.parse(localStorage.getItem('editingTemplate') || 'null');
+
+    if (editing) {
+        document.getElementById('tplName').value = editing.name || '';
+        const layout = editing.layout || defaultLayout;
+        Object.entries(layout).forEach(([id, pos]) => {
+            const el = document.getElementById(id);
+            if (el) applyPos(el, pos);
+        });
+    } else {
+        Object.entries(defaultLayout).forEach(([id, pos]) => {
+            const el = document.getElementById(id);
+            if (el) applyPos(el, pos);
+        });
+    }
+
+    function trackEnds(templateProp, totalPx) {
+        const parts = templateProp.split(/\s+/);
+        const pxParts = parts.filter(p => p.endsWith('px'));
+        if (pxParts.length === parts.length) {
+            let acc = 0;
+            return parts.map(p => acc += parseFloat(p));
         }
-        function rowFromY(clientY) {
-            const rect = grid.getBoundingClientRect();
-            const y = clientY - rect.top;
-            const lines = getRowLines();
-            if (y < 0 || y > lines.at(-1)) return null;
-            for (let i = 0; i < lines.length; i++) {
+        const frTotal = parts.reduce((s, p) => s + parseFloat(p), 0);
+        let acc = 0;
+        return parts.map(p => acc += totalPx * (parseFloat(p) / frTotal));
+    }
+
+    function getColLines() {
+        return trackEnds(
+            getComputedStyle(grid).gridTemplateColumns,
+            grid.getBoundingClientRect().width
+        );
+    }
+
+    function getRowLines() {
+        return trackEnds(
+            getComputedStyle(grid).gridTemplateRows,
+            grid.getBoundingClientRect().height
+        );
+    }
+
+    function colFromX(clientX) {
+        const rect = grid.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const lines = getColLines();
+        for (let i = 0; i < lines.length; i++) {
+            if (x <= lines[i]) return i + 1;
+        }
+        return lines.length;
+    }
+
+    function rowFromY(clientY) {
+        const rect = grid.getBoundingClientRect();
+        const y = clientY - rect.top;
+        const lines = getRowLines();
+        for (let i = 0; i < lines.length; i++) {
             if (y <= lines[i]) return i + 1;
-            }
-            return null;
         }
+        return lines.length;
+    }
 
-        const hi = Object.assign(document.createElement("div"), {
-            style: `
+    const hi = Object.assign(document.createElement("div"), {
+        style: `
             position:absolute;pointer-events:none;display:none;
             background:rgba(120,122,124,.25);border:2px dashed gray;z-index:40;`
+    });
+    grid.appendChild(hi);
+
+    function showHi(rect) {
+        const colLines = [0, ...getColLines()];
+        const rowLines = [0, ...getRowLines()];
+        const left = colLines[rect.col - 1];
+        const top = rowLines[rect.row - 1];
+        const width = colLines[rect.col - 1 + rect.colSpan] - left;
+        const height = rowLines[rect.row - 1 + rect.rowSpan] - top;
+        Object.assign(hi.style, {
+            left: left + "px",
+            top: top + "px",
+            width: width + "px",
+            height: height + "px",
+            display: "block"
         });
-        grid.appendChild(hi);
-        function showHi(rect) {
-            const colLines = [0, ...getColLines()];
-            const rowLines = [0, ...getRowLines()];
-            const left  = colLines[rect.col-1];
-            const top   = rowLines[rect.row-1];
-            const width  = colLines[rect.col-1+rect.colSpan] - left;
-            const height = rowLines[rect.row-1+rect.rowSpan] - top;
-            Object.assign(hi.style,{
-            left:left+"px",top:top+"px",width:width+"px",height:height+"px",display:"block"
-            });
-        }
-        const hideHi = () => hi.style.display="none";
-
-        function getRows() { return getRowLines().length; }
-        function buildOcc(exclude=null) {
-            const occ = Array.from({length:getRows()+1},() => Array(4).fill(false));
-            sections.forEach(el=>{
-            if (el===exclude) return;
-            const c0=+el.dataset.col, r0=+el.dataset.row;
-            const cs=+el.dataset.colSpan, rs=+el.dataset.rowSpan;
-            for(let r=r0;r<r0+rs;r++) for(let c=c0;c<c0+cs;c++) occ[r][c]=true;
-            });
-            return occ;
-        }
-
-        sections.forEach(sec=>{
-            const btn = sec.querySelector(".handle button"); if(!btn) return;
-            btn.style.cursor="move"; sec.draggable=true;
-
-            sec.addEventListener("dragstart",e=>{
-            dragSrc=sec; gapRect=null; e.dataTransfer.effectAllowed="move";
-            });
-            sec.addEventListener("dragend",()=>{dragSrc=null;hideHi();});
-
-            sec.addEventListener("dragover",e=>{
-            e.preventDefault(); sec.classList.add("drag-over");
-            });
-            sec.addEventListener("dragleave",()=>sec.classList.remove("drag-over"));
-
-            sec.addEventListener("drop",e=>{
-            e.preventDefault(); sec.classList.remove("drag-over");
-            if(dragSrc===sec) return;
-            captureLayout();
-            const srcPos={col:dragSrc.dataset.col,row:dragSrc.dataset.row,
-                            colSpan:dragSrc.dataset.colSpan,rowSpan:dragSrc.dataset.rowSpan};
-            const tgtPos={col:sec.dataset.col,row:sec.dataset.row,
-                            colSpan:sec.dataset.colSpan,rowSpan:sec.dataset.rowSpan};
-            applyPos(dragSrc,tgtPos); applyPos(sec,srcPos);
-            });
-        });
-
-        grid.addEventListener("dragover",e=>{
-            if(!dragSrc) return; e.preventDefault();
-            const col=colFromX(e.clientX),row=rowFromY(e.clientY);
-            if(!col||!row) {hideHi();gapRect=null;return;}
-
-            const elUnder = document.elementFromPoint(e.clientX,e.clientY);
-            if(elUnder && elUnder.closest(".section") && elUnder.closest(".section")!==dragSrc){
-            hideHi();gapRect=null;return;
-            }
-
-            const occ = buildOcc(dragSrc);
-            if(occ[row][col]) {hideHi();gapRect=null;return;}
-
-            let maxCS=0; for(let c=col;c<=3 && !occ[row][c];c++) maxCS++;
-            if(maxCS===0){hideHi();gapRect=null;return;}
-
-            let maxRS=0,rows=getRows(),go=true;
-            for(let r=row;r<=rows&&go;r++){
-            for(let c=col;c<col+maxCS;c++){ if(occ[r][c]){go=false;break;} }
-            if(go) maxRS++; else break;
-            }
-
-            gapRect={col,row,colSpan:maxCS,rowSpan:maxRS};
-            showHi(gapRect);
-        });
-
-        grid.addEventListener("drop",e=>{
-            e.preventDefault(); hideHi();
-            if(dragSrc && gapRect){
-            captureLayout();
-            applyPos(dragSrc,gapRect);
-            }
-            dragSrc=null; gapRect=null;
-        });
-
-        interact('.section').resizable({
-  edges : { left:true, right:true, top:true, bottom:true },
-  listeners : {
-    move (ev) {
-      const tgt = ev.target;
-      let w = ev.rect.width,  h = ev.rect.height;
-      if (w < 150) w = 150;
-      if (h < 60 ) h = 60 ;
-      tgt.style.width  = w + 'px';
-      tgt.style.height = h + 'px';
-      const dx = (parseFloat(tgt.dataset.dx) || 0) + ev.deltaRect.left;
-      const dy = (parseFloat(tgt.dataset.dy) || 0) + ev.deltaRect.top;
-      tgt.style.transform = `translate(${dx}px, ${dy}px)`;
-      tgt.dataset.dx = dx; tgt.dataset.dy = dy;
-    },
-    async end (ev) {
-      const tgt = ev.target;
-      const dx = parseFloat(tgt.dataset.dx) || 0;
-      const dy = parseFloat(tgt.dataset.dy) || 0;
-      tgt.style.transform = '';
-      delete tgt.dataset.dx; delete tgt.dataset.dy;
-      const prevPosition = tgt.style.position || '';
-      tgt.style.position = 'absolute';
-      tgt.style.left = (tgt.offsetLeft + dx) + 'px';
-      tgt.style.top  = (tgt.offsetTop  + dy) + 'px';
-      const box = tgt.getBoundingClientRect();
-      const colStart = colFromX(box.left  + 1);
-      const colEnd   = colFromX(box.right - 1);
-      const rowStart = rowFromY(box.top   + 1);
-      const rowEnd   = rowFromY(box.bottom- 1);
-      if (!colStart || !rowStart || !colEnd || !rowEnd) {
-        tgt.style.position = prevPosition;
-        tgt.style.left = tgt.style.top = '';
-        return;
-      }
-      captureLayout();
-      applyPos(tgt, {
-        col     : colStart,
-        row     : rowStart,
-        colSpan : colEnd - colStart + 1,
-        rowSpan : rowEnd - rowStart + 1
-      });
-      tgt.style.position = prevPosition;
-      tgt.style.left = tgt.style.top = '';
-      tgt.style.width = tgt.style.height = '';
     }
-  },
-  modifiers : [
-    interact.modifiers.restrictEdges({ outer:'parent', endOnly:true })
-  ],
-  inertia : true
-});
 
-        /* The remaining save modal logic is untouched */
-        const doneBtn   = document.getElementById('doneBtn');
-        const saveModal = document.getElementById('saveModal');
-        const modCancel = document.getElementById('modCancel');
-        const modSave   = document.getElementById('modSave');
-        const tplName   = document.getElementById('tplName');
+    const hideHi = () => hi.style.display = "none";
 
-        const editIdx  = localStorage.getItem('editingIndex');
-        const editing  = JSON.parse(localStorage.getItem('editingTemplate') || 'null');
-        if (editing) tplName.value = editing.name || '';
+    function getRows() {
+        return getRowLines().length;
+    }
 
-        doneBtn.addEventListener('click', async e => {
+    function buildOcc(exclude = null) {
+        const occ = Array.from({ length: getRows() + 1 }, () => Array(4).fill(false));
+        sections.forEach(el => {
+            if (el === exclude) return;
+            const c0 = +el.dataset.col, r0 = +el.dataset.row;
+            const cs = +el.dataset.colSpan, rs = +el.dataset.rowSpan;
+            for (let r = r0; r < r0 + rs; r++)
+                for (let c = c0; c < c0 + cs; c++) occ[r][c] = true;
+        });
+        return occ;
+    }
+
+    sections.forEach(sec => {
+        const btn = sec.querySelector(".handle button");
+        if (!btn) return;
+        btn.style.cursor = "move";
+        sec.draggable = true;
+
+        sec.addEventListener("dragstart", e => {
+            dragSrc = sec;
+            gapRect = null;
+            e.dataTransfer.effectAllowed = "move";
+        });
+
+        sec.addEventListener("dragend", () => {
+            dragSrc = null;
+            hideHi();
+        });
+
+        sec.addEventListener("dragover", e => {
+            e.preventDefault();
+            sec.classList.add("drag-over");
+        });
+
+        sec.addEventListener("dragleave", () => sec.classList.remove("drag-over"));
+
+        sec.addEventListener("drop", e => {
+            e.preventDefault();
+            sec.classList.remove("drag-over");
+            if (dragSrc === sec) return;
+            captureLayout();
+            const srcPos = {
+                col: dragSrc.dataset.col,
+                row: dragSrc.dataset.row,
+                colSpan: dragSrc.dataset.colSpan,
+                rowSpan: dragSrc.dataset.rowSpan
+            };
+            const tgtPos = {
+                col: sec.dataset.col,
+                row: sec.dataset.row,
+                colSpan: sec.dataset.colSpan,
+                rowSpan: sec.dataset.rowSpan
+            };
+            applyPos(dragSrc, tgtPos);
+            applyPos(sec, srcPos);
+        });
+    });
+
+    grid.addEventListener("dragover", e => {
+        if (!dragSrc) return;
+        e.preventDefault();
+        const col = colFromX(e.clientX), row = rowFromY(e.clientY);
+        if (!col || !row) { hideHi(); gapRect = null; return; }
+
+        const elUnder = document.elementFromPoint(e.clientX, e.clientY);
+        if (elUnder && elUnder.closest(".section") && elUnder.closest(".section") !== dragSrc) {
+            hideHi();
+            gapRect = null;
+            return;
+        }
+
+        const occ = buildOcc(dragSrc);
+        if (occ[row]?.[col]) { hideHi(); gapRect = null; return; }
+
+        let maxCS = 0;
+        for (let c = col; c <= 3; c++) {
+            if (occ[row]?.[c]) break;
+            maxCS++;
+        }
+
+        let maxRS = 0, rows = getRows(), go = true;
+        for (let r = row; r <= rows && go; r++) {
+            for (let c = col; c < col + maxCS; c++) {
+                if (occ[r]?.[c]) { go = false; break; }
+            }
+            if (go) maxRS++;
+        }
+
+        gapRect = { col, row, colSpan: maxCS, rowSpan: maxRS };
+        showHi(gapRect);
+    });
+
+    grid.addEventListener("drop", e => {
+        e.preventDefault();
+        hideHi();
+        if (dragSrc && gapRect) {
+            captureLayout();
+            applyPos(dragSrc, gapRect);
+        }
+        dragSrc = null;
+        gapRect = null;
+    });
+
+    interact('.section').resizable({
+        edges: { left: true, right: true, top: true, bottom: true },
+        listeners: {
+            move(ev) {
+                const tgt = ev.target;
+                let w = ev.rect.width, h = ev.rect.height;
+                if (w < 150) w = 150;
+                if (h < 60) h = 60;
+                tgt.style.width = w + 'px';
+                tgt.style.height = h + 'px';
+                const dx = (parseFloat(tgt.dataset.dx) || 0) + ev.deltaRect.left;
+                const dy = (parseFloat(tgt.dataset.dy) || 0) + ev.deltaRect.top;
+                tgt.style.transform = `translate(${dx}px, ${dy}px)`;
+                tgt.dataset.dx = dx; tgt.dataset.dy = dy;
+            },
+            end(ev) {
+                const tgt = ev.target;
+                const dx = parseFloat(tgt.dataset.dx) || 0;
+                const dy = parseFloat(tgt.dataset.dy) || 0;
+                tgt.style.transform = '';
+                delete tgt.dataset.dx;
+                delete tgt.dataset.dy;
+                const box = tgt.getBoundingClientRect();
+                const colStart = colFromX(Math.floor(box.left + 1));
+                const colEnd   = colFromX(Math.ceil(box.right - 1));
+                const rowStart = rowFromY(Math.floor(box.top + 1));
+                const rowEnd   = rowFromY(Math.ceil(box.bottom - 1));
+                if (!colStart || !rowStart || !colEnd || !rowEnd) return;
+                captureLayout();
+                applyPos(tgt, {
+                    col: colStart,
+                    row: rowStart,
+                    colSpan: colEnd - colStart + 1,
+                    rowSpan: rowEnd - rowStart + 1
+                });
+            }
+        },
+        modifiers: [interact.modifiers.restrictEdges({ outer: 'parent', endOnly: true })],
+        inertia: true
+    });
+
+    const doneBtn = document.getElementById('doneBtn');
+    const saveModal = document.getElementById('saveModal');
+    const modCancel = document.getElementById('modCancel');
+    const modSave = document.getElementById('modSave');
+    const tplName = document.getElementById('tplName');
+
+    doneBtn.addEventListener('click', async e => {
         e.preventDefault();
         if (editIdx !== null) {
             await saveTemplate(editing.name);
@@ -468,40 +509,54 @@
             saveModal.classList.remove('hidden');
             tplName.focus();
         }
-        });
+    });
 
-        modSave.addEventListener('click', async () => {
+    modSave.addEventListener('click', async () => {
         const name = tplName.value.trim();
         if (!name) { alert('Template name is required.'); return; }
         await saveTemplate(name);
         saveModal.classList.add('hidden');
-        });
+    });
 
-        [modCancel, saveModal].forEach(el =>
+    [modCancel, saveModal].forEach(el =>
         el.addEventListener('click', e => {
             if (e.target === saveModal || e.target === modCancel)
-            saveModal.classList.add('hidden');
+                saveModal.classList.add('hidden');
         }));
 
-        async function saveTemplate(name) {
-        const canvas = await html2canvas(grid, { backgroundColor:'#ffffff' });
-        const img    = canvas.toDataURL('image/png');
+    async function saveTemplate(name) {
+        const canvas = await html2canvas(grid, { backgroundColor: '#ffffff' });
+        const img = canvas.toDataURL('image/png');
         const templates = JSON.parse(localStorage.getItem('templates') || '[]');
 
+        const layout = {};
+        document.querySelectorAll('.section').forEach(sec => {
+            layout[sec.id] = {
+                col: +sec.dataset.col,
+                row: +sec.dataset.row,
+                colSpan: +sec.dataset.colSpan,
+                rowSpan: +sec.dataset.rowSpan
+            };
+        });
+
+        const templateData = { name, img, layout };
+
         if (editIdx !== null) {
-            templates[+editIdx] = { name, img };
+            templates[+editIdx] = templateData;
             localStorage.removeItem('editingIndex');
             localStorage.removeItem('editingTemplate');
         } else {
-            templates.push({ name, img });
+            templates.push(templateData);
         }
+
         localStorage.setItem('templates', JSON.stringify(templates));
-
         window.location.href = "{{ route('bayanihanleader.createTemplate') }}";
-        }
+    }
 
-        });
-    </script>
+});
+</script>
+
+
 
 
 
