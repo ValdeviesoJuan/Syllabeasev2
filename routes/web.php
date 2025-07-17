@@ -50,10 +50,9 @@ Route::get('/notifications/mark-read/{id}', function ($id) {
 })->name('notifications.markRead');
 
 // //New middleware route for notification Dean - BLeader
-// use App\Http\Controllers\BayanihanLeader\BLSyllabusController;
-// Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
-//     Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
-// });
+Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
+    Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
+});
 
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;
