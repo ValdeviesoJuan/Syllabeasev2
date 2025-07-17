@@ -4,12 +4,30 @@
 @include('layouts.modal')
 <!DOCTYPE html>
 <html lang="en">
+    
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>SyllabEase</title>
         @vite('resources/css/app.css')
+        <style>
+        .bg svg {
+            transform: scaleY(-1);
+            min-width: '1880'
+        }
+
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        } 
+        body{
+            background-color: #eaeaea;
+        }
+    </style>
         <style>
             .bg svg {
                 transform: scaleY(-1);
@@ -64,24 +82,21 @@
     <div class="m-auto p-8 bg-white mt-[5%] shadow-lg rounded-lg  w-11/12">
         <span class="flex flex-block justify-between items-center">
             <h1 class="font-bold text-4xl text-[#201B50] mb-8">List of Syllabus</h1>
-            <div
-                class="mb-5 ml-11 mt-2 pt-2 w-[200px] hover:scale-105 transition ease-in-out bg-blue3 py-2 text-white rounded px-2 hover:bg-blue shadow-lg">
-                <form action="{{ route('bayanihanleader.createSyllabus') }}" method="GET">
-                    @csrf
-                    <button type="submit" class="flex m-auto text-ml gap-2">
-                        <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#ffffff" stroke-width="1.5"
-                                stroke-linecap="round"></path>
-                            <path
-                                d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7"
-                                stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
-                        </svg>
-                        <div class="right-0 justify-end">
-                            Create Syllabus
-                        </div>
-                    </button>
-                </form>
+            <div class="">
+                <a href="{{ route('bayanihanleader.createSyllabus') }}"
+                    class="whitespace-nowrap w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                    style="background: #d7ecf9;"
+                    onmouseover="this.style.background='#c3dff3';"
+                    onmouseout="this.style.background='#d7ecf9';">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                    </svg>
+                    Create Syllabus
+                </a>
+                
             </div>
         </span>
         <livewire:b-l-syllabus-table />

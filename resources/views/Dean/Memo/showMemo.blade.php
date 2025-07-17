@@ -2,7 +2,20 @@
 
 @section('content')
 <div class="mt-16 max-w-4xl mx-auto bg-white p-6 shadow rounded-lg dark:bg-gray-800">
+<style>
+        .bg svg {
+            transform: scaleY(-1);
+            min-width: '1880'
+        }
 
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+    </style>
     {{-- Header --}}
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ $memo->title }}</h1>
