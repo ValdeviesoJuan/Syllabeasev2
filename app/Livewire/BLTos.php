@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\BayanihanGroup;
-use App\Models\BayanihanLeader;
+use App\Models\BayanihanGroupUsers; 
 use App\Models\Chairperson;
 use App\Models\Tos;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +24,11 @@ class BLTos extends Component
     ];
     public function render()
     {
-        $myGroup = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-        ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        ->select('bayanihan_groups.bg_id')
-        ->get();
+        $myGroup = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->select('bayanihan_groups.bg_id')
+            ->get();
         if ($myGroup) {
             $myGroupBgIds = $myGroup->pluck('bg_id')->toArray();
             $toss = Tos::join('bayanihan_groups', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')

@@ -23,7 +23,7 @@ class collegeSeeder extends Seeder
             [
                 'college_id' => '2',
                 'college_code' => 'CITC',
-                'college_description' => 'College of Information TEchnology and Computing',
+                'college_description' => 'College of Information Technology and Computing',
                 'college_status' => 'Active'
             ],
             [

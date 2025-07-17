@@ -53,24 +53,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="bg-blue px-2 py-1 text-white w-min flex-row rounded-lg">
-                <div class="">
-                    <a class="" href="{{ route('chairperson.createPo') }}">
-                        <div class="">
-                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
-                            </svg>
-                        </div>
-                        <div class="">
-                            Add
-                        </div>
-                    </a>
-                </div>
-            </div> -->
-
-        <!-- <a href="{{ route('chairperson.editPo', $department_id) }}">Edit </a> -->
-
     </div>
     <div>
         <div class="ml-10 mt-2 pt-2 w-max hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded-lg hover:bg-blue">
@@ -89,7 +71,7 @@
             </form>
         </div>
         <div class="ml-10 mt-2 pt-2 w-max hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded-lg hover:bg-blue">
-            <form action="{{ route('chairperson.editPo', $department_id) }}" method="GET">
+            <form action="{{ route('chairperson.editPo') }}" method="GET">
                 @csrf
                 <button type="submit" class="flex  px-5   text-ml">
                     <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

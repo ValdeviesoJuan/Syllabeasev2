@@ -51,12 +51,6 @@ class ChairPOController extends Controller
     }
     public function createPo()
     {
-        $user = Auth::user(); 
-        $notifications = $user->notifications;
-        return view('Chairperson.ProgramOutcome.poCreate', compact('notifications'));
-    }
-    public function storePo(Request $request)
-    {
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
@@ -64,6 +58,13 @@ class ChairPOController extends Controller
 
         $department_id = $chairperson->entity_id;
 
+        $user = Auth::user(); 
+        $notifications = $user->notifications;
+
+        return view('Chairperson.ProgramOutcome.poCreate', compact('notifications', 'department_id'));
+    }
+    public function storePo(Request $request, string $department_id)
+    {
         $validatedData = $request->validate([
             'po_letter.*' => 'required',
             'po_description.*' => 'required',
@@ -79,16 +80,8 @@ class ChairPOController extends Controller
 
         return redirect()->route('chairperson.programOutcome')->with('success', 'Program Outcome created successfully.');
     }
-    public function editPo($po_id)
+    public function editPo()
     {
-        $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
-            ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.user_id', '=', Auth::user()->id)
-            ->where('user_roles.entity_type', '=', 'Chairperson')
-            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->select('departments.*', 'program_outcomes.*')
-            ->get();
-            
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
@@ -96,6 +89,11 @@ class ChairPOController extends Controller
 
         $department_id = $chairperson->entity_id;
 
+        $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
+            ->where('program_outcomes.department_id', '=', $department_id)
+            ->select('departments.*', 'program_outcomes.*')
+            ->get();
+            
         $user = Auth::user(); 
         $notifications = $user->notifications;
 
@@ -103,13 +101,6 @@ class ChairPOController extends Controller
     }
     public function updatePo(Request $request, string $department_id)
     {
-        $chairperson = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
-
-        $department_id = $chairperson->entity_id;
-
         $request->validate([
             'po_letter.*' => 'required|string',
             'po_description.*' => 'required|string',
@@ -121,6 +112,7 @@ class ChairPOController extends Controller
         ]);
 
         ProgramOutcome::where('department_id', $department_id)->delete();
+
         foreach ($validatedData['po_letter'] as $key => $poLetter) {
             $outcome = new ProgramOutcome();
             $outcome->department_id = $department_id;

@@ -30,8 +30,8 @@ class DeanMiddleware
             } else {
                 return redirect('/home')->with('message', 'Access Denied');
             }
-            } else {
-                return redirect('/login')->with('message', 'Login');
-            }
+        } else {
+            return redirect('/login')->with('message', 'Login');
+        }
       }
 }

@@ -21,14 +21,6 @@ class BayanihanLeaderCoController extends Controller
     }
     public function storeCo(Request $request, $syll_id)
     {
-        // $programOutcomes = Syllabus::where('syllabi.syll_id', '=', $syll_id)
-        //     ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-        //     ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-        //     ->join('program_outcomes', 'program_outcomes.department_id', '=', 'curricula.department_id')
-        //     ->select('program_outcomes.*')
-        //     ->get();
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
         ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
         ->where('syllabi.syll_id', '=', $syll_id)
@@ -60,27 +52,6 @@ class BayanihanLeaderCoController extends Controller
     }
     public function createCoPo($syll_id)
     {
-        // $programOutcomes = Syllabus::where('syllabi.syll_id', '=', $syll_id)
-        //     ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-        //     ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-        //     ->join('program_outcomes', 'program_outcomes.department_id', '=', 'curricula.department_id')
-        //     ->select('program_outcomes.*')
-        //     ->get();
-        // multiple progr out inputs
-        // $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
-        // ->join('curricula', 'curricula.department_id', '=', 'departments.department_id')
-        // ->join('courses', 'courses.curr_id', '=', 'curricula.curr_id')
-        // ->join('bayanihan_groups', 'bayanihan_groups.course_id', '=', 'courses.course_id')
-        // ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        // ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-        // ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        // ->where('syllabi.syll_id', '=', $syll_id)
-        // ->groupBy('program_outcomes.po_id')
-        // ->select('program_outcomes.*')
-        // ->distinct()
-        // ->get();
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
         ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
         ->get();
@@ -109,15 +80,6 @@ class BayanihanLeaderCoController extends Controller
     }
     public function editCoPo($syll_id)
     {
-        // $programOutcomes = Syllabus::where('syllabi.syll_id', '=', $syll_id)
-        //     ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-        //     ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-        //     ->join('program_outcomes', 'program_outcomes.department_id', '=', 'curricula.department_id')
-        //     ->select('program_outcomes.*')
-        //     ->get();
-
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
         ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
         ->where('syllabi.syll_id', '=', $syll_id)

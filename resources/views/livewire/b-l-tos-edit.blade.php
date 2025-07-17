@@ -3,16 +3,16 @@
 
     <table id="tosTable" class="mt-4 border-2 border-solid w-full font-serif text-sm bg-white">
         <tr>
-            <th rowspan="3">
+            <th class="px-1 w-[70px]" rowspan="3">
                 Topics
             </th>
-            <th rowspan="3">
+            <th class="px-1 w-[70px]" rowspan="3">
                 No. of <br> Hours <br> Taught
             </th>
-            <th class="px-2" rowspan="3">
+            <th class="px-1 w-[70px]" rowspan="3">
                 %
             </th>
-            <th rowspan="3">
+            <th class="px-1 w-[70px]" rowspan="3">
                 No. of <br>Test <br>Items
             </th>
             <th colspan="5" class="py-2">
@@ -47,16 +47,16 @@
             @csrf
             @foreach($tos_rows as $index => $tos_row)
             <tr>
-                <td class="p-2">
+                <td class="px-1 w-full">
                     {{ $tos_row->tos_r_topic }}
                 </td>
-                <td class="text-center">
+                <td class="text-center w-full">
                     {{ $tos_row->tos_r_no_hours }}
                 </td>
-                <td class="text-center w-[50px]">
+                <td class="text-center w-[full]">
                     {{ $tos_row->tos_r_percent }}
                 </td>
-                <td id="tos_r_no_items" class="text-center">
+                <td class="text-center w-full" id="tos_r_no_items" >
                     {{ $tos_row->tos_r_no_items }}
                 </td>
                 <input type="hidden" name="tos_r_id[]" value="{{ $tos_row->tos_r_id }}">
@@ -103,5 +103,4 @@
             <td id="expCol4" class="text-center font-bold p-2">{{$tos->col_4_exp}}</td>
         </tr>
     </table>
-
 </div>

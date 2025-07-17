@@ -263,33 +263,6 @@
                         <!-- <span class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
                     </a>
                 </li>
-    
-                <li>
-                    <button type="button" class="flex items-center w-full p-2 text-base text-white transition duration-75 rounded-lg group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
-                        <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                            <defs id="defs1" />
-                            <g id="layer1" transform="translate(-15.755283,-77.661276)">
-                                <rect style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.231;stroke-linecap:round" id="rect1" width="179.53818" height="179.53816" x="15.755282" y="77.66127" ry="22.909351" />
-                                <text xml:space="preserve" style="font-weight:bold;font-size:141.022px;font-family:Octarine;-inkscape-font-specification:'Octarine, Bold';fill:#2468d2;fill-opacity:1;fill-rule:evenodd;stroke-width:0.975245;stroke-linecap:round" x="54.408501" y="222.98553" id="text2" transform="scale(1.0315405,0.96942389)">
-                                    <tspan id="tspan2" style="fill:#2468d2;fill-opacity:1;stroke-width:0.975245" x="54.408501" y="222.98553">P</tspan>
-                                </text>
-                            </g>
-                        </svg>
-
-                        <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Program</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                        </svg>
-                    </button>
-                    <ul id="dropdown-example" class="hidden py-2 space-y-2">
-                        <li>
-                            <a href="{{ route('admin.programOutcome') }}" class="{{request()->route()->getName() == 'admin.programOutcome' ? 'bg-blue4' : ''}}flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Outcomes</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.poe') }}" class="{{request()->route()->getName() == 'admin.poe' ? 'bg-blue4' : ''}}flex items-center w-full p-2 text-white transition duration-75 rounded-lg pl-11 group  hover:bg-blue4 dark:text-white dark:hover:bg-gray-700">Educational Objectives</a>
-                        </li>
-                    </ul>
-                </li>
                             
                 <li>
                     <a href="{{ route('admin.course') }}" class="{{request()->route()->getName() == 'admin.course' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">

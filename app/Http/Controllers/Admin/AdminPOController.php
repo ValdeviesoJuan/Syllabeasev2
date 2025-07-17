@@ -12,111 +12,93 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminPOController extends Controller
 {
-    public function index()
+    public function viewPo(string $department_id)
     {
-        $departments = Department::all();
-
-        $department_name = UserRole::where('user_roles.user_id', '=', Auth::id())
-            ->join('departments', 'user_roles.entity_id', '=', 'departments.department_id')
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->select('departments.department_name')
-            ->first()
-            ->department_name;
-
-        $today = now()->toDateString();
+        $department = Department::where('departments.department_id', '=', $department_id)
+            ->select('departments.*')
+            ->first();
 
         $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
-            ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.entity_type', '=', 'Department')
-            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            // ->where('user_roles.start_validity', '<=', $today)
-            // ->where('user_roles.end_validity', '>=', $today)
+            ->where('program_outcomes.department_id', '=', $department_id)
             ->orderBy('program_outcomes.po_letter', 'asc')
             ->select('departments.*', 'program_outcomes.*')
             ->get();
         
-        return view('admin.po.polist', compact( 'programOutcomes',  'department_name'));
+        return view('admin.po.polist', compact( 'programOutcomes',  'department'));
     }
-    public function createPo()
+    public function createPo(string $department_id)
     {
-        $departments = Department::where('department_status', '=', 'Active')->get();
+        $department = Department::where('department_id', '=', $department_id)
+            ->select('departments.*')
+            ->first();
 
-        return view('admin.po.pocreate', compact('departments'));
+        return view('admin.po.pocreate', compact('department'));
     }
-    public function storePo(Request $request)
+    public function storePo(Request $request, string $department_id)
     {
-
+        // Validate the array inputs properly
         $validatedData = $request->validate([
-            'department_id' => 'required|exists:departments,department_id',
+            'po_letter' => 'required|array',
             'po_letter.*' => 'required|string',
+            'po_description' => 'required|array',
             'po_description.*' => 'required|string',
         ]);
 
-        foreach ($validatedData['po_letter'] as $key => $poLetter) {
+        // Check for matching counts
+        if (count($validatedData['po_letter']) !== count($validatedData['po_description'])) {
+            return back()->withErrors('Mismatch between PO letters and descriptions.');
+        }
+
+        foreach ($validatedData['po_letter'] as $index => $poLetter) {
             ProgramOutcome::create([
-                'department_id'   => $validatedData['department_id'],
+                'department_id'   => $department_id,
                 'po_letter'       => $poLetter,
-                'po_description'  => $validatedData['po_description'][$key],
+                'po_description'  => $validatedData['po_description'][$index],
             ]);
         }
 
-        return redirect()->route('admin.programOutcome')->with('success', 'Program Outcome created successfully.');
+        return redirect()->route('admin.viewPo', $department_id)->with('success', 'Program Outcomes created successfully.');
     }
-    public function editPo($po_id)
+    public function editPo(string $department_id)
     {
+        $department = Department::where('department_id', '=', $department_id)
+            ->select('departments.*')
+            ->first();
+
         $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
-            ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.user_id', '=', Auth::user()->id)
-            ->where('user_roles.entity_type', '=', 'Chairperson')
-            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->where('program_outcomes.department_id', '=', $department_id)
+            ->orderBy('program_outcomes.po_letter', 'asc')
             ->select('departments.*', 'program_outcomes.*')
             ->get();
-            
-        $chairperson = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
 
-        $department_id = $chairperson->entity_id;
-
-        return view('admin.po.poedit', compact('programOutcomes', 'department_id'));
+        return view('admin.po.poedit', compact('programOutcomes', 'department'));
     }
     public function updatePo(Request $request, string $department_id)
     {
-        $chairperson = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
-
-        $department_id = $chairperson->entity_id;
-
-        $request->validate([
+        $validatedData = $request->validate([
+            'po_letter' => 'required|array',
             'po_letter.*' => 'required|string',
+            'po_description' => 'required|array',
             'po_description.*' => 'required|string',
         ]);
 
-        $validatedData = $request->validate([
-            'po_letter.*' => 'required',
-            'po_description.*' => 'required',
-        ]);
-
         ProgramOutcome::where('department_id', $department_id)->delete();
-        foreach ($validatedData['po_letter'] as $key => $poLetter) {
-            $outcome = new ProgramOutcome();
-            $outcome->department_id = $department_id;
-            $outcome->po_letter = $poLetter;
-            $outcome->po_description = $validatedData['po_description'][$key];
 
-            $outcome->save();
+        foreach ($validatedData['po_letter'] as $index => $poLetter) {
+            ProgramOutcome::create([
+                'department_id'   => $department_id,
+                'po_letter'       => $poLetter,
+                'po_description'  => $validatedData['po_description'][$index],
+            ]);
         }
-        return redirect()->route('admin.programOutcome')->with('success', 'Program Outcome updated successfully.');
+
+        return redirect()->route('admin.viewPo', $department_id)->with('success', 'Program Outcome updated successfully.');
     }
-    public function destroyPo($po_id)
+    public function destroyPo(string $po_id)
     {
         $po = ProgramOutcome::findorfail($po_id);
         $po->delete();
 
-        return redirect()->route('admin.programOutcome')->with('success', 'Program Outcome deleted successfully.');
+        return back()->with('success', 'Program Outcome deleted successfully.');
     }
 }

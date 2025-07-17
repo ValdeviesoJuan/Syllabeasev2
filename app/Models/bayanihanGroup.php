@@ -3,8 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\BayanihanLeader;
+use Illuminate\Database\Eloquent\Model; 
 use OwenIt\Auditing\Contracts\Auditable;
 
 class BayanihanGroup extends Model implements Auditable
@@ -19,13 +18,13 @@ class BayanihanGroup extends Model implements Auditable
         'bg_school_year'
     ];
 
-    public function BayanihanLeaders()
+    public function members()
     {
-        return $this->hasMany(BayanihanLeader::class, 'bg_id', 'bg_id');
+        return $this->hasMany(BayanihanGroupUsers::class, 'bg_id')->where('bg_role', 'member');
     }
 
-    public function BayanihanMembers()
+    public function leaders()
     {
-        return $this->hasMany(BayanihanMember::class, 'bg_id', 'bg_id');
+        return $this->hasMany(BayanihanGroupUsers::class, 'bg_id')->where('bg_role', 'leader');
     }
 }

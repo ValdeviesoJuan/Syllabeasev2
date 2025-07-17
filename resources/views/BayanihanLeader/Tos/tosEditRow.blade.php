@@ -40,8 +40,8 @@
     </div>
 
     <div class="p-2 justify-center m-auto text-center">
-        <div class="relative mt-2 w-[80%] flex flex-col bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-xl shadow-lg p-12 mx-auto border border-white bg-white">
-            <livewire:b-l-tos-edit :tos_id="$tos_id" />
+        <div class="relative mt-2 w-[90%] flex flex-col bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-l shadow-lg p-12 mx-auto border border-white bg-white">
+            <livewire:b-l-tos-edit :tos_id={{ $tos_id }} />
         </div>
     </div>
 

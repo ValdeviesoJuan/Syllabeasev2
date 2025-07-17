@@ -29,7 +29,7 @@
             <img class="edit_user_img text-center p-6 mt-4 w-[400px] m-auto mb-6" src="/assets/Edit Program Outcomes.png" alt="SyllabEase Logo">
                 <div class="mb-10 pb-10">
                     <div class="ml-20 items-center">
-                        <form action="{{ route('chairperson.updatePo', $department_id) }}" method="POST">
+                        <form action="{{ route('admin.updatePo', $department->department_id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <div class="">

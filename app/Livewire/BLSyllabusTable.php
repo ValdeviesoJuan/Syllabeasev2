@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\BayanihanGroup;
-use App\Models\BayanihanLeader;
+use App\Models\BayanihanGroupUsers; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -21,23 +21,11 @@ class BLSyllabusTable extends Component
     ];
     public function render()
     {
-        
-        // $myDepartment = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-        //     ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-        //     ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-        //     ->join('departments', 'departments.department_id', '=', 'curricula.department_id')
-        //     ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        //     ->select('departments.department_id')
-        //     ->first();
-        $myGroup = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-        ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        ->select('bayanihan_groups.bg_id')
-        ->get();
-
-            // $syllabi = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            // ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-            // ->where('syllabi.department_id', '=', $department_id)
-            // ->whereNotNull('syllabi.chair_submitted_at')
+        $myGroup = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->select('bayanihan_groups.bg_id')
+            ->get();
             if ($myGroup) {
                 $myGroupBgIds = $myGroup->pluck('bg_id')->toArray();
                 $syllabi = BayanihanGroup::join('syllabi', function ($join) {

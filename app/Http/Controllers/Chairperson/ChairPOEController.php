@@ -121,6 +121,7 @@ class ChairPOEController extends Controller
     {
         $poe = POE::findorfail($poe_id);
         $poe->delete();
-        return redirect()->route('chairperson.poe')->with('success', 'POE deleted successfully.');
+
+        return back()->with('success', 'POE deleted successfully.');
     }
 }

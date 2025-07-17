@@ -1,6 +1,4 @@
 @extends('layouts.blSidebar')
-<!-- @-extends('layouts.blNav') -->
-
 @section('content')
 
 <!DOCTYPE html>

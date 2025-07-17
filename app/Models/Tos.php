@@ -17,6 +17,7 @@ class Tos extends Model implements Auditable
         'syll_id',
         'user_id',
         'tos_term',
+        'effectivity_date',
         'tos_no_items',
         'col_1_per',
         'col_2_per',
