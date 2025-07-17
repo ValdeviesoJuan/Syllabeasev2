@@ -16,7 +16,7 @@ class BLTosEdit extends Component
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
             ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
-        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
+        
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $this->tos_id)
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')

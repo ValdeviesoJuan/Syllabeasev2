@@ -2,7 +2,6 @@
 @extends('layouts.blNav')
 @section('content')
 
-{{-- na add ni gelski --}}
 @php
     use Illuminate\Support\Facades\DB;
 
@@ -30,7 +29,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,14 +51,11 @@
         background-size: contain;
     }
 </style>
-
 <body>
     <div class="m-auto bg-slate-100 mt-[120px] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-11/12">
         <img class="edit_user_img text-center mt-12 w-[370px] m-auto mb-12" src="/assets/Midterm Course Outline.png" alt="SyllabEase Logo">
         <form action="{{ route('bayanihanleader.storeCot', $syll_id) }}" method="POST">
             @csrf
-            <div id="input-container" class="">
-            </div>
             <table class="border-collapse border-2 border-solid m-5 font-serif">
                 <thead>
                     <tr class="border-2 border-solid">
@@ -79,25 +74,24 @@
                 <tbody id="tableBody">
                     <tr class="border-2 border-solid text-sm" id="">
                         <td class="p-2">
-                            {{-- na add ni gelski --}}
                             <input type="number"
-                            class="w-full h-60 font-sans {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
-                            name="syll_allotted_hour"
-                            id=""
-                            placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. 10' }}"
-                            value="{{ $isDisabled ? 'Disabled' : '' }}"
-                            required {{ $isDisabled }}>
-                                                    <!-- <textarea id="syll_allotted_hour" placeholder=" e.g. 1 hour" name="syll_allotted_hour" rows="4" cols="50" class="font-sans border-2 border-solid w-full" required></textarea> -->
-                                                </td>
-                                                <td class="p-2">
-                                                    <!-- <input type="number"class="w-[65%] font-sans mb-1" name="syll_allotted_time" id="" placeholder="e.g. 10"> week -->
-                                                    <textarea id="syll_allotted_time"
-                            placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. Week 1' }}"
-                            name="syll_allotted_time"
-                            rows="4"
-                            cols="50"
-                            class="font-sans border-2 border-solid w-full h-60 {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
-                            {{ $isDisabled }}>{{ $isDisabled ? 'Disabled' : '' }}</textarea>
+                                class="w-full h-60 font-sans {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
+                                name="syll_allotted_hour"
+                                id=""
+                                placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. 10' }}"
+                                value="{{ $isDisabled ? 'Disabled' : '' }}"
+                                required {{ $isDisabled }}
+                            >
+                        </td>
+                        <td class="p-2">
+                            <textarea id="syll_allotted_time"
+                                placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. Week 1' }}"
+                                name="syll_allotted_time"
+                                rows="4"
+                                cols="50"
+                                class="font-sans border-2 border-solid w-full h-60 {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
+                                {{ $isDisabled }}>{{ $isDisabled ? 'Disabled' : '' }}
+                            </textarea>
                         </td>
                         <td class="">
                             <select name="syll_course_outcome[]" id="syll_course_outcome[]" class="select2 border-2 border-solid w-full h-60" multiple {{ $isDisabled }}>
@@ -153,7 +147,7 @@
     &times;
   </button>
 </div>
-        <script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     let totalHours = {{ $totalHours }};
     const maxHours = 40;

@@ -401,13 +401,13 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('users.firstname', 'users.lastname', 'users.*')
             ->first();
 
-        $chairRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
         $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
             ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
             ->where('user_roles.entity_type', 'Department')
             ->where('user_roles.role_id', $chairRoleId)
             ->where('departments.department_id', '=', $info->department_id)
-            ->select('users.*', 'departments.*')
+            ->select('users.firstname', 'users.lastname', 'users.*')
             ->first();
 
         $syllabus = new Syllabus();
@@ -424,8 +424,8 @@ class BayanihanLeaderSyllabusController extends Controller
         $syllabus->curr_id = $info->curr_id;
         $syllabus->course_id = $info->course_id;
 
-        $syllabus->syll_dean = $dean->prefix . ' ' . $dean->firstname . ' ' . $dean->lastname . ' ' . $dean->suffix;
-        $syllabus->syll_chair = $chair->prefix . ' ' . $chair->firstname . ' ' . $chair->lastname . ' ' . $chair->suffix;
+        $syllabus->syll_dean = ($dean->prefix ? $dean->prefix . ' ' : '') . $dean->firstname . ' ' . $dean->lastname . ' ' . $dean->suffix;
+        $syllabus->syll_chair = ($chair->prefix ? $chair->prefix . ' ' : '') . $chair->firstname . ' ' . $chair->lastname . ' ' . $chair->suffix;
 
         $syllabus->version = 1;
         $syllabus->save();

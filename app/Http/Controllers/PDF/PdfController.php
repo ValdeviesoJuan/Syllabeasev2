@@ -34,6 +34,7 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\SimpleType\Jc;
+use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\Shared\Html as HtmlConverter;
 use CloudConvert\CloudConvert;
 use CloudConvert\Models\Job;
@@ -343,9 +344,13 @@ class PDFController extends Controller
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
             ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
-        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
-        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
-            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
+
+        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)
+            ->select('syllabus_course_outcomes.*')
+            ->get();
+        
+        $tos_rows = TosRows::leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
+            ->where('tos_rows.tos_id', '=', $tos_id)
             ->select('tos.*', 'tos_rows.*')
             ->get();
 
@@ -388,7 +393,7 @@ class PDFController extends Controller
             'chair' => $chair,
         ];
         setlocale(LC_TIME, 'es');
-        $document = new \PhpOffice\PhpWord\TemplateProcessor('doc/Tos-Template.docx');
+        $document = new TemplateProcessor('doc/Tos-Template.docx');
 
         $document->setValue('tos_term', $data['tos']->tos_term);
         $document->setValue('course_code', $data['tos']->course_code);
@@ -497,10 +502,9 @@ class PDFController extends Controller
 
     public function generateSyllabusPDF($syll_id)
     {
-
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
-            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') // Corrected
+            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') 
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -561,15 +565,15 @@ class PDFController extends Controller
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
             ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
             ->select('bayanihan_group_users.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->where('syllabi.syll_id', '=', $syll_id)
             ->get();
         $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
             ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
             ->select('bayanihan_group_users.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
             ->where('bayanihan_group_users.bg_role', '=', 'member')
+            ->where('syllabi.syll_id', '=', $syll_id)
             ->get();
 
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
@@ -588,22 +592,25 @@ class PDFController extends Controller
             'syll' => $syll,
             'programOutcomes' => $programOutcomes,
             'poes' => $poes,
-            'courseOutlinesFinals' => $courseOutlinesFinals,
+            'courseOutcomes' => $courseOutcomes,
             'copos' => $copos,
-            'instructors' => $instructors,
             'courseOutlines' => $courseOutlines,
+            'courseOutlinesFinals' => $courseOutlinesFinals,
             'cotCos' => $cotCos,
             'cotCosF' => $cotCosF,
+            'instructors' => $instructors,
             'bLeaders' => $bLeaders,
             'bMembers' => $bMembers,
             'reviewForm' => $reviewForm,
             'syllabusVersions' => $syllabusVersions,
-            'courseOutcomes' => $courseOutcomes,
         ];
         setlocale(LC_TIME, 'es');
         $date = date('Y-m-d');
-        $document = new \PhpOffice\PhpWord\TemplateProcessor('doc/Syllabus-Template.docx');
+        $document = new TemplateProcessor('doc/Syllabus-Template.docx');
 
+        $formattedDate = date('m.d.y', strtotime($data['syll']->effectivity_date));
+        $document->setValue('effective_date', $formattedDate);
+        
         $document->setValue('college_description', $data['syll']->college_description);
         $document->setValue('department_name', $data['syll']->department_name);
 
@@ -637,8 +644,9 @@ class PDFController extends Controller
         $document->setValue('syll_ins_consultation', $syll->syll_ins_consultation);
         $document->setValue('syll_ins_bldg_rm', $syll->syll_ins_bldg_rm);
         $document->setValue('syll_course_description', $syll->syll_course_description);
-        $rowCount = count($courseOutlines);
 
+        //For Course Outline Midterms Section
+        $rowCount = count($courseOutlines);
         $document->cloneRow('syll_allotted_time', $rowCount);
         foreach ($courseOutlines as $index => $row) {
             $syll_allotted_time = str_replace("\n", '</w:t><w:br/><w:t>', $row['syll_allotted_time']);
@@ -665,7 +673,7 @@ class PDFController extends Controller
             $syll_topics = str_replace("'", '&apos;', $syll_topics);
 
 
-            $document->setValue('syll_allotted_time#' . ($index + 1), $syll_allotted_time);
+            $document->setValue('syll_allotted_time#' . ($index + 1), $row['syll_allotted_hour'] . 'hours' .$syll_allotted_time);
             $document->setValue('syll_intended_learning#' . ($index + 1), $syll_intended_learning);
             $document->setValue('syll_topics#' . ($index + 1), $syll_topics);
             $document->setValue('syll_suggested_readings#' . ($index + 1), $syll_suggested_readings);
@@ -689,6 +697,7 @@ class PDFController extends Controller
         }
         \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(false);
 
+        //For Course Outline Finals Section
         $rowCount_f = count($courseOutlinesFinals);
         $document->cloneRow('syll_allotted_time_f', $rowCount_f);
         foreach ($courseOutlinesFinals as $index => $row) {
@@ -712,7 +721,7 @@ class PDFController extends Controller
 
             $syll_topics_f = str_replace("'", '&apos;', $syll_topics_f);
 
-            $document->setValue('syll_allotted_time_f#' . ($index + 1), $syll_allotted_time_f);
+            $document->setValue('syll_allotted_time_f#' . ($index + 1), $row['syll_allotted_hour'] . ' hours ' . $syll_allotted_time_f);
             $document->setValue('syll_intended_learning_f#' . ($index + 1), $syll_intended_learning_f);
             $document->setValue('syll_topics_f#' . ($index + 1), $syll_topics_f);
             $document->setValue('syll_suggested_readings_f#' . ($index + 1), $syll_suggested_readings_f);
@@ -735,28 +744,29 @@ class PDFController extends Controller
             $document->setValue('syll_co_code_f#' . ($index + 1), nl2br(e($cooString)));
         }
 
+        //For Program Educational Objectives in Syllabus
         $poeCount = count($poes);
         $document->cloneRow('poe_code', $poeCount);
         foreach ($poes as $index => $poe) {
             $poe_code = $poe['poe_code'];
-            // $poe_description = $poe['poe_description'];
-            $poe_description = htmlspecialchars_decode($poe['po_description']);
+            $poe_description = htmlspecialchars_decode($poe['poe_description']);
 
             $document->setValue('poe_code#' . ($index + 1), $poe_code);
             $document->setValue('poe_description#' . ($index + 1), $poe_description);
         }
 
+        //For Program Outcomes in Syllabus
         $poCount = count($programOutcomes);
         $document->cloneRow('po_letter', $poCount);
         foreach ($programOutcomes as $index => $po) {
             $po_letter = $po['po_letter'];
-            // $po_description = $po['po_description'];
             $po_description = htmlspecialchars_decode($po['po_description']);
 
             $document->setValue('po_letter#' . ($index + 1), $po_letter);
             $document->setValue('po_description#' . ($index + 1), $po_description);
         }
 
+        //For all Instructors in Syllabus
         $insCount = count($instructors);
         $document->cloneRow('ins_firstname', $insCount);
         foreach ($instructors as $index => $instructor) {
@@ -770,6 +780,7 @@ class PDFController extends Controller
         $document->setValue('syll_chair', $data['syll']->syll_chair);
         $document->setValue('syll_dean', $data['syll']->syll_dean);
 
+        //For Syllabus Course Requirement Section
         $syll_course_requirements = htmlspecialchars_decode(($data['syll']->syll_course_requirements));
         $syll_course_requirements = str_replace('andbull;', '&bull;', $syll_course_requirements);
         $syll_course_requirements = str_replace('&nbsp;', '', $syll_course_requirements);
@@ -780,9 +791,7 @@ class PDFController extends Controller
         $syll_course_requirements = str_replace("andrsquo;", '&apos;', $syll_course_requirements);
         $syll_course_requirements = str_replace("andndash;", '', $syll_course_requirements);
 
-
         // $syll_course_requirements = str_replace(':', '', $syll_course_requirements); 
-
 
         $dom = new \DOMDocument();
         @$dom->loadHTML($syll_course_requirements);
@@ -855,30 +864,64 @@ class PDFController extends Controller
             $document->setValue("syll_course_requirements_{$i}", '');
         }
 
-
+        //For Syllabus Course Outcome Section
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
+        
+        $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
+            ->get();
 
-        $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)->get();
-        $copos = SyllabusCoPO::where('syll_id', '=', $syll_id)->get();
+        $copos = SyllabusCoPO::where('syll_id', '=', $syll_id)
+            ->get();
 
-        $phpWordTable = new Table(array('borderSize' => 6, 'borderColor' => '000000', 'width' => 100 * 50, 'unit' => TblWidth::PERCENT));
+        // Define default font style
+        $fontStyle = ['name' => 'Times New Roman', 'size' => 9];
+        $boldFontStyle = ['name' => 'Times New Roman', 'size' => 9, 'bold' => true];
+        $paragraphStyle = ['alignment' => Jc::CENTER, 'spaceBefore' => 0, 'spaceAfter' => 0];
 
+        $phpWordTable = new Table(array(
+            'borderSize' => 6, 
+            'borderColor' => '000000', 
+            'width' => 100 * 50, 
+            'unit' => TblWidth::PERCENT,
+            'cellMarginTop' => 0,
+            'cellMarginBottom' => 0,
+            'cellMarginLeft' => 50,    // Optional for inner spacing
+            'cellMarginRight' => 50    // Optional for inner spacing
+        ));
+
+        // === First Header Row ===
         $phpWordTable->addRow();
-        $phpWordTable->addCell(1000, ['valign' => 'center'])->addText('Course Outcomes (CO)', ['bold' => true], ['alignment' => Jc::CENTER]);
+
+        // Course Outcomes (CO) column with rowspan 2
+        $phpWordTable->addCell(2500, ['valign' => 'center', 'vMerge' => 'restart'])->addText(
+            'Course Outcomes (CO)', $boldFontStyle, $paragraphStyle
+        );
+
+        // Program Outcomes (PO) column spanning all POs
+        $phpWordTable->addCell(count($programOutcomes) * 300, ['valign' => 'center', 'gridSpan' => count($programOutcomes)])
+            ->addText('Program Outcomes (PO)', $boldFontStyle, $paragraphStyle);
+
+        // === Second Header Row ===
+        $phpWordTable->addRow();
+
+        // This cell continues the rowspan from "Course Outcomes (CO)"
+        $phpWordTable->addCell(null, ['vMerge' => 'continue']); // Empty cell continuing the row span
 
         foreach ($programOutcomes as $index => $po) {
-            $phpWordTable->addCell(500, ['valign' => 'center'])->addText(($index + 1), ['bold' => true], ['alignment' => Jc::CENTER]);
+            $phpWordTable->addCell(300, ['valign' => 'center'])->addText(
+                ($index + 1), $boldFontStyle, $paragraphStyle
+            );
         }
 
         foreach ($courseOutcomes as $co) {
             $phpWordTable->addRow();
 
             $coText = "{$co->syll_co_code}: {$co->syll_co_description}";
-            $phpWordTable->addCell(500)->addText($coText, [], ['alignment' => Jc::LEFT]);
+            $phpWordTable->addCell(2500)->addText($coText, $fontStyle, ['alignment' => 'left']);
 
             foreach ($programOutcomes as $po) {
                 $coPoCode = '';
@@ -890,7 +933,9 @@ class PDFController extends Controller
                     }
                 }
 
-                $phpWordTable->addCell(500, ['valign' => 'center'])->addText($coPoCode, [], ['alignment' => Jc::CENTER]);
+                $phpWordTable->addCell(300, ['valign' => 'center'])->addText(
+                    $coPoCode, $fontStyle, $paragraphStyle
+                );
             }
         }
 
@@ -901,10 +946,10 @@ class PDFController extends Controller
         $document->saveAs(storage_path() . "/word/{$name}");
 
         return response()->download(storage_path() . "/word/{$name}");
-        $name = 'Syllabus' . '-' . "$syll->course_title"  . "-" . "$syll->status" . "-" . "$date" . '.docx';
-        $path = storage_path("word/{$name}");
+        // $name = 'Syllabus' . '-' . "$syll->course_title"  . "-" . "$syll->status" . "-" . "$date" . '.docx';
+        // $path = storage_path("word/{$name}");
 
-        $document->saveAs($path);
+        // $document->saveAs($path);
 
         // return response()->download($path)->deleteFileAfterSend(true);
 

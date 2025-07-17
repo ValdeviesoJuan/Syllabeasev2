@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Roles;
 use App\Models\UserRole;
 use App\Models\BayanihanGroup; 
+use App\Models\Syllabus; 
 use App\Models\Course;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BTeam;
@@ -307,11 +308,23 @@ class ChairController extends Controller
     }
     public function destroyBTeam($bg_id)
     {
+        $hasApprovedSyllabusDocument = Syllabus::where('bg_id', $bg_id)
+            ->where('status', 'Approved by Dean')
+            ->whereNotNull('dean_approved_at')
+            ->exists();
+
+        if ($hasApprovedSyllabusDocument) {
+            return redirect()->route('chairperson.bayanihan')
+                ->with('error', 'Cannot delete this Bayanihan Team because it already has an approved syllabus.');
+        }
+
         $bGroup = BayanihanGroup::findorfail($bg_id);
         $bGroup->delete();
+
         BayanihanGroupUsers::where('bg_id', $bg_id)->delete();
 
-        return redirect()->route('chairperson.bayanihan')->with('success', 'Bayanihan Team deleted successfully.');
+        return redirect()->route('chairperson.bayanihan')
+            ->with('success', 'Bayanihan Team deleted successfully.');
     }
     public function mail(){
         return view('mails.BtMail');

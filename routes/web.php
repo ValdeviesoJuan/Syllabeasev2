@@ -22,7 +22,6 @@ Route::put('/dean/memos/{id}', [DeanMemoController::class, 'update'])->name('dea
 Route::delete('/dean/memos/{id}', [DeanMemoController::class, 'destroy'])->name('dean.memo.destroy');
 Route::get('/dean/memo/{id}', [DeanMemoController::class, 'show'])->name('dean.memo.show');
 
-
 //For chairperson memo view
 Route::middleware(['auth', 'isChair'])->group(function () {
     Route::get('/chair/memo', [ChairMemoController::class, 'index'])->name('chair.memo');

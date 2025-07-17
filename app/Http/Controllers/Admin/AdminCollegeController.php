@@ -147,7 +147,7 @@ class AdminCollegeController extends Controller
         // Send email to the assigned Dean
         $user = User::findOrFail($request->user_id);
         $college = College::findOrFail($request->college_id);
-        // Mail::to($user->email)->send(new DeanAssigned($user, $college, $request->start_validity, $request->end_validity));
+        Mail::to($user->email)->send(new DeanAssigned($user, $college, $request->start_validity, $request->end_validity));
 
         return redirect()->route('admin.college')->with('success', 'Dean assigned successfully and email sent.');
     }

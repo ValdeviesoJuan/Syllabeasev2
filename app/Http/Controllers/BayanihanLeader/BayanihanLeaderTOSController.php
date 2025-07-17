@@ -19,6 +19,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TosCreatedNotification;
 
 class BayanihanLeaderTOSController extends Controller
 {
@@ -443,7 +445,7 @@ class BayanihanLeaderTOSController extends Controller
             }
         }
 
-        return redirect()->route('bayanihanleader.editTosRow', $tos->tos_id);
+        return redirect()->route('bayanihanleader.viewTos', $tos->tos_id);
     }
 
     public function updateTos(Request $request, $syll_id, $tos_id)
@@ -656,8 +658,7 @@ class BayanihanLeaderTOSController extends Controller
             }
         }
 
-
-        return redirect()->route('bayanihanleader.editTosRow', $row->tos_id);
+        return redirect()->route('bayanihanleader.viewTos', $tos_id)->with('success', 'Updated Tos Successfully');
     }
 
     public function replicateTos($tos_id)
@@ -682,6 +683,17 @@ class BayanihanLeaderTOSController extends Controller
             return redirect()->route('bayanihanleader.viewTos', $newTos->tos_id)
                 ->with('success', 'Tos replicated successfully');
         }
+    }
+    public function editTosRow($tos_id) 
+    {
+        $tos_id = TOS::where('tos_id', '=', $tos_id)
+            ->select('tos_id')
+            ->first();
+            
+        $user = Auth::user();
+        $notifications = $user->notifications;
+
+        return view('bayanihanleader.tos.tosEditRow', compact('tos_id', 'notifications'));
     }
     public function updateTosRow(Request $request, $tos_id)
     {

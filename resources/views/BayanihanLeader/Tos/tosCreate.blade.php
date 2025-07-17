@@ -10,20 +10,19 @@
     <title>Syllabease</title>
     @vite('resources/css/app.css')
     <style>
-
-body {
-background-image: url("{{ asset('assets/Wave.png') }}");
-background-repeat: no-repeat;
-background-position: top;
-background-attachment: fixed;
-background-size: contain;
-}
-</style>
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+    </style>
 </head>
 
 <body>
     <div class="flex flex-col justify-center mt-10 mx-auto">
-        <div class="relative mt-20 flex flex-col bg-gradient-to-r from-[#FFF] to-[#dbeafe]  rounded-xl shadow-lg p-3 mx-auto border border-white bg-white">
+        <div class="relative mt-20 flex flex-col bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-xl shadow-lg p-3 mx-auto border border-white bg-white">
             <div>
                 <img class="edit_user_img text-center mt-4 mb-6 w-[250px] m-auto mb-2" src="/assets/Create TOS.png" alt="SyllabEase Logo">
             </div>
@@ -39,7 +38,7 @@ background-size: contain;
 
             <div class="m-8">
                 <form action="{{ route('bayanihanleader.storeTos', $syll_id) }}" method="POST">
-                @csrf
+                    @csrf
                     <div class="">
                         <div class="mb-3">
                             <label for="tos_term" class="flex">Term</label>
@@ -68,7 +67,7 @@ background-size: contain;
                         </div>
                         <div>
                             <p>Comprehension</p>
-                            <input type="number" name="col_2_per" id="col_2_per" class="cognitive-input border border-[#a8a29e] rounded w-[400px] p-2" min="0" value="25" >
+                            <input type="number" name="col_2_per" id="col_2_per" class="cognitive-input border border-[#a8a29e] rounded w-[400px] p-2" min="0" value="25" required>
                         </div>
                         <div>
                             <p>Application / Analysis</p>
@@ -80,8 +79,7 @@ background-size: contain;
                         </div>
                     </div>
 
-
-                    <div id="feedback" class="text-red-500 font-bold mt-8"></div>
+                    <div id="feedback" class="text-red font-bold mt-8"></div>
                     <div id="currentTotal" class="font-bold mt-2"></div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary font-semibold text-white px-6 py-2 rounded-lg m-2 mt-30 mb-4 bg-blue">Create TOS</button>
@@ -110,7 +108,7 @@ background-size: contain;
                 const val = parseFloat(input.value) || 0;
                 if (val > 50) {
                     alert('Knowledge should not exceed 50% as per CITL policy.');
-                    input.value = 50;
+                    input.value = 0;
                 }
             }
 
@@ -126,14 +124,15 @@ background-size: contain;
             // Show warning if not 100%
             if (total !== 100) {
                 feedbackDiv.textContent = 'Total should be 100%';
-                feedbackDiv.classList.add('text-red-500');
+                feedbackDiv.classList.add('text-red');
             } else {
                 feedbackDiv.textContent = '';
-                feedbackDiv.classList.remove('text-red-500');
+                feedbackDiv.classList.remove('text-red');
             }
         });
     });
-     const form = document.querySelector('form');
+    
+    const form = document.querySelector('form');
 
     form.addEventListener('submit', function(e) {
         let total = 0;
@@ -144,11 +143,11 @@ background-size: contain;
         if (total !== 100) {
             e.preventDefault();
             feedbackDiv.textContent = 'Cannot create TOS. Total must be exactly 100%.';
-            feedbackDiv.classList.add('text-red-500');
+            feedbackDiv.classList.add('text-red');
         }
     });
 </script>
 
-
-
 </html>
+
+@endsection

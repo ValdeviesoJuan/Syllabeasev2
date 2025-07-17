@@ -279,20 +279,14 @@ class DeanController extends Controller
         $users = User::all();
 
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-
-        $userRole = UserRole::where('ur_id', $ur_id)
+        $chair = UserRole::where('ur_id', $ur_id)
             ->where('role_id', $chairRoleId)
             ->where('entity_type', 'Department')
             ->firstOrFail();
 
-        $allChairs = UserRole::with(['user', 'entity'])
-            ->where('role_id',     $chairRoleId)
-            ->where('entity_type', 'Department')
-            ->get();
-
         return view(
             'Dean.Chairs.chairEdit',
-            compact('notifications', 'chair', 'users', 'departments', 'colleges', 'allChairs', 'ur_id')
+            compact('notifications',  'users', 'departments', 'colleges', 'chair')
         );
     }
     public function updateChair(Request $request, string $ur_id)
