@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Syllabease</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/Sample/se.png') }}">
-
 </head>
-    <script>
-        //JS for Searchable Select
-        $(document).ready(function() {
-            $('.select2').select2(); // Initialize Select2 
-        });
-    </script>
+
+<script>
+    //JS for Searchable Select
+    $(document).ready(function() {
+        $('.select2').select2(); // Initialize Select2 
+    });
+</script>
+
 <body>
     <nav class="fixed top-0 z-50 w-full bg-white border- shadow border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
@@ -346,7 +348,7 @@
     </aside>
 
     <div class="p-4 sm:ml-64">
-            @yield('content')
+        @yield('content')
     </div>
 
 </body>

@@ -98,11 +98,11 @@
                 <td class="px-6 py-4">Version {{ $syllabus->version }}</td>
                 <td class="px-6 py-4">
                     <button class="
-                    {{ $syllabus->status === 'Pending' ? 'w-[80%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Approved by Chair' ? 'w-[80%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Returned by Chair' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Approved by Dean' ? 'w-[80%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Returned by Dean' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : '' }}">
+                    {{ $syllabus->status === 'Pending' ? 'w-[100%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
+                    {{ $syllabus->status === 'Approved by Chair' ? 'w-[100%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
+                    {{ $syllabus->status === 'Returned by Chair' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : '' }}
+                    {{ $syllabus->status === 'Approved by Dean' ? 'w-[100%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
+                    {{ $syllabus->status === 'Returned by Dean' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : '' }}">
                         {{ $syllabus->status }}
                     </button>
                 </td>
