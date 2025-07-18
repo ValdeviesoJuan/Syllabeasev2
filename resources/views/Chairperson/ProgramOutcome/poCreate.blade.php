@@ -33,7 +33,7 @@
             <img class="edit_user_img text-center p-6 mt-4 w-[400px] m-auto mb-6" src="/assets/Create Program Outcomes.png" alt="SyllabEase Logo">
                 <div class="mb-10 pb-10">
                     <div class="ml-20 items-center">
-                        <form action="{{ route('chairperson.storePo') }}" method="POST">
+                        <form action="{{ route('chairperson.storePo', $department_id) }}" method="POST">
                             @csrf
                             <div class="">
                                 <div id="input-container" class="ml-2">

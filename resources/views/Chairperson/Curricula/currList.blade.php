@@ -5,7 +5,20 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<style>
+        .bg svg {
+            transform: scaleY(-1);
+            min-width: '1880'
+        }
 
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+    </style>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -77,14 +90,14 @@
                         <td class="px-6 py-4 flex">
                             <form action="{{ route('chairperson.editCurr', $curriculum->curr_id) }}" method="GET">
                                 @csrf
-                                <button type="submit" class="hover:text-yellow hover:underlined px-1">
+                                <button type="submit" class="text-green hover:text-yellow hover:underlined px-1">
                                     Edit
                                 </button>
                             </form>
                             <form action="{{ route('chairperson.destroyCurr',$curriculum->curr_id) }}" method="Post">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="hover:text-yellow hover:underlined px-1">
+                                <button type="submit" class="text-red hover:text-yellow hover:underlined px-1">
                                     Delete
                                 </button>
                             </form>

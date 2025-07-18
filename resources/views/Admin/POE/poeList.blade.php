@@ -32,7 +32,7 @@
                     @foreach ($poes as $poe)
                     <div class="ml-20 flex items-center tracking-wide leading-relaxed">
                         <p>{{ $poe->poe_code }} : {{ $poe->poe_description }}</p>
-                        <form action="{{-- route('admin.destroyPoe', $poe->poe_id) --}}" method="Post">
+                        <form action="{{ route('admin.destroyPoe', ['poe_id' => $poe->poe_id, 'department_id' => $department->department_id]) }}" method="Post">
                             @csrf
                             @method('DELETE')
                             <div class="w-10 color-sePrimary deleteButtonContainer">
@@ -52,7 +52,7 @@
     </div>
     <div>
         <div class="ml-10 mt-2 pt-2 w-max hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded-lg hover:bg-blue">
-            <form action="{{-- route('admin.createPoe') --}}" method="GET">
+            <form action="{{ route('admin.createPoe', $department->department_id) }}" method="GET">
                 @csrf
                 <button type="submit" class="flex  px-5   text-ml">
                     <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -67,7 +67,7 @@
             </form>
         </div>
         <div class="ml-10 mt-2 pt-2 w-max hover:scale-105 transition ease-in-out bg-blue py-2 text-white rounded-lg hover:bg-blue">
-            <form action="{{-- route('admin.editPoe', $department_id) --}}" method="GET">
+            <form action="{{ route('admin.editPoe', $department->department_id) }}" method="GET">
                 @csrf
                 <button type="submit" class="flex  px-5   text-ml">
                     <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

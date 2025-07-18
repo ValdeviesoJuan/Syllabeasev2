@@ -9,8 +9,7 @@ use App\Models\User;
 use App\Models\UserRole;
 use App\Models\Roles;
 use App\Models\BayanihanGroup;
-use App\Models\BayanihanLeader;
-use App\Models\BayanihanMember;
+use App\Models\BayanihanGroupUsers;
 use App\Models\Course;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BTeam;
@@ -55,16 +54,6 @@ class DeanSyllabusController extends Controller
         $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
             ->select('syllabus_instructors.*', 'syllabi.*')
             ->get();
-
-        // $syllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        //     ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-        //     ->where('syllabi.department_id', '=', $department_id)
-        //     ->where('syllabi.status', '=', 'Pending')
-        //     ->whereNotNull('syllabi.chair_submitted_at')
-        //     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-        //     ->get();
         
         if ($college_id) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
@@ -81,8 +70,7 @@ class DeanSyllabusController extends Controller
         }
 
         $ApprovedSyllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+            ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
             ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
             ->where('syllabi.department_id', '=', $college_id)
             ->where('syllabi.status', '=', 'Chair Approved')
@@ -91,8 +79,7 @@ class DeanSyllabusController extends Controller
             ->get();
 
         $RejectedSyllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
+            ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
             ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
             ->where('syllabi.department_id', '=', $college_id)
             ->where('syllabi.status', '=', 'Chair Rejected')
@@ -160,27 +147,32 @@ class DeanSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
-
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
+            
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('poes.*')
             ->get();
+            
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
+
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('Dean.Syllabus.syllView', compact(
             'notifications',
             'syll',
@@ -244,16 +236,16 @@ class DeanSyllabusController extends Controller
         $chair->notify(new Chair_SyllabusDeanReturned($course_code, $bg_school_year, $syll_id));
 
         // Notification for Bayanihan Members 
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $submitted_syllabus->bg_id)->get();
-        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_syllabus->bg_id)->get();
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $submitted_syllabus->bg_id)->where('bg_role', operator: 'leader')->get();
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $submitted_syllabus->bg_id)->where('bg_role', 'member')->get();
         foreach ($bayanihan_leaders as $leader) {
-            $user = User::find($leader->bg_user_id);
+            $user = User::find($leader->user_id);
             if ($user) {
                 $user->notify(new BL_SyllabusDeanReturned($course_code, $bg_school_year, $syll_id));
             }
         }
         foreach ($bayanihan_members as $member) {
-            $user = User::find($member->bm_user_id);
+            $user = User::find($member->user_id);
             if ($user) {
                 $user->notify(new BT_SyllabusDeanReturned($course_code, $bg_school_year, $syll_id));
             }
@@ -293,16 +285,16 @@ class DeanSyllabusController extends Controller
         $chair->notify(new Chair_SyllabusDeanApproved($course_code, $bg_school_year, $syll_id));
 
         // Notification for Bayanihan Members 
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $submitted_syllabus->bg_id)->get();
-        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_syllabus->bg_id)->get();
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $submitted_syllabus->bg_id)->where('bg_role', operator: 'leader')->get();
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $submitted_syllabus->bg_id)->where('bg_role', 'member')->get();
         foreach ($bayanihan_leaders as $leader) {
-            $user = User::find($leader->bg_user_id);
+            $user = User::find($leader->user_id);
             if ($user) {
                 $user->notify(new BL_SyllabusDeanApproved($course_code, $bg_school_year, $syll_id));
             }
         }
         foreach ($bayanihan_members as $member) {
-            $user = User::find($member->bm_user_id);
+            $user = User::find($member->user_id);
             if ($user) {
                 $user->notify(new BT_SyllabusDeanApproved($course_code, $bg_school_year, $syll_id));
             }

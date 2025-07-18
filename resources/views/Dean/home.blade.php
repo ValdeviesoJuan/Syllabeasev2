@@ -59,7 +59,7 @@
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden">
                     <div class="flex justify-between items-center mb-2 mt-2">
-                        <h2 class="font-bold text-4xl text-[#201B50]">Colleges</h2>
+                        <h2 class="font-bold text-4xl text-[#201B50]">Departments</h2>
                         <a href="{{ route('dean.createDepartment') }}"
                             class="whitespace-nowrap w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
                             style="background: #d7ecf9;"
@@ -103,10 +103,6 @@
                         <td class="px-6 py-4">
                             <p class="">{{ $department->department_name }}</p>
                         </td>
-
-                        {{-- <td class="px-6 py-4">
-                            <p>{{ $department->department_status }}</p>
-                        </td> --}}
 
                         <td class="px-6 py-4 flex">
                             @if($department->department_status == 'Active')

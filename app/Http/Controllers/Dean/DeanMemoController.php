@@ -35,10 +35,11 @@ class DeanMemoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'files.*' => 'required|file|mimes:pdf',
             'date' => 'nullable|date',
+            'files' => 'nullable|array',
+            'files.*' => 'nullable|file|mimes:pdf',
             'emails' => 'required|array',
-            'emails.*' => 'email'
+            'emails.*' => 'email',
         ]);
 
         $fileNames = [];
@@ -53,9 +54,9 @@ class DeanMemoController extends Controller
 
         $memo = Memo::create([
             'title' => $validated['title'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'file_name' => json_encode($fileNames),
-            'date' => $validated['date'],
+            'date' => $validated['date'] ?? null,
         ]);
 
         foreach ($validated['emails'] as $email) {

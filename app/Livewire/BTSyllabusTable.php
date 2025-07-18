@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\BayanihanGroup;
-use App\Models\bayanihanMember;
+use App\Models\BayanihanGroupUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -21,15 +21,17 @@ class BTSyllabusTable extends Component
     ];
     public function render()
     {
-        $myDepartment = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-            ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->join('departments', 'departments.department_id', '=', 'curricula.department_id')
-            ->where('bayanihan_members.bm_user_id', '=', Auth::user()->id)
-            ->select('departments.department_id')
-            ->first();
-            $myGroup = BayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->where('bayanihan_members.bm_user_id', '=', Auth::user()->id)
+        $myDepartment = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+                ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
+                ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
+                ->join('departments', 'departments.department_id', '=', 'curricula.department_id')
+                ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+                ->where('bayanihan_group_users.bg_role', '=', 'member')
+                ->select('departments.department_id')
+                ->first();
+        $myGroup = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->select('bayanihan_groups.bg_id')
             ->get();
             if ($myGroup) {

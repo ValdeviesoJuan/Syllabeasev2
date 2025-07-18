@@ -28,22 +28,22 @@
                 <tr class="hover:bg-gray4 dark:hover:bg-gray-600">
                     <td class="px-6 py-4 font-bold">
                         <div class="flex items-center space-x-3">
-                            <p>{{ $department->department_code }}</p>
+                            <p> {{ $department->department_code }}</p>
                         </div>
                     </td>
 
                     <td class="px-6 py-4">
-                        <p>{{ $department->department_name }}</p>
+                        <p> {{ $department->department_name }}</p>
                     </td>
 
                     <td class="px-6 py-4 font-bold">
                         <div class="flex items-center space-x-3">
-                            <p>{{ $department->program_code }}</p>
+                            <p> {{ $department->program_code }}</p>
                         </div>
                     </td>
-
+                                        
                     <td class="px-6 py-4">
-                        <p>{{ $department->program_name }}</p>
+                        <p> {{ $department->program_name }}</p>
                     </td>
 
                     <td class="px-6 py-4">
@@ -62,11 +62,10 @@
                                 </svg>
                             </button>
 
-
                             <div id="dropdownMenu-{{ $department->department_id }}" class="origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-blue ring-opacity-5 hidden z-10">
                                 <div class="py-1 space-y-1">
                                     <a href="{{ route('admin.editDepartment', $department->department_id) }}"
-                                       class="block w-full text-left px-4 py-2 text-sm text-green hover:bg-gray-100">
+                                       class="block w-full text-left px-4 py-2 text-sm text-green hover:bg-gray5">
                                         Edit
                                     </a>
 
@@ -74,18 +73,17 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                                class="block w-full text-left px-4 py-2 text-sm text-red hover:bg-gray-100">
+                                                class="block w-full text-left px-4 py-2 text-sm text-red hover:bg-gray5">
                                             Delete
                                         </button>
                                     </form>
-
-                                    <a href="javascript:void(0)"
-                                       class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray-100 cursor-default">
-                                        View PEO
+                                    <a href="{{ route('admin.viewPoe', $department->department_id) }}"
+                                       class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray5 cursor-default">
+                                        View POE
                                     </a>
 
-                                    <a href="javascript:void(0)"
-                                       class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray-100 cursor-default">
+                                    <a href="{{ route('admin.viewPo', $department->department_id) }}"
+                                       class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray5 cursor-default">
                                         View PO
                                     </a>
                                 </div>
@@ -107,27 +105,38 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const buttons = document.querySelectorAll('[id^="dropdownButton-"]');
-        buttons.forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const id = this.id.replace('dropdownButton-', '');
-                const menu = document.getElementById(`dropdownMenu-${id}`);
-                menu.classList.toggle('hidden');
+    document.addEventListener('click', function (e) {
+        const clickedButton = e.target.closest('[id^="dropdownButton-"]');
 
-                document.querySelectorAll('[id^="dropdownMenu-"]').forEach(el => {
-                    if (el.id !== `dropdownMenu-${id}`) {
-                        el.classList.add('hidden');
-                    }
+        // If a dropdown button was clicked
+        if (clickedButton) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const id = clickedButton.id.replace('dropdownButton-', '');
+            const clickedMenu = document.getElementById(`dropdownMenu-${id}`);
+
+            // Toggle clicked menu
+            if (clickedMenu) {
+                const isHidden = clickedMenu.classList.contains('hidden');
+
+                // Close all dropdowns first
+                document.querySelectorAll('[id^="dropdownMenu-"]').forEach(menu => {
+                    menu.classList.add('hidden');
                 });
-            });
-        });
 
-        document.addEventListener('click', function () {
-            document.querySelectorAll('[id^="dropdownMenu-"]').forEach(el => {
-                el.classList.add('hidden');
-            });
+                // Then re-show only if it was previously hidden
+                if (isHidden) {
+                    clickedMenu.classList.remove('hidden');
+                }
+            }
+
+            return;
+        }
+
+        // If clicked anywhere else, close all dropdowns
+        document.querySelectorAll('[id^="dropdownMenu-"]').forEach(menu => {
+            menu.classList.add('hidden');
         });
     });
 </script>

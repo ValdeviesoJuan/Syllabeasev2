@@ -62,7 +62,11 @@
             <div class="fixed top-0 z-50">
 
                 <nav class="w-screen flex px-6 md:shadow-lg items-center relative bg-blue py-1">
-                    <img class="w-48 text-lg font-bold md:py-0 py-4" src="/assets/Sample/syllabease4.png" alt="SyllabEase">
+                    <a href="{{ route('home') }}">
+                        <img class="w-48 text-lg font-bold md:py-0 py-4" src="/assets/Sample/syllabease4.png" alt="SyllabEase">
+                    </a>
+
+
 
                     <div class="md:px-2 ml-auto md:flex md:space-x-3 absolute md:relative top-full left-0 right-0">
                     <div class="relative parent">

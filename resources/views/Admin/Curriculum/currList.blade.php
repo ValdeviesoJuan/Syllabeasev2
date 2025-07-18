@@ -86,9 +86,9 @@
                                         <form action="{{ route('admin.destroyCurr',$curriculum->curr_id) }}" method="Post">
                                             @csrf
                                             @method('DELETE')
-                                                <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
-                                                   Delete
-                                                </button>
+                                            <button type="submit" class="text-red font-medium mt-5 hover:scale-105">
+                                                Delete
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>

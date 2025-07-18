@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserRole;
 use App\Models\Roles;
-use App\Models\BayanihanGroup;
-use App\Models\BayanihanLeader;
-use App\Models\BayanihanMember;
+use App\Models\BayanihanGroup; 
 use App\Models\Course;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BTeam;
@@ -43,6 +41,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\DeanSyllabusChairApprovedMail;
 use App\Mail\BLSyllabusChairApprovedMail;
 use App\Mail\BTSyllabusChairApprovedMail;
+use App\Models\BayanihanGroupUsers;
 
 class ChairSyllabusController extends Controller
 {
@@ -59,15 +58,6 @@ class ChairSyllabusController extends Controller
             ->select('syllabus_instructors.*', 'syllabi.*')
             ->get();
 
-        // $syllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->where('bayanihan_leaders.bg_user_id', '=', Auth::user()->id)
-        //     ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-        //     ->where('syllabi.department_id', '=', $department_id)
-        //     ->where('syllabi.status', '=', 'Pending')
-        //     ->whereNotNull('syllabi.chair_submitted_at')
-        //     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-        //     ->get();
         if ($department_id) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
@@ -129,9 +119,6 @@ class ChairSyllabusController extends Controller
         $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
             ->get();
 
-        // $copos = SyllabusCoPo::where('syll_id', '=', $syll_id)
-        //     ->get();
-
         $copos = SyllabusCoPO::where('syll_id', '=', $syll_id)
             ->get();
 
@@ -158,19 +145,21 @@ class ChairSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
-            ->get();
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -230,7 +219,7 @@ class ChairSyllabusController extends Controller
         $syllabus = Syllabus::find($syll_id);
 
         if (!$syllabus) {
-            return redirect()->route('bayanihanleader.home')->with('error', 'Syllabus not found.');
+            return redirect()->route('chair.syllabus')->with('error', 'Syllabus not found.');
         }
 
         $syllabus->dean_submitted_at = Carbon::now();
@@ -262,9 +251,9 @@ class ChairSyllabusController extends Controller
         }
 
         // ✅ Bayanihan Leaders Notification & Email
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $submitted_syllabus->bg_id)->get();
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $submitted_syllabus->bg_id)->where('bg_role', 'leader')->get();
         foreach ($bayanihan_leaders as $leader) {
-            $user = User::find($leader->bg_user_id);
+            $user = User::find($leader->user_id);
             if ($user) {
                 $user->notify(new BL_SyllabusChairApproved($course_code, $bg_school_year, $syll_id));
                 Mail::to($user->email)->send(new BLSyllabusChairApprovedMail($course_code, $bg_school_year, $syll_id));
@@ -272,9 +261,9 @@ class ChairSyllabusController extends Controller
         }
 
         // ✅ Bayanihan Teachers Notification & Email
-        $bayanihan_members = BayanihanMember::where('bg_id', $submitted_syllabus->bg_id)->get();
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $submitted_syllabus->bg_id)->where('bg_role', 'member')->get();
         foreach ($bayanihan_members as $member) {
-            $user = User::find($member->bm_user_id);
+            $user = User::find($member->user_id);
             if ($user) {
                 $user->notify(new BT_SyllabusChairApproved($course_code, $bg_school_year, $syll_id));
                 Mail::to($user->email)->send(new BTSyllabusChairApprovedMail($course_code, $bg_school_year, $syll_id));
@@ -299,7 +288,7 @@ class ChairSyllabusController extends Controller
         $syllabus = Syllabus::find($syll_id);
 
         if (!$syllabus) {
-            return redirect()->route('bayanihanleader.home')->with('error', 'Syllabus not found.');
+            return redirect()->route('chairperson.syllabus')->with('error', 'Syllabus not found.');
         }
         $syllabus->chair_rejected_at = Carbon::now();
         $syllabus->status = 'Returned by Chair';
@@ -313,8 +302,8 @@ class ChairSyllabusController extends Controller
             ->first();
 
         // Notification 
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $returned_syllabus->bg_id)->get('bayanihan_leaders.*');
-        $bayanihan_members = BayanihanMember::where('bg_id', $returned_syllabus->bg_id)->get('bayanihan_members.*');
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $returned_syllabus->bg_id)->where('bg_role', 'leader')->get('bayanihan_group_users.*');
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $returned_syllabus->bg_id)->where('bg_role', 'member')->get('bayanihan_group_users.*');
 
         $course_code = $returned_syllabus->course_code;
         $bg_school_year = $returned_syllabus->bg_school_year;
@@ -378,19 +367,21 @@ class ChairSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
-            ->get();
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -432,7 +423,7 @@ class ChairSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
         if (!$syll) {
-            return redirect()->route('bayanihanleader.home')->with('error', 'Syllabus not found.');
+            return redirect()->route('chairperson.syllabus')->with('error', 'Syllabus not found.');
         }
         $syll->chair_rejected_at = Carbon::now();
         $syll->status = 'Returned by Chair';
@@ -486,21 +477,21 @@ class ChairSyllabusController extends Controller
             ->first();
 
         // Notification 
-        $bayanihan_leaders = BayanihanLeader::where('bg_id', $returned_syllabus->bg_id)->get();
-        $bayanihan_members = BayanihanMember::where('bg_id', $returned_syllabus->bg_id)->get();
+        $bayanihan_leaders = BayanihanGroupUsers::where('bg_id', $returned_syllabus->bg_id)->where('bg_role','leader')->get();
+        $bayanihan_members = BayanihanGroupUsers::where('bg_id', $returned_syllabus->bg_id)->where('bg_role','member')->get();
 
         $course_code = $returned_syllabus->course_code;
         $bg_school_year = $returned_syllabus->bg_school_year;
 
         foreach ($bayanihan_leaders as $leader) {
-            $user = User::find($leader->bg_user_id);
+            $user = User::find($leader->user_id);
             if ($user) {
                 $user->notify(new BL_SyllabusChairReturned($course_code, $bg_school_year, $syll_id));
             }
         }
 
         foreach ($bayanihan_members as $member) {
-            $user = User::find($member->bm_user_id);
+            $user = User::find($member->user_id);
             if ($user) {
                 $user->notify(new BT_SyllabusChairReturned($course_code, $bg_school_year, $syll_id));
             }
@@ -537,17 +528,6 @@ class ChairSyllabusController extends Controller
     }
     public function commentSyllabus($syll_id)
     {
-        // $syll = College::join('departments', 'departments.college_id', '=', 'colleges.college_id')
-        //     ->join('curricula', 'departments.department_id', '=', 'curricula.department_id')
-        //     ->join('courses', 'courses.curr_id', '=', 'curricula.curr_id')
-        //     ->join('bayanihan_groups', 'bayanihan_groups.course_id', '=', 'courses.course_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('bayanihan_members', 'bayanihan_members.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     // ->join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-        //     ->where('syllabi.syll_id', '=', $syll_id)
-        //     ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description')
-        //     ->first();
 
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
@@ -558,27 +538,6 @@ class ChairSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
-        // $dean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-        //     ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
-        //     ->where('colleges.college_id', '=', $syll->college_id)
-        //     ->select('users.*', 'colleges.*')
-        //     ->first();
-
-        // $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-        //     ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
-        //     ->where('user_roles.entity_type', '=', 'Department')
-        //     ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-        //     ->where('departments.department_id', '=', $syll->department_id)
-        //     ->select('users.*', 'departments.*')
-        //     ->first();
-
-        // $programOutcomes = Syllabus::where('syllabi.syll_id', '=', $syll_id)
-        //     ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        //     ->join('bayanihan_leaders', 'bayanihan_leaders.bg_id', '=', 'bayanihan_groups.bg_id')
-        //     ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-        //     ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-        //     ->join('program_outcomes', 'program_outcomes.department_id', '=', 'curricula.department_id')
-        //     ->get();
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -618,20 +577,24 @@ class ChairSyllabusController extends Controller
             ->get()
             ->groupBy('syll_co_out_id');
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
-        $bMembers = bayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
+            
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('Chairperson.Syllabus.syllComment', compact(
             'notifications',
             'syll',
@@ -685,8 +648,10 @@ class ChairSyllabusController extends Controller
         $srf17 = $srfResults['srf17'];
         $srf18 = $srfResults['srf18'];
         $srf19 = $srfResults['srf19'];
+        
         $user = Auth::user(); 
         $notifications = $user->notifications;
+
         return view('chairperson.syllabus.viewReviewForm', compact(
             'syll_id',
             'notifications',

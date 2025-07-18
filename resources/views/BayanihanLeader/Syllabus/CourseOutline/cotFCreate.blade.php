@@ -2,10 +2,33 @@
 @extends('layouts.blNav')
 @section('content')
 
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $totalHours = DB::table('syllabus_course_outlines_finals')
+        ->where('syll_id', $syll_id)
+        ->sum('syll_allotted_hour');
+    $isDisabled = ($totalHours > 40) ? 'disabled' : '';
+@endphp
+
+@if($totalHours > 40)
+    <div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-6" role="alert">
+      <div class="flex">
+        <div class="py-1">
+          <svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-bold">Allotted Time Exceeded</p>
+          <p class="text-sm">The allotted time is more than 40. You cannot add more course outlines.</p>
+        </div>
+      </div>
+    </div>
+@endif
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +42,6 @@
         });
     </script>
 </head>
-
 <style>
     body {
         background-image: url("{{ asset('assets/Wave.png') }}");
@@ -29,15 +51,11 @@
         background-size: contain;
     }
 </style>
-
 <body>
-    <div class="m-auto bg-slate-100 mt-[120px] p-2 shadow-lg bg-gradient-to-r from-[#000] to-[#dbeafe] rounded-lg w-11/12">
-        {{-- <div class="max-w-md  w-[560px] p-6 px-8 rounded-lg shadow-lg"> --}}
+    <div class="m-auto bg-slate-100 mt-[120px] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-11/12">
         <img class="edit_user_img text-center mt-12 w-[370px] m-auto mb-12" src="/assets/Final Course Outline.png" alt="SyllabEase Logo">
         <form action="{{ route('bayanihanleader.storeCotF', $syll_id) }}" method="POST">
             @csrf
-            <div id="input-container" class="">
-            </div>
             <table class="border-collapse border-2 border-solid m-5 font-serif">
                 <thead>
                     <tr class="border-2 border-solid">
@@ -57,12 +75,12 @@
                     <tr class="border-2 border-solid text-sm" id="">
                         <td class="p-2">
                             <input type="number"
-    class="w-full h-60 font-sans {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
-    name="syll_allotted_hour"
-    id=""
-    placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. 10' }}"
-    value="{{ $isDisabled ? 'Disabled' : '' }}"
-    required {{ $isDisabled }}>
+                                    class="w-full h-60 font-sans {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}"
+                                    name="syll_allotted_hour"
+                                    id=""
+                                    placeholder="{{ $isDisabled ? 'Disabled' : 'e.g. 10' }}"
+                                    value="{{ $isDisabled ? 'Disabled' : '' }}"
+                                    required {{ $isDisabled }}>
                         </td>
                         <td class="p-2">
                             <textarea id="syll_allotted_time" placeholder=" e.g. Week 1" name="syll_allotted_time" rows="4" cols="50" class="font-sans border-2 border-solid w-full h-60 "></textarea>
@@ -78,22 +96,22 @@
                             <textarea id="syll_intended_learning" name="syll_intended_learning" rows="4" cols="50" class="border-2 border-solid w-full h-60 {{ $isDisabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : '' }}" {{ $isDisabled }}>{{ $isDisabled ? 'Disabled' : '' }}</textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_topics" name="syll_topics" rows="4" cols="50" class="border-2 border-solid w-full h-60 " required></textarea>
+                            <textarea id="syll_topics" name="syll_topics" rows="4" cols="50" class="border-2 border-solid w-full h-60 " required {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_suggested_readings" name="syll_suggested_readings" rows="4" cols="50" class="border-2 border-solid w-full h-60 "></textarea>
+                            <textarea id="syll_suggested_readings" name="syll_suggested_readings" rows="4" cols="50" class="border-2 border-solid w-full h-60 " {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_learning_act" name="syll_learning_act" rows="4" cols="50" class="border-2 border-solid w-full h-60 "></textarea>
+                            <textarea id="syll_learning_act" name="syll_learning_act" rows="4" cols="50" class="border-2 border-solid w-full h-60 " {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_asses_tools" name="syll_asses_tools" rows="4" cols="50" class="border-2 border-solid w-full h-60 "></textarea>
+                            <textarea id="syll_asses_tools" name="syll_asses_tools" rows="4" cols="50" class="border-2 border-solid w-full h-60 " {{ $isDisabled }}></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_grading_criteria" name="syll_grading_criteria" rows="4" cols="50" class="border-2 border-solid w-full h-60 "></textarea>
+                            <textarea id="syll_grading_criteria" name="syll_grading_criteria" rows="4" cols="50" class="border-2 border-solid w-full h-60 "{{ $isDisabled }} ></textarea>
                         </td>
                         <td class="">
-                            <textarea id="syll_remarks" name="syll_remarks" rows="4" cols="50" class="border-2 border-solid w-full h-60 "></textarea>
+                            <textarea id="syll_remarks" name="syll_remarks" rows="4" cols="50" class="border-2 border-solid w-full h-60 "{{ $isDisabled }} ></textarea>
                         </td>
                     </tr>
                 </tbody>
@@ -108,55 +126,56 @@
         <div id="customAlert"
              class="hidden fixed top-6 right-6 z-50 bg-white border-t-4 border-[#ef4444] rounded-b text-red-900 px-8 py-8 shadow-md min-w-[320px] flex items-start"
              role="alert">
-          <div class="py-1 mr-4">
-            <svg class="fill-current h-6 w-6 text-[#ef4444]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-              <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="font-bold">Allotted Time Exceeded</p>
-            <p class="text-sm">The allotted time exceeds 40. You cannot add more.</p>
-          </div>
-          <button onclick="document.getElementById('customAlert').classList.add('hidden')" class="ml-4 text-red-700 hover:text-red-900 text-xl font-bold leading-none">
-            &times;
-          </button>
+            <div class="py-1 mr-4">
+                <svg class="fill-current h-6 w-6 text-[#ef4444]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="font-bold">Allotted Time Exceeded</p>
+                <p class="text-sm">The allotted time exceeds 40. You cannot add more.</p>
+            </div>
+            <button onclick="document.getElementById('customAlert').classList.add('hidden')" class="ml-4 text-red-700 hover:text-red-900 text-xl font-bold leading-none">
+                &times;
+            </button>
         </div>
-        <script>
-document.addEventListener('DOMContentLoaded', function() {
-    let totalHours = {{ $totalHours }};
-    const maxHours = 39;
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let totalHours = {{ $totalHours }};
+        const maxHours = 40;
 
-    const hourInput = document.querySelector('input[name="syll_allotted_hour"]');
-    const submitBtn = document.querySelector('button[type="submit"]');
-    const formFields = document.querySelectorAll('input, textarea, select');
+        const hourInput = document.querySelector('input[name="syll_allotted_hour"]');
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const formFields = document.querySelectorAll('input, textarea, select');
 
-    function setDisabledState() {
-        formFields.forEach(f => {
-            f.disabled = true;
-            f.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
-            if (f.tagName === 'INPUT' || f.tagName === 'TEXTAREA') {
-                f.value = 'Disabled';
-                f.placeholder = 'Disabled';
+        function setDisabledState() {
+            formFields.forEach(f => {
+                f.disabled = true;
+                f.classList.add('bg-gray-200', 'text-gray-500', 'cursor-not-allowed');
+                if (f.tagName === 'INPUT' || f.tagName === 'TEXTAREA') {
+                    f.value = 'Disabled';
+                    f.placeholder = 'Disabled';
+                }
+            });
+            submitBtn.disabled = true;
+        }
+
+        if (totalHours > maxHours) {
+            setDisabledState();
+        }
+
+        submitBtn.addEventListener('click', function(e) {
+            let current = parseFloat(hourInput.value) || 0;
+            if (totalHours > maxHours || (totalHours + current) > maxHours) {
+                e.preventDefault();
+                setDisabledState();
+                document.getElementById('customAlert').classList.remove('hidden');
             }
         });
-        submitBtn.disabled = true;
-    }
-
-    if (totalHours > maxHours) {
-        setDisabledState();
-    }
-
-    submitBtn.addEventListener('click', function(e) {
-        let current = parseFloat(hourInput.value) || 0;
-        if (totalHours > maxHours || (totalHours + current) > maxHours) {
-            e.preventDefault();
-            setDisabledState();
-            document.getElementById('customAlert').classList.remove('hidden');
-        }
     });
-});
 </script>
-</body>
 
 </html>
 @endsection

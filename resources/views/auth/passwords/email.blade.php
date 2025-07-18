@@ -26,7 +26,10 @@
             ">
                 <!-- Logo -->
                 <div class="flex justify-center mb-6">
-                    <img src="{{ asset('assets/Sample/syllabease.png') }}" alt="SyllabEase Logo" class="mx-auto w-60">
+                   <a href="{{ route('login') }}">
+                        <img src="{{ asset('assets/Sample/syllabease.png') }}" alt="SyllabEase Logo" class="mx-auto w-60">
+                    </a>
+
                 </div>
                 <h1 class="text-xl font-bold text-gray-900 mb-2 text-left">Forgot Password</h1>
                 <p class="text-gray-500 text-sm text-left mb-6">

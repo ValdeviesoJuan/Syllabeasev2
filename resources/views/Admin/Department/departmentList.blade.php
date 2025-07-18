@@ -52,9 +52,7 @@
                     </a>
                 </div>
                 <livewire:admin-department-table />
-                <div class='overflow-x-auto w-full'>
             </div>
-            
         </div>
     </div>
 

@@ -1,6 +1,4 @@
-
 @extends('layouts.blNav')
-
 @section('content')
 <!DOCTYPE html>
 <html lang="en">

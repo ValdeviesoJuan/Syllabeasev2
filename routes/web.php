@@ -22,7 +22,6 @@ Route::put('/dean/memos/{id}', [DeanMemoController::class, 'update'])->name('dea
 Route::delete('/dean/memos/{id}', [DeanMemoController::class, 'destroy'])->name('dean.memo.destroy');
 Route::get('/dean/memo/{id}', [DeanMemoController::class, 'show'])->name('dean.memo.show');
 
-
 //For chairperson memo view
 Route::middleware(['auth', 'isChair'])->group(function () {
     Route::get('/chair/memo', [ChairMemoController::class, 'index'])->name('chair.memo');
@@ -51,10 +50,9 @@ Route::get('/notifications/mark-read/{id}', function ($id) {
 })->name('notifications.markRead');
 
 // //New middleware route for notification Dean - BLeader
-// use App\Http\Controllers\BayanihanLeader\BLSyllabusController;
-// Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
-//     Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
-// });
+Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
+    Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
+});
 
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;
@@ -255,9 +253,9 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
     // Program Outcome and Educ Obj 
     Route::get('/programOutcome', [ChairPOController::class, 'index'])->name('chairperson.programOutcome');
     Route::get('/programOutcome/createPo', [ChairPOController::class, 'createPo'])->name('chairperson.createPo');
-    Route::post('/programOutcome/storePo', [ChairPOController::class, 'storePo'])->name('chairperson.storePo');
-    Route::get('/programOutcome/editPo/{department_id}', [ChairPOController::class, 'editPo'])->name('chairperson.editPo');
-    Route::put('/programOutcome/updatePo/{po_id}', [ChairPOController::class, 'updatePo'])->name('chairperson.updatePo');
+    Route::post('/programOutcome/storePo/{department_id}', [ChairPOController::class, 'storePo'])->name('chairperson.storePo');
+    Route::get('/programOutcome/editPo', [ChairPOController::class, 'editPo'])->name('chairperson.editPo');
+    Route::put('/programOutcome/updatePo/{department_id}', [ChairPOController::class, 'updatePo'])->name('chairperson.updatePo');
     Route::delete('/programOutcome/destroyPo/{po_id}', [ChairPOController::class, 'destroyPo'])->name('chairperson.destroyPo');
 
     Route::get('/poe', [ChairPOEController::class, 'index'])->name('chairperson.poe');
@@ -285,14 +283,14 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
     Route::get('/course/viewCourse/{course_id}', [ChairCourseController::class, 'viewCourse'])->name('chairperson.viewCourse');
 
     // Syllabus 
-    Route::get('/syallbus', [ChairSyllabusController::class, 'index'])->name('chairperson.syllabus');
+    Route::get('/syllabus', [ChairSyllabusController::class, 'index'])->name('chairperson.syllabus');
     Route::get('/syllabus/viewSyllabus/{syll_id}', [ChairSyllabusController::class, 'viewSyllabus'])->name('chairperson.viewSyllabus');
     Route::put('/syllabus/approveSyllabus/{syll_id}', [ChairSyllabusController::class, 'approveSyllabus'])->name('chairperson.approveSyllabus');
     Route::PUT('/syllabus/rejectSyllabus/{syll_id}', [ChairSyllabusController::class, 'rejectSyllabus'])->name('chairperson.rejectSyllabus');
     Route::post('/syllabus/return/{syll_id}', [ChairSyllabusController::class, 'returnSyllabus'])->name('chairperson.returnSyllabus');
-    Route::get('/syallbus/reviewForm/{syll_id}', [ChairSyllabusController::class, 'reviewForm'])->name('chairperson.reviewForm');
-    Route::get('/syallbus/commentSyllabus/{syll_id}', [ChairSyllabusController::class, 'commentSyllabus'])->name('chairperson.commentSyllabus');
-    Route::get('/syallbus/viewReviewForm/{syll_id}', [ChairSyllabusController::class, 'viewReviewForm'])->name('chairperson.viewReviewForm');
+    Route::get('/syllabus/reviewForm/{syll_id}', [ChairSyllabusController::class, 'reviewForm'])->name('chairperson.reviewForm');
+    Route::get('/syllabus/commentSyllabus/{syll_id}', [ChairSyllabusController::class, 'commentSyllabus'])->name('chairperson.commentSyllabus');
+    Route::get('/syllabus/viewReviewForm/{syll_id}', [ChairSyllabusController::class, 'viewReviewForm'])->name('chairperson.viewReviewForm');
 
     // TOS
     Route::get('/tos', [ChairTOSController::class, 'index'])->name('chairperson.tos');
@@ -474,22 +472,20 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     // Route::delete('/dean/memos/{id}', [AdminMemoController::class, 'destroy'])->name('dean.memo.destroy');
 
     //Admin: PO Controller
-    Route::get('/admin/programOutcome', [AdminPOController::class, 'index'])->name('admin.programOutcome');
-    Route::get('/programOutcome/createPo', [AdminPOController::class, 'createPo'])->name('admin.createPo');
-    Route::post('/programOutcome/storePo', [AdminPOController::class, 'storePo'])->name('admin.storePo');
-    Route::get('/programOutcome/editPo/{department_id}', [AdminPOController::class, 'editPo'])->name('admin.editPo');
-    Route::put('/programOutcome/updatePo/{po_id}', [AdminPOController::class, 'updatePo'])->name('admin.updatePo');
-    Route::delete('/programOutcome/destroyPo/{po_id}', [AdminPOController::class, 'destroyPo'])->name('admin.destroyPo');
+    Route::get('admin/department/{department_id}/program_outcome', [AdminPOController::class, 'viewPo'])->name('admin.viewPo');
+    Route::get('admin/department/{department_id}/program_outcome/create_po', [AdminPOController::class, 'createPo'])->name('admin.createPo');
+    Route::post('admin/department/{department_id}/program_outcome/store_po', [AdminPOController::class, 'storePo'])->name('admin.storePo');
+    Route::get('admin/department/{department_id}/program_outcome/edit_po/', [AdminPOController::class, 'editPo'])->name('admin.editPo');
+    Route::put('admin/department/{department_id}/program_outcome/update_po', [AdminPOController::class, 'updatePo'])->name('admin.updatePo');
+    Route::delete('admin/department/program_outcome/destroy_po/{po_id}', [AdminPOController::class, 'destroyPo'])->name('admin.destroyPo');
 
     //Admin: POE Controller
-    Route::get('/admin/poe', [AdminPOEController::class, 'index'])->name('admin.poe');
-    // Route::get('/createPoe', [AdminPOEController::class, 'createPoe'])->name('admin.createPoe');
-    // Route::post('/poe/storePoe', [AdminPOEController::class, 'storePoe'])->name('admin.storePoe');
-    // Route::get('/poe/editPoe/{department_id}', [AdminPOEController::class, 'editPoe'])->name('admin.editPoe');
-    // Route::put('/poe/updatePoe/{poe_id}', [AdminPOEController::class, 'updatePoe'])->name('admin.updatePoe');
-    // Route::delete('/poe/destroyPoe/{poe_id}', [AdminPOEController::class, 'destroyPoe'])->name('admin.destroyPoe');
-
-    
+    Route::get('admin/department/{department_id}/poe', [AdminPOEController::class, 'viewPoe'])->name('admin.viewPoe');
+    Route::get('admin/department/{department_id}/poe/create_poe/', [AdminPOEController::class, 'createPoe'])->name('admin.createPoe');
+    Route::post('admin/department/{department_id}/poe/store_poe', [AdminPOEController::class, 'storePoe'])->name('admin.storePoe');
+    Route::get('admin/department/{department_id}/poe/edit_poe/', [AdminPOEController::class, 'editPoe'])->name('admin.editPoe');
+    Route::put('admin/department/{department_id}/poe/update_poe', [AdminPOEController::class, 'updatePoe'])->name('admin.updatePoe');
+    Route::delete('admin/department/poe/destroy_poe/{poe_id}', [AdminPOEController::class, 'destroyPoe'])->name('admin.destroyPoe');
 
     //Admin: User Management Controls
     Route::get('admin/home', [ManageUser::class, 'index'])->name('admin.home');

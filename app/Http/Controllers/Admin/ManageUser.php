@@ -24,11 +24,11 @@ class ManageUser extends Controller
         $roleFilter = $request->input('roleFilter');
 
         $query = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-        ->select('users.*');
+            ->select('users.*');
+
         if ($roleFilter !== 'all') {
             $query->where('user_roles.role_id', $roleFilter); 
         }
-
 
         $users = $query->distinct()->paginate(10);
 

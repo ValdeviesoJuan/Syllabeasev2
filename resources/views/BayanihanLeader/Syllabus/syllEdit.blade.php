@@ -45,7 +45,24 @@
             </div>
             
             <div class="mb-3">
-                <label class="flex" for="syll_bldg_rm">Bldg/Rm No.:</label>
+                <label for="effectivity_date" class="flex">Effectivity Date</label>
+                <input 
+                    type="date" 
+                    name="effectivity_date" 
+                    id="effectivity_date" 
+                    class="border border-[#a8a29e] rounded p-[5px] w-[390px]" 
+                    value="{{ $syllabus->effectivity_date }}" 
+                    required
+                >
+                @error('effectivity_date')
+                <span class="" role="alert">
+                    <strong class="">{{ $message }}</strong>
+                </span>
+                @enderror
+            </div>
+            <div></div>
+            <div class="mb-3">
+                <label class="flex" for="syll_bldg_rm">Bldg./Rm No.:</label>
                 <input type="text" name="syll_bldg_rm" id="syll_bldg_rm" class="form-control border border-[#a8a29e] rounded p-[5px] w-[300px]" value="{{$syllabus->syll_bldg_rm}}" required></input>
                 @error('syll_bldg_rm')
                 <span class="" role="alert">
@@ -95,8 +112,8 @@
 
         <div class="grid  gap-6 mb-6 md:grid-cols-2">
             <div class="mb-3">
-                <label class="flex" for="syll_ins_bldg_rm">Bldg.Rm. No:</label>
-                <input type="text" name="syll_ins_bldg_rm" id="syll_ins_bldg_rm" class="form-control border border-[#a8a29e] rounded p-[5px] w-[300px]" value="syll_ins_bldg_rm"required></input>
+                <label class="flex" for="syll_ins_bldg_rm">Instructor Bldg./Rm. No:</label>
+                <input type="text" name="syll_ins_bldg_rm" id="syll_ins_bldg_rm" class="form-control border border-[#a8a29e] rounded p-[5px] w-[300px]" value="{{$syllabus->syll_ins_bldg_rm}}"required></input>
                 @error('syll_ins_bldg_rm')
                 <span class="" role="alert">
                     <strong class="">{{ $message }}</strong>

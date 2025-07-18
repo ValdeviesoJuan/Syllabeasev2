@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\BayanihanTeacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\BayanihanLeader;
-use App\Models\BayanihanMember;
+use App\Models\BayanihanGroupUsers;
 use App\Models\Syllabus;
 use App\Models\SyllabusCoPo;
 use App\Models\SyllabusCotCoF;
@@ -36,18 +35,20 @@ class BayanihanTeacherAuditController extends Controller
         $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->select('syllabi.*')
             ->get();
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
-            ->where('syllabi.syll_id', '=', $syll_id)
-            ->get();
 
-        $bMembers = BayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
         $courseOutcomes = SyllabusCourseOutcome::where('syll_id', $syll_id)->get();
@@ -122,18 +123,19 @@ class BayanihanTeacherAuditController extends Controller
             ->select('tos.*', 'tos_rows.*')
             ->get();
 
-        $bLeaders = BayanihanLeader::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_leaders.bg_id')
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_leaders.bg_user_id')
-            ->select('bayanihan_leaders.*', 'users.*')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
-
-        $bMembers = BayanihanMember::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_members.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_members.bm_user_id')
-            ->select('bayanihan_members.*', 'users.*')
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
             ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)

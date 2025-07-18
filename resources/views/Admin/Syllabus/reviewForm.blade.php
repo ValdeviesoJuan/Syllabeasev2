@@ -27,7 +27,67 @@
         <div id="" class="mt-24 flex flex-col border  justify-center border-gray3 top-0  bg-white bg-opacity-100 rounded-lg font-sans pb-10">
             <div class=" justify-center items-center mx-10">
                 <div class="flex mt-5 justify-center items-center">
-                    <div class="text-3xl font-bold mb-5 mt-5">SYLLABUS REVIEW FORM</div>
+                <!-- HEADER SECTION -->
+                <div class="w-full bg-white">
+                    <!-- Outer container for header -->
+                    <div class="flex justify-center items-start mb-4">
+                        <div class="flex justify-between items-start w-full max-w-5xl">
+                            
+                            <!-- LEFT: Logo + Campus Info -->
+                            <div class="flex items-start space-x-2 w-[70%]">
+                                <!-- Logo -->
+                                <div class="w-20 ml-6 mt-4">
+                                    <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
+                                </div>
+                                <!-- Text block -->
+                                <div>
+                                    <h1 class="text-sm font-bold uppercase leading-tight ml-9 mt-[40px]">
+                                        University of Science and Technology of Southern Philippines
+                                    </h1>
+                                    <p class="text-xs leading-snug ml-9">
+                                        Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- RIGHT: Document Info Table -->
+                            <table class="text-[10px] text-center border border-gray-400 w-40 mt-[25px]">
+                                <!-- Top Header Row -->
+                                <thead>
+                                    <tr class="bg-[#5A6E99] text-white">
+                                        <th colspan="3" class="border border-gray-400 px-1 py-[2px] font-semibold">
+                                            Document Code No.
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <!-- Document Code -->
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" class="border border-gray-400 py-[2px] text-[11px] font-bold text-gray-700">
+                                            FM-USTP-ACAD-12
+                                        </td>
+                                    </tr>
+                                    <!-- Sub Headers -->
+                                    <tr class="bg-[#5A6E99] text-white">
+                                        <td class="border border-gray-400 px-1 py-[2px]">Rev. No.</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">Effective Date</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">Page No.</td>
+                                    </tr>
+                                    <!-- Data Row -->
+                                    <tr>
+                                        <td class="border border-gray-400 px-1 py-[2px]">02</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">03.01.23</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">1 of 2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                        <!-- Title Section (centered) -->
+                        <div class="text-3xl font-bold text-center mb-5 mt-2">
+                            SYLLABUS REVIEW FORM
+                        </div>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 grid-rows-2 mb-6 mt-">
                     <div class="">
@@ -61,7 +121,7 @@
                         Faculty: {{$reviewForm->srf_faculty}}
                     </div> -->
                 </div>
-                <div class="w-[900px] h-11/12 bg-white bg-white bg-opacity-100 ">
+                <div class="w-[900px] h-11/12 bg-white bg-opacity-100 ">
                     <div class="mb-4">
                         <p>
                             <span class="font-semibold">Directions:</span> Check the column <span class="font-semibold">YES</span> if an indicator is observed in the syllabus and check column NO if otherwise. Provide clear and constructive remarks that would help improve the content and alignment of the syllabus.

@@ -19,6 +19,7 @@ class SyllabusReviewForm extends Model implements Auditable
         'srf_course_code',
         'srf_title',
         'srf_sem_year',
+        'effectivity_date',
         'srf_faculty',
         'user_id',
         'srf_date',
