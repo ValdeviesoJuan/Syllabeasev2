@@ -77,7 +77,6 @@
                                             Delete
                                         </button>
                                     </form>
-
                                     <a href="{{ route('admin.viewPoe', $department->department_id) }}"
                                        class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray5 cursor-default">
                                         View POE
@@ -100,7 +99,7 @@
             <div class="flex justify-center">
                 <span class="text-gray-600 text-sm">Page {{ $departments->currentPage() }} of {{ $departments->lastPage() }}</span>
             </div>
-            {{ $departments->links() }} 
+            {{ $departments->links() }}
         </div>
     </div>
 </div>
