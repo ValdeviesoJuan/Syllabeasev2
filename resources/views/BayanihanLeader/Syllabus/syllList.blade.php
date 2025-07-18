@@ -79,7 +79,7 @@
     @endif
 
 <body>
-    <div class="m-auto p-8 bg-white mt-[5%] shadow-lg rounded-lg  w-11/12">
+    <div class="m-auto p-8 bg-white mt-[5%] shadow-lg rounded-lg  w-full">
         <span class="flex flex-block justify-between items-center">
             <h1 class="font-bold text-4xl text-[#201B50] mb-8">List of Syllabus</h1>
             <div class="">

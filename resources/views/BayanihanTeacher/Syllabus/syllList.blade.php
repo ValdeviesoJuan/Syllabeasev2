@@ -31,7 +31,7 @@
 
 <body>
     <div class="mt-[7%]">
-        <div class="mt-[100px] pb-12 m-auto p-8 bg-slate-100 mt-[30px] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-11/12">
+        <div class="mt-[100px] pb-12 m-auto p-8 bg-slate-100  shadow-lg  rounded-lg w-full">
             <div class="font-bold text-4xl text-[#201B50] mb-8">
                 List of Syllabi
             </div>

@@ -199,7 +199,7 @@
 
             </div>
         </div>
-
+<div class="mt-[100px] pb-12 m-auto p-8 bg-slate-100  shadow-lg  rounded-lg w-full">
         <!-- Syllabus here -->
         <div class="">
             <div class="mt-2 text-blue text-2xl font-semibold">
@@ -326,6 +326,6 @@
         });
     </script>
 </body>
-
+</div>
 </html>
 @endsection

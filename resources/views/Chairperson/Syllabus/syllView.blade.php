@@ -260,7 +260,7 @@
 
         </div> -->
  <!-- OUTER CONTAINER -->
-    <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
+    <div class="mx-auto mt-6 w-11/12 border-[1px] border-black bg-white font-serif text-sm p-4">
     <!-- HEADER SECTION -->
     <br>
     <div class="flex justify-center items-start mb-4">
@@ -321,7 +321,7 @@
     <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white {{ isset($srf1) && $srf1['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
         <!-- 1st Header -->
         <tr>
-            <th colspan="2" class="font-medium border-2 border-solid px-4 {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
+            <th colspan="2" class="font-medium border-1 border-solid px-4 {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                 <span class="font-bold">{{$syll->college_description}}</span><br>
                 {{$syll->department_name}}
             </th>

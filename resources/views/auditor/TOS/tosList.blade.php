@@ -26,7 +26,7 @@
 </head>
 
 <body class="mt-[20px]">
-    <div class="m-auto pb-12 p-8 bg-slate-100 mt-[7%] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-11/12">
+    <div class="m-auto pb-12 p-8 bg-slate-100 mt-[7%] p-2 shadow-lg bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-lg w-full">
         <div class="flex justify-center align-items-center">
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden mb-6">

@@ -109,14 +109,14 @@
                 <td class="px-6 py-4 flex">
                     <form action="{{ route('chairperson.editBTeam', $bgroup->bg_id) }}" method="GET">
                         @csrf
-                        <button type="submit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1">
+                        <button type="submit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1 text-green">
                             Edit
                         </button>
                     </form>
                     <form action="{{ route('chairperson.destroyBTeam',$bgroup->bg_id) }}" method="Post">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1">
+                        <button type="submit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1 text-red">
                             Delete
                         </button>
                     </form>
