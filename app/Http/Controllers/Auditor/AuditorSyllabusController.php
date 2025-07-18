@@ -27,7 +27,7 @@ class AuditorSyllabusController extends Controller
 {
     public function index()
     {
-        return view('auditor.syllabus.syllList');
+        return view('auditor.syllList');
     }
 
     public function commentSyllabus($syll_id)

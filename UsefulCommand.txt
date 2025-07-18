@@ -1,3 +1,4 @@
+php artisan db:seed
 php artisan db:seed --class=RoleSeeder
 php artisan db:seed --class=CollegeSeeder
 php artisan db:seed --class=DepartmentSeeder
