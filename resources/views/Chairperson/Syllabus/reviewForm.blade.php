@@ -33,63 +33,62 @@
                 <!-- HEADER SECTION -->
                 <div class="border-2 border-black w-full bg-white">
 
-                <div class="flex justify-center items-start mb-4 "> 
-                    <div class="flex justify-between items-start w-full max-w-5xl">
-                        
-                        <!-- LEFT: Logo + Campus Info -->
-                        <div class="flex items-start space-x-2 w-[70%]">
-                        <!-- Logo -->
-                        <div class="w-20 ml-6 mt-[16px]">
-                            <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
-                        </div>
+                  <div class="flex justify-center items-start mb-4 "> 
+                      <div class="flex justify-between items-start w-full max-w-5xl">
+
+                          <!-- LEFT: Logo + Campus Info -->
+                          <div class="flex items-start space-x-2 w-[70%]">
+                            <!-- Logo -->
+                            <div class="w-20 ml-6 mt-[16px]">
+                                <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
+                            </div>
 
 
-                        <!-- Text block -->
-                        <div>
-                            <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
-                                University of Science and Technology of Southern Philippines
-                            </h1>
-                            <p class="text-xs leading-snug ml-6">
-                                Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
-                            </p>
-                        </div>
-                        </div>
+                            <!-- Text block -->
+                            <div>
+                                <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
+                                    University of Science and Technology of Southern Philippines
+                                </h1>
+                                <p class="text-xs leading-snug ml-6">
+                                    Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
+                                </p>
+                            </div>
+                          </div>
 
-                        <!-- RIGHT: Document Info Table -->
-                        <table class="text-[10px] text-center border border-gray-400 w-40">
-                            <!-- Top Header Row -->
-                            <thead>
-                                <tr class="bg-[#5A6E99] text-white">
-                                    <th colspan="3" class="border border-gray-400 px-1 py-[2px] font-semibold">
-                                        Document Code No.
-                                    </th>
-                                </tr>
-                            </thead>
-                            <!-- Document Code -->
-                            <tbody>
-                                <tr>
-                                    <td colspan="3" class="border border-gray-400 py-[2px] text-[11px] font-bold text-gray-700">
-                                        FM-USTP-ACAD-01
-                                    </td>
-                                </tr>
-                                <!-- Sub Headers -->
-                                <tr class="bg-[#5A6E99] text-white">
-                                    <td class="border border-gray-400 px-1 py-[2px]">Rev. No.</td>
-                                    <td class="border border-gray-400 px-1 py-[2px]">Effective Date</td>
-                                    <td class="border border-gray-400 px-1 py-[2px]">Page No.</td>
-                                </tr>
-                                <!-- Data Row -->
-                                <tr>
-                                    <td class="border border-gray-400 px-1 py-[2px]">01</td>
-                                    <td class="border border-gray-400 px-1 py-[2px]">03.01.23</td>
-                                    <td class="border border-gray-400 px-1 py-[2px]">1 of 2</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                          <!-- RIGHT: Document Info Table -->
+                          <table class="text-[10px] text-center border border-gray-400 w-40">
+                              <!-- Top Header Row -->
+                              <thead>
+                                  <tr class="bg-[#5A6E99] text-white">
+                                      <th colspan="3" class="border border-gray-400 px-1 py-[2px] font-semibold">
+                                          Document Code No.
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <!-- Document Code -->
+                              <tbody>
+                                  <tr>
+                                      <td colspan="3" class="border border-gray-400 py-[2px] text-[11px] font-bold text-gray-700">
+                                          FM-USTP-ACAD-01
+                                      </td>
+                                  </tr>
+                                  <!-- Sub Headers -->
+                                  <tr class="bg-[#5A6E99] text-white">
+                                      <td class="border border-gray-400 px-1 py-[2px]">Rev. No.</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">Effective Date</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">Page No.</td>
+                                  </tr>
+                                  <!-- Data Row -->
+                                  <tr>
+                                      <td class="border border-gray-400 px-1 py-[2px]">01</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">03.01.23</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">1 of 2</td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                      </div>
                     </div>
                 </div>
-
-
                 <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white">
                     <!-- 1st Header -->
                     <tr>
@@ -410,26 +409,26 @@
         <!-- REVIEW FORM -->
         <div id="review_form" class="rounded-xl overflow-auto w-[50%] flex flex-col border  justify-center border-gray3  bg-white bg-opacity-100  rounded shadow-lg font-sans">
             <!-- HEADER SECTION -->
-                <div class="w-full bg-white">
+            <div class="w-full bg-white">
 
                 <div class="flex justify-center items-start mb-4 "> 
                     <div class="flex justify-between items-start w-full max-w-5xl">
                         
                         <!-- LEFT: Logo + Campus Info -->
                         <div class="flex items-start space-x-2 w-[70%]">
-                        <!-- Logo -->
-                        <div class="w-20 ml-6 mt-[16px]">
-                            <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
-                        </div>
-                        <!-- Text block -->
-                        <div>
-                            <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
-                                University of Science and Technology of Southern Philippines
-                            </h1>
-                            <p class="text-xs leading-snug ml-6">
-                                Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
-                            </p>
-                        </div>
+                          <!-- Logo -->
+                          <div class="w-20 ml-6 mt-[16px]">
+                              <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
+                          </div>
+                          <!-- Text block -->
+                          <div>
+                              <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
+                                  University of Science and Technology of Southern Philippines
+                              </h1>
+                              <p class="text-xs leading-snug ml-6">
+                                  Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
+                              </p>
+                          </div>
                         </div>
                         <!-- RIGHT: Document Info Table -->
                         <table class="text-[10px] text-center border border-gray-400 w-40">
@@ -464,6 +463,7 @@
                         </table>
                     </div>
                 </div>
+            </div>
             <div class="h-screen justify-center items-center mx-1">
                 <div class="flex justify-center items-center mt-5">
                     <div class="text-3xl font-bold mb-5 mt-5">SYLLABUS REVIEW FORM</div>

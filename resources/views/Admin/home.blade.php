@@ -59,7 +59,10 @@
                                     class="import_btn flex items-center gap-2 float-right"
                                     style="background: #d7ecf9; border: none; border-radius: 10px; padding: 5px 24px; font-size: 1rem; color: #1a3557; font-weight: 500; justify-content: center; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); cursor: pointer; transition: background 0.3s ease;"
                                     onmouseover="this.style.background='#c3dff3';"
-                                    onmouseout="this.style.background='#d7ecf9';">
+                                    onmouseout="this.style.background='#d7ecf9';"
+                                    id="importBtn"
+                                    disabled
+                                >
 
                                     <!-- Modern Upload Icon -->
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -77,9 +80,6 @@
                     </div> 
                     <livewire:admin-user-table />
                 </div>
-            </div>
-        </div>
-    </div>
 <script>
     $(document).ready(function() {
         $('.dropdown-menu').hide();
@@ -96,7 +96,17 @@
                 $('.dropdown-menu').hide();
             }
         });
+
+        // Enable import button only if file is selected
+        $('#customFile').on('change', function() {
+            if ($(this).val()) {
+                $('#importBtn').prop('disabled', false);
+            } else {
+                $('#importBtn').prop('disabled', true);
+            }
+        });
     });
+</script>
 </script>
 </body>
 

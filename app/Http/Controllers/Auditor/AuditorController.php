@@ -11,7 +11,7 @@ class AuditorController extends Controller
 {
     public function home()
     {
-        return view('auditor.home');
+        return view('auditor.syllList');
     }
 
     public function tos()
