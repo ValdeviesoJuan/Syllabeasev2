@@ -235,7 +235,7 @@
             <tbody>
                 <tr>
                     <td colspan="3" class="border border-gray-400 py-1 text-sm font-bold text-gray-700">
-                        FM-USTP-ACAD-12
+                        FM-USTP-ACAD-01
                     </td>
                 </tr>
                 <!-- Sub Headers -->

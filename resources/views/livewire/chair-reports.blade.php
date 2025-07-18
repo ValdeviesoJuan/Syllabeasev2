@@ -87,18 +87,22 @@
             Syllabus
         </div>
         <div class="flex ml-[10%] mb-5">
-            <input wire:model.live="search" type="text" class="border focus:outline-none focus:border-blue border-black w-[20%] rounded-lg p-1" placeholder="Search...">
-            <button wire:click="applyFilters"><svg width="34px" class="bg-blue rounded-lg p-[3px] ml-2" height="34px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            </button>
-            <select wire:model="filters.course_semester" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[12%] ml-6" placeholder="Semester">
+            <div class="relative w-[30%] min-w-0">
+            <input
+                wire:model.live="search"
+                type="text"
+                class="border focus:outline-none focus:border-blue-500 border-black w-full rounded-lg p-2 pr-10"
+                placeholder="Search..."
+            >
+            </div>
+
+            <select wire:model="filters.course_semester" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[17%] ml-6" placeholder="Semester">
                 <option value="">Semester (All)</option>
                 <option value="1st Semester">1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
                 <option value="Mid Year">Mid Year</option>
             </select>
-            <select wire:model="filters.bg_school_year" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[12%] ml-6" placeholder="School Year">
+            <select wire:model="filters.bg_school_year" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[18%] ml-6" placeholder="School Year">
                 <option value="">School Year (All)</option>
                 <option value="2023-2024">2023-2024</option>
                 <option value="2024-2025">2024-2025</option>
@@ -169,18 +173,24 @@
             Table of Specification
         </div>
         <div class="flex ml-[10%] mb-5">
-            <input wire:model.live="tos_search" type="text" class="border focus:outline-none focus:border-blue border-black w-[20%] rounded-lg p-1" placeholder="Search...">
-            <button wire:click="applyFilters"><svg width="34px" class="bg-blue rounded-lg p-[3px] ml-2" height="34px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            </button>
-            <select wire:model="filters.tos_course_semester" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[12%] ml-6" placeholder="Semester">
+            <div class="relative w-[30%] min-w-0">
+                <input wire:model.live="tos_search" type="text"
+                    class="border focus:outline-none focus:border-blue-500 border-black w-full rounded-lg p-2 pr-10"
+                    placeholder="Search...">
+            </div>
+
+            <select wire:model="filters.tos_course_semester"
+                class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[17%] ml-6"
+                placeholder="Semester">
                 <option value="">Semester (All)</option>
                 <option value="1st Semester">1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
                 <option value="Mid Year">Mid Year</option>
             </select>
-            <select wire:model="filters.tos_bg_school_year" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[12%] ml-6" placeholder="School Year">
+
+            <select wire:model="filters.tos_bg_school_year"
+                class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[18%] ml-6"
+                placeholder="School Year">
                 <option value="">School Year (All)</option>
                 <option value="2023-2024">2023-2024</option>
                 <option value="2024-2025">2024-2025</option>
@@ -190,8 +200,13 @@
                 <option value="2028-2029">2028-2029</option>
                 <option value="2029-2030">2029-2030</option>
             </select>
-            <button wire:click="applyFilters" class="bg-blue ml-2 focus:outline-none focus:border-blue cursor-pointer rounded-lg text-white px-3 p-[4px] ">Apply Filters</button>
+
+            <button wire:click="applyFilters"
+                class="bg-blue ml-2 focus:outline-none focus:border-blue cursor-pointer rounded-lg text-white px-3 p-[4px]">
+                Apply Filters
+            </button>
         </div>
+
         <div class="flex justify-center">
             <table class="bg-white mb-16 border w-[80%]">
                 <thead class="bg-blue text-left text-white">
