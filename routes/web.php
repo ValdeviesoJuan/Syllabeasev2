@@ -283,14 +283,14 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
     Route::get('/course/viewCourse/{course_id}', [ChairCourseController::class, 'viewCourse'])->name('chairperson.viewCourse');
 
     // Syllabus 
-    Route::get('/syallbus', [ChairSyllabusController::class, 'index'])->name('chairperson.syllabus');
+    Route::get('/syllabus', [ChairSyllabusController::class, 'index'])->name('chairperson.syllabus');
     Route::get('/syllabus/viewSyllabus/{syll_id}', [ChairSyllabusController::class, 'viewSyllabus'])->name('chairperson.viewSyllabus');
     Route::put('/syllabus/approveSyllabus/{syll_id}', [ChairSyllabusController::class, 'approveSyllabus'])->name('chairperson.approveSyllabus');
     Route::PUT('/syllabus/rejectSyllabus/{syll_id}', [ChairSyllabusController::class, 'rejectSyllabus'])->name('chairperson.rejectSyllabus');
     Route::post('/syllabus/return/{syll_id}', [ChairSyllabusController::class, 'returnSyllabus'])->name('chairperson.returnSyllabus');
-    Route::get('/syallbus/reviewForm/{syll_id}', [ChairSyllabusController::class, 'reviewForm'])->name('chairperson.reviewForm');
-    Route::get('/syallbus/commentSyllabus/{syll_id}', [ChairSyllabusController::class, 'commentSyllabus'])->name('chairperson.commentSyllabus');
-    Route::get('/syallbus/viewReviewForm/{syll_id}', [ChairSyllabusController::class, 'viewReviewForm'])->name('chairperson.viewReviewForm');
+    Route::get('/syllabus/reviewForm/{syll_id}', [ChairSyllabusController::class, 'reviewForm'])->name('chairperson.reviewForm');
+    Route::get('/syllabus/commentSyllabus/{syll_id}', [ChairSyllabusController::class, 'commentSyllabus'])->name('chairperson.commentSyllabus');
+    Route::get('/syllabus/viewReviewForm/{syll_id}', [ChairSyllabusController::class, 'viewReviewForm'])->name('chairperson.viewReviewForm');
 
     // TOS
     Route::get('/tos', [ChairTOSController::class, 'index'])->name('chairperson.tos');

@@ -161,8 +161,12 @@
                                             </div>
                                             <div>
                                                 <div>
-                                                    <span class="hover:text-blue"><a href="{{ $notification->data['action_url'] }}">
-                                                        <span class="font-semibold">{{ $notification->data['course_code'] }}-{{ $notification->data['bg_school_year'] }}</span>: {{ $notification->data['message'] }}</a></span>
+                                                    <span class="hover:text-blue">
+                                                        <a href="{{ $notification->data['action_url'] }}">
+                                                            <span class="font-semibold">{{ $notification->data['course_code'] }}-{{ $notification->data['bg_school_year'] }}</span>
+                                                            : {{ $notification->data['message'] }}
+                                                        </a>
+                                                    </span>
                                                 </div>
                                                 <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
                                             </div>
@@ -233,15 +237,11 @@
                 </nav>
             </div>
         </div>
-
         <main>
             <div class="mt-16">
                 @yield('content')
             </div>
-
         </main>
     </div>
-
 </body>
-
 </html>
