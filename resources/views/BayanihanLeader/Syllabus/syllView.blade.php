@@ -475,7 +475,7 @@
         </div>
     </div>
     @endif
-   <!-- OUTER CONTAINER -->
+    <!-- OUTER CONTAINER -->
     <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
     <!-- HEADER SECTION -->
     <br>
@@ -532,13 +532,8 @@
                 </tr>
             </tbody>
         </table>
- 
-
-
         </div>
     </div>
-
-
     <!-- SYLLABUS TABLE -->
     <table x-data="{ showPrev: false }" class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white" 
         x-init="

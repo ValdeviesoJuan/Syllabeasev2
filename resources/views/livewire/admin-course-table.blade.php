@@ -1,35 +1,59 @@
-<div class=" mx-auto sm:p-2 text-gray-100 m-10 bg-gray-100 mt-2">
-<div class="flex justify-between mb-4">
-        <select wire:model="filters.course_year_level" class="border cursor-pointer focus:outline-none focus:border-blue rounded-lg p-1 w-[17%] ml-" placeholder="Year level">
-            <option value="" class="">Year level (All)</option>
+<div class="mx-auto sm:p-2 text-gray-100 m-10 bg-gray-100 mt-2">
+    <div class="flex flex-wrap justify-between gap-2 mb-4 items-center">
+
+        <!-- Search Bar First -->
+        <div class="relative w-[30%] min-w-[250px]">
+            <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-5 h-5 text-blue-500" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <input type="text" wire:model.live="search" id="table-search"
+                class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search...">
+        </div>
+
+        <!-- Year Level Dropdown -->
+        <select wire:model="filters.course_year_level"
+            class="border cursor-pointer focus:outline-none focus:border-blue rounded-lg  w-[17%] text-sm"
+            placeholder="Year level">
+            <option value="">Year level (All)</option>
             <option value="1st Year">1st Year</option>
             <option value="2nd Year">2nd Year</option>
             <option value="3rd Year">3rd Year</option>
             <option value="4th Year">4th Year</option>
             <option value="5th Year">5th Year</option>
         </select>
-        <select wire:model="filters.course_semester" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[17%] ml-" placeholder="Semester">
+
+        <!-- Semester Dropdown -->
+        <select wire:model="filters.course_semester"
+            class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg  w-[17%] text-sm"
+            placeholder="Semester">
             <option value="">Semester (All)</option>
             <option value="1st Semester">1st Semester</option>
             <option value="2nd Semester">2nd Semester</option>
             <option value="Mid Year">Mid Year</option>
         </select>
-        <select wire:model="filters.curr_code" class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg p-1 w-[17%] ml-" placeholder="Semester">
+
+        <!-- Curriculum Dropdown -->
+        <select wire:model="filters.curr_code"
+            class="border focus:outline-none focus:border-blue cursor-pointer rounded-lg w-[17%] text-sm"
+            placeholder="Curriculum">
             <option value="">Curriculum (All)</option>
-            
             <option value=""></option>
-         
         </select>
-        <button wire:click="applyFilters" class="bg-blue5 focus:outline-none focus:border-blue cursor-pointer rounded-lg text-white p-[4px] px-4">Apply Filters</button>
-        <div class="relative">
-            <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                </svg>
-            </div>
-            <input type="text" wire:model.live="search" id="table-search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search...">
-        </div>
+
+        <!-- Apply Button -->
+        <button wire:click="applyFilters"
+            class="bg-blue5 hover:bg-blue-600 focus:outline-none focus:border-blue cursor-pointer rounded-lg text-white p-[10px] px-4 text-sm">
+            Apply Filters
+        </button>
     </div>
+
+    <!-- Table -->
     <div class="overflow-x-auto">
                     <table class=' w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
                         <thead class="rounded text-sm text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

@@ -27,64 +27,66 @@
     <div class="m-auto justify-center flex mb-4 ml-36">
         <button id="checkAllYesButton" class="ml text-lg justify-end p-1 rounded text-white shadow mb-1 px-4 bg-[#4ade80] hover:scale-105 transition ease-in-out">Check All Yes</button>
     </div>
-    <div class="flex flex overflow-auto mx-1">
+    <div class="flex overflow-auto mx-1">
         <div id="" class="mr-5 syllabus h-screen rounded-tl-xl bg-white w-[50%] overflow-auto ">
             <div className="flex flex-col w-full bg-red-200 h-[1000px]">
-                <!-- OUTER CONTAINER -->
-                <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
-                    <!-- HEADER SECTION -->
-                    <div class="flex justify-center items-start mb-4">
-                        <!-- OUTER FLEX CONTAINER -->
-                        <div class="flex justify-between items-start w-full max-w-5xl">
-                    
-                            <!-- LEFT: Logo + Campus Info -->
-                            <div class="flex items-start space-x-4 w-[70%]">
-                                <!-- Logo with left shift -->
-                                <div class="-ml-6">
-                                    <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-20 h-auto">
-                                </div>
+                <!-- HEADER SECTION -->
+                <div class="border-2 border-black w-full bg-white">
 
-                                <!-- Text block -->
-                                <div>
-                                    <h1 class="text-md font-bold uppercase leading-tight ml-11 p-2">
-                                        University of Science and Technology of Southern Philippines
-                                    </h1>
-                                    <p class="text-sm mt-1 ml-11">
-                                        Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
-                                    </p>
-                                </div>
+                  <div class="flex justify-center items-start mb-4 "> 
+                      <div class="flex justify-between items-start w-full max-w-5xl">
+
+                          <!-- LEFT: Logo + Campus Info -->
+                          <div class="flex items-start space-x-2 w-[70%]">
+                            <!-- Logo -->
+                            <div class="w-20 ml-6 mt-[16px]">
+                                <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
                             </div>
-                            <table class="text-xs text-center border border-gray-400 ml-20">
-                                <!-- Top Header Row -->
-                                <thead>
-                                    <tr class="bg-[#5A6E99] text-white">
-                                        <th colspan="3" class="border border-gray-400 px-3 py-1 text-xs font-semibold">
-                                            Document Code No.
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <!-- Document Code -->
-                                <tbody>
-                                    <tr>
-                                        <td colspan="3" class="border border-gray-400 py-1 text-sm font-bold text-gray-700">
-                                            FM-USTP-ACAD-12
-                                        </td>
-                                    </tr>
-                                    <!-- Sub Headers -->
-                                    <tr class="bg-[#5A6E99] text-white">
-                                        <td class="border border-gray-400 px-2 py-1 font-medium">Rev. No.</td>
-                                        <td class="border border-gray-400 px-2 py-1 font-medium">Effective Date</td>
-                                        <td class="border border-gray-400 px-2 py-1 font-medium">Page No.</td>
-                                    </tr>
-                                    <!-- Data Row -->
-                                    <tr>
-                                        <td class="border border-gray-400 px-2 py-1">01</td>
-                                        <td class="border border-gray-400 px-2 py-1">03.01.23</td>
-                                        <td class="border border-gray-400 px-2 py-1">1 of 2</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+
+
+                            <!-- Text block -->
+                            <div>
+                                <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
+                                    University of Science and Technology of Southern Philippines
+                                </h1>
+                                <p class="text-xs leading-snug ml-6">
+                                    Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
+                                </p>
+                            </div>
+                          </div>
+
+                          <!-- RIGHT: Document Info Table -->
+                          <table class="text-[10px] text-center border border-gray-400 w-40">
+                              <!-- Top Header Row -->
+                              <thead>
+                                  <tr class="bg-[#5A6E99] text-white">
+                                      <th colspan="3" class="border border-gray-400 px-1 py-[2px] font-semibold">
+                                          Document Code No.
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <!-- Document Code -->
+                              <tbody>
+                                  <tr>
+                                      <td colspan="3" class="border border-gray-400 py-[2px] text-[11px] font-bold text-gray-700">
+                                          FM-USTP-ACAD-01
+                                      </td>
+                                  </tr>
+                                  <!-- Sub Headers -->
+                                  <tr class="bg-[#5A6E99] text-white">
+                                      <td class="border border-gray-400 px-1 py-[2px]">Rev. No.</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">Effective Date</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">Page No.</td>
+                                  </tr>
+                                  <!-- Data Row -->
+                                  <tr>
+                                      <td class="border border-gray-400 px-1 py-[2px]">01</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">03.01.23</td>
+                                      <td class="border border-gray-400 px-1 py-[2px]">1 of 2</td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                      </div>
                     </div>
                 </div>
                 <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white">
@@ -403,67 +405,65 @@
                 </table>
             </div>
         </div>
-
+        </div>
+        <!-- REVIEW FORM -->
         <div id="review_form" class="rounded-xl overflow-auto w-[50%] flex flex-col border  justify-center border-gray3  bg-white bg-opacity-100  rounded shadow-lg font-sans">
+            <!-- HEADER SECTION -->
+            <div class="w-full bg-white">
 
-            <!-- USTP HEADER (copy) -->
-            <div class="flex justify-center items-start mb-4">
-                <!-- OUTER FLEX CONTAINER -->
-                <div class="flex justify-between items-start w-full max-w-5xl">
-                    
-                    <!-- LEFT: Logo + Campus Info -->
-                    <div class="flex items-start space-x-4 w-[70%]">
-                        <!-- Logo with left shift -->
-                        <div class="-ml-6">
-                            <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-20 h-auto">
+                <div class="flex justify-center items-start mb-4 "> 
+                    <div class="flex justify-between items-start w-full max-w-5xl">
+                        
+                        <!-- LEFT: Logo + Campus Info -->
+                        <div class="flex items-start space-x-2 w-[70%]">
+                          <!-- Logo -->
+                          <div class="w-20 ml-6 mt-[16px]">
+                              <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
+                          </div>
+                          <!-- Text block -->
+                          <div>
+                              <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
+                                  University of Science and Technology of Southern Philippines
+                              </h1>
+                              <p class="text-xs leading-snug ml-6">
+                                  Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
+                              </p>
+                          </div>
                         </div>
-
-                        <!-- Text block -->
-                        <div>
-                            <h1 class="text-md font-bold uppercase leading-tight ml-11 p-2">
-                                University of Science and Technology of Southern Philippines
-                            </h1>
-                            <p class="text-sm mt-1 ml-11">
-                                Alubijid | Balubal | Cagayan de Oro | Claveria | Jasaan | Oroquieta | Panaon | Villanueva
-                            </p>
-                        </div>
+                        <!-- RIGHT: Document Info Table -->
+                        <table class="text-[10px] text-center border border-gray-400 w-40">
+                            <!-- Top Header Row -->
+                            <thead>
+                                <tr class="bg-[#5A6E99] text-white">
+                                    <th colspan="3" class="border border-gray-400 px-1 py-[2px] font-semibold">
+                                        Document Code No.
+                                    </th>
+                                </tr>
+                            </thead>
+                            <!-- Document Code -->
+                            <tbody>
+                                <tr>
+                                    <td colspan="3" class="border border-gray-400 py-[2px] text-[11px] font-bold text-gray-700">
+                                        FM-USTP-ACAD-12
+                                    </td>
+                                </tr>
+                                <!-- Sub Headers -->
+                                <tr class="bg-[#5A6E99] text-white">
+                                    <td class="border border-gray-400 px-1 py-[2px]">Rev. No.</td>
+                                    <td class="border border-gray-400 px-1 py-[2px]">Effective Date</td>
+                                    <td class="border border-gray-400 px-1 py-[2px]">Page No.</td>
+                                </tr>
+                                <!-- Data Row -->
+                                <tr>
+                                    <td class="border border-gray-400 px-1 py-[2px]">02</td>
+                                    <td class="border border-gray-400 px-1 py-[2px]">03.01.23</td>
+                                    <td class="border border-gray-400 px-1 py-[2px]">1 of 2</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-
-                    <!-- RIGHT: Document Info Table -->
-                    <table class="text-xs text-center border border-gray-400 ml-20">
-                        <!-- Top Header Row -->
-                        <thead>
-                            <tr class="bg-[#5A6E99] text-white">
-                                <th colspan="3" class="border border-gray-400 px-3 py-1 text-xs font-semibold">
-                                    Document Code No.
-                                </th>
-                            </tr>
-                        </thead>
-                        <!-- Document Code -->
-                        <tbody>
-                            <tr>
-                                <td colspan="3" class="border border-gray-400 py-1 text-sm font-bold text-gray-700">
-                                    FM-USTP-ACAD-12
-                                </td>
-                            </tr>
-                            <!-- Sub Headers -->
-                            <tr class="bg-[#5A6E99] text-white">
-                                <td class="border border-gray-400 px-2 py-1 font-medium">Rev. No.</td>
-                                <td class="border border-gray-400 px-2 py-1 font-medium">Effective Date</td>
-                                <td class="border border-gray-400 px-2 py-1 font-medium">Page No.</td>
-                            </tr>
-                            <!-- Data Row -->
-                            <tr>
-                                <td class="border border-gray-400 px-2 py-1">01</td>
-                                <td class="border border-gray-400 px-2 py-1">03.01.23</td>
-                                <td class="border border-gray-400 px-2 py-1">1 of 2</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
-            <!-- END USTP HEADER -->
-
             <div class="h-screen justify-center items-center mx-1">
                 <div class="flex justify-center items-center mt-5">
                     <div class="text-3xl font-bold mb-5 mt-5">SYLLABUS REVIEW FORM</div>
