@@ -35,15 +35,14 @@
 
                   <div class="flex justify-center items-start mb-4 "> 
                       <div class="flex justify-between items-start w-full max-w-5xl">
-
+                      
                           <!-- LEFT: Logo + Campus Info -->
                           <div class="flex items-start space-x-2 w-[70%]">
                             <!-- Logo -->
                             <div class="w-20 ml-6 mt-[16px]">
                                 <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
                             </div>
-
-
+                            
                             <!-- Text block -->
                             <div>
                                 <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
