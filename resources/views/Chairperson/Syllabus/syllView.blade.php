@@ -270,7 +270,7 @@
         <!-- LEFT: Logo + Campus Info -->
         <div class="flex items-start space-x-4 w-[70%]">
             <!-- Logo with left shift -->
-            <div class="-ml-6">
+            <div >
                 <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-20 h-auto">
             </div>
 
