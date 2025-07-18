@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let acc = 0;
         return parts.map(p => acc += totalPx * (parseFloat(p) / frTotal));
     }
-
+    
     function getColLines() {
         return trackEnds(
             getComputedStyle(grid).gridTemplateColumns,
@@ -641,7 +641,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveModal.classList.add('hidden');
         }));
 
-
     // Convert the current grid layout to a <table> HTML string
     function convertGridToTableHTML() {
         // Save the full grid HTML for custom templates
@@ -667,7 +666,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const html = convertGridToTableHTML();
 
         const templateData = { name, img, layout, html };
-
         if (editIdx !== null) {
             templates[+editIdx] = templateData;
             localStorage.removeItem('editingIndex');
@@ -682,10 +680,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
-
-
-
 
 </body>
 

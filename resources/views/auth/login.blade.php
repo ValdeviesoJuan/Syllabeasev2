@@ -100,17 +100,19 @@
                                 placeholder="Password"
                             />
                             <button type="button" id="togglePassword" tabindex="-1" class="absolute right-3 top-1/2 -translate-y-1/2 focus:outline-none">
-                                <!-- Eye icon (show) -->
-                                <svg id="eyeOpen" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 5-7 9-9 9s-9-4-9-9 7-9 9-9 9 4 9 9z" />
-                                </svg>
-                                <!-- Eye-off icon (hide), hidden by default -->
-                                <svg id="eyeClosed" class="w-5 h-5 text-gray-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7s4-7 9-7c1.657 0 3.21.41 4.5 1.125M19.5 14.625A9.956 9.956 0 0021 12c0-3-4-7-9-7m0 0c-1.657 0-3.21.41-4.5 1.125M3 3l18 18" />
-                                </svg>
-                            </button>
+    <!-- Eye icon (show) - hidden by default -->
+    <svg id="eyeOpen" class="w-5 h-5 text-gray-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 5-7 9-9 9s-9-4-9-9 7-9 9-9 9 4 9 9z" />
+    </svg>
+
+    <!-- Eye-off icon (hide) - shown by default -->
+    <svg id="eyeClosed" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7s4-7 9-7c1.657 0 3.21.41 4.5 1.125M19.5 14.625A9.956 9.956 0 0021 12c0-3-4-7-9-7m0 0c-1.657 0-3.21.41-4.5 1.125M3 3l18 18" />
+    </svg>
+</button>
+
                         </div>
                         @error('password')
                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>

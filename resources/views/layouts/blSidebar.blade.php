@@ -81,15 +81,15 @@
                                         <div>
                                             <div>
                                                 <a href="{{ $notification->data['action_url'] ?? '#' }}" class="hover:text-blue">
-                                                        <span class="font-semibold">
-                                                            {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
-                                                        </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
+                                                    <span class="font-semibold">
+                                                        {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
+                                                    </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
+                                                </a>
                                             </div>
                                             <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
                                         </div>
                                     </div>
                                     @endforeach
-
                                 </div>
                             </div>
                         </div>
@@ -97,14 +97,14 @@
 
                     <div class="flex items-center ms-3">
                         <div>
-                            <button type="button" class="flex text-sm bg-yellow justify-center items-center rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                            <button type="button" class="flex text-sm bg-yellow justify-center items-center rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user-bl">
                                 <span class="sr-only">Open user menu</span>
                                 <div class="w-8 h-8 rounded-full text-white text-sm flex justify-center items-center">
                                     {{ Str::upper(substr(Auth::user()->firstname, 0, 1)) . Str::upper(substr(Auth::user()->lastname, 0, 1)) }}
                                 </div>
                             </button>
                         </div>
-                        <div class=" w-[350px] z-50 hidden my-4 text-base shadow-xl px-4 py-2 list-none bg-white rounded dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                        <div class=" w-[350px] z-50 hidden my-4 text-base shadow-xl px-4 py-2 list-none bg-white rounded dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user-bl">
                             <div class="flex flex-row">
                                 <!-- SyllabEase Logo -->
                                 <div>

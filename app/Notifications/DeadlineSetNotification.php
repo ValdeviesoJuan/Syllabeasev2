@@ -38,7 +38,7 @@ class DeadlineSetNotification extends Notification
             'message' => $this->getMessage(),
             'deadline_id' => $this->deadline->dl_id,
             'for' => 'Bayanihan Leader',
-            'action_url' => route('bayanihanleader.syllList'),
+            'action_url' => route('bayanihanleader.syllabus'),
             'course_code' => $this->deadline->course_code ?? 'N/A',
             'bg_school_year' => $this->deadline->dl_school_year ?? 'N/A',
         ];
