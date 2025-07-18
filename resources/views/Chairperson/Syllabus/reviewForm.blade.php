@@ -408,7 +408,6 @@
         </div>
         </div>
         <!-- REVIEW FORM -->
-        
         <div id="review_form" class="rounded-xl overflow-auto w-[50%] flex flex-col border  justify-center border-gray3  bg-white bg-opacity-100  rounded shadow-lg font-sans">
             <!-- HEADER SECTION -->
                 <div class="w-full bg-white">
@@ -422,8 +421,6 @@
                         <div class="w-20 ml-6 mt-[16px]">
                             <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
                         </div>
-
-
                         <!-- Text block -->
                         <div>
                             <h1 class="text-sm font-bold uppercase leading-tight ml-6 mt-[10px]">
@@ -434,7 +431,6 @@
                             </p>
                         </div>
                         </div>
-
                         <!-- RIGHT: Document Info Table -->
                         <table class="text-[10px] text-center border border-gray-400 w-40">
                             <!-- Top Header Row -->
