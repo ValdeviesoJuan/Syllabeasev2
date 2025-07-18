@@ -40,13 +40,13 @@
                     <div>
                         <label class="" for="dl_tos">TOS Midterm Deadline</label>
                     </div>
-                    <input type="datetime-local" name="dl_tos_midterm" id="dl_tos" class="px-1 py-[6px] w-full border rounded border-gray" required></input>
+                    <input type="datetime-local" name="dl_tos_midterm" id="dl_tos" class="px-1 py-[6px] w-full border rounded border-gray" ></input>
                 </div>
                 <div class="m-4 ">
                     <div>
                         <label class="" for="dl_tos">TOS Final Deadline</label>
                     </div>
-                    <input type="datetime-local" name="dl_tos_final" id="dl_tos" class="px-1 py-[6px] w-full border rounded border-gray" required></input>
+                    <input type="datetime-local" name="dl_tos_final" id="dl_tos" class="px-1 py-[6px] w-full border rounded border-gray" ></input>
                 </div>
                 <div class="m-4 ">
                     <div>
