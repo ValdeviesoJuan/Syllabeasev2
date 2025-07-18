@@ -477,21 +477,19 @@
         </div>
     </div>
     @endif
- <!-- OUTER CONTAINER -->
+    <!-- OUTER CONTAINER -->
     <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
     <!-- HEADER SECTION -->
     <br>
     <div class="flex justify-center items-start mb-4">
     <!-- OUTER FLEX CONTAINER -->
     <div class="flex justify-between items-start w-full max-w-5xl">
-        
         <!-- LEFT: Logo + Campus Info -->
         <div class="flex items-start space-x-4 w-[70%]">
             <!-- Logo with left shift -->
             <div class="-ml-6">
                 <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-20 h-auto">
             </div>
-
             <!-- Text block -->
             <div>
                 <h1 class="text-md font-bold uppercase leading-tight ml-11 p-2">
@@ -502,7 +500,6 @@
                 </p>
             </div>
         </div>
-
         <!-- RIGHT: Document Info Table -->
         <table class="text-xs text-center border border-gray-400 ml-20">
             <!-- Top Header Row -->
@@ -534,16 +531,12 @@
                 </tr>
             </tbody>
         </table>
- 
         </div>
     </div>
 
     <!-- SYLLABUS TABLE -->
     <table x-data="{ showPrev: false }" class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white" 
-        x-init="
-            const toggle = document.getElementById('toggleRevisions');
-            toggle.addEventListener('change', () => showPrev = toggle.checked);"
-    >
+        x-init="const toggle = document.getElementById('toggleRevisions');toggle.addEventListener('change', () => showPrev = toggle.checked);">
         <!-- 1st Header -->
         <tr>
             <th colspan="2" 

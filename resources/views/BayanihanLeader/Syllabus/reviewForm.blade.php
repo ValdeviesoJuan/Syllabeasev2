@@ -5,11 +5,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SyllabEase</title>
-    @vite('resources/css/app.css')
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyllabEase</title>
+@vite('resources/css/app.css')
+<style>
 
 body {
 background-image: url("{{ asset('assets/wave.png') }}");
@@ -39,7 +39,6 @@ background-size: contain;
                                 <div class="w-20 ml-6 mt-4">
                                     <img src="{{ asset('assets/ustplogo.png') }}" alt="USTP Logo" class="w-full h-auto">
                                 </div>
-
                                 <!-- Text block -->
                                 <div>
                                     <h1 class="text-sm font-bold uppercase leading-tight ml-9 mt-[40px]">
@@ -50,7 +49,6 @@ background-size: contain;
                                     </p>
                                 </div>
                             </div>
-
                             <!-- RIGHT: Document Info Table -->
                             <table class="text-[10px] text-center border border-gray-400 w-40 mt-[25px]">
                                 <!-- Top Header Row -->
