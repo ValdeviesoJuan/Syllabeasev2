@@ -1,4 +1,8 @@
+Latest base v2
+
+
 @extends('layouts.blNav')
+
 @section('content')
 <!DOCTYPE html>
 <html lang="en">
@@ -40,6 +44,66 @@
             resize: none; /* interactJS handles resizing */
         }
 
+        /* Interact.js resize handles */
+        .section .resize-handle {
+            position: absolute;
+            z-index: 10;
+            background: transparent;
+        }
+        .resize-handle-top {
+            top: -6px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            cursor: n-resize;
+        }
+        .resize-handle-left {
+            top: 0;
+            left: -6px;
+            width: 12px;
+            height: 100%;
+            cursor: w-resize;
+        }
+        .resize-handle-bottom {
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            cursor: s-resize;
+        }
+        .resize-handle-right {
+            top: 0;
+            right: -6px;
+            width: 12px;
+            height: 100%;
+            cursor: e-resize;
+        }
+        .resize-handle-corner {
+            width: 16px;
+            height: 16px;
+            background: transparent;
+        }
+        .resize-handle-topleft {
+            top: -8px;
+            left: -8px;
+            cursor: nw-resize;
+        }
+        .resize-handle-topright {
+            top: -8px;
+            right: -8px;
+            cursor: ne-resize;
+        }
+        .resize-handle-bottomleft {
+            bottom: -8px;
+            left: -8px;
+            cursor: sw-resize;
+        }
+        .resize-handle-bottomright {
+            bottom: -8px;
+            right: -8px;
+            cursor: se-resize;
+        }
+
         .handle {
             position: absolute;
             top: 0;
@@ -68,7 +132,7 @@
 
 
     <div class="sticky top-0 z-50 bg-white flex justify-between mb-6 px-4 py-2">
-        <button id="undoBtn" class="bg-gray-100 hover:scale-105 transition ease-in-out text-black px-4 py-2 rounded-lg shadow">
+        <button id="undoBtn" class="bg-gray-100 hover:scale-105 transition ease-in-out text-black px-4 py-2 rounded-lg shadow h-[44px]">
             Undo
         </button>
 
@@ -285,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let acc = 0;
         return parts.map(p => acc += totalPx * (parseFloat(p) / frTotal));
     }
-
+    
     function getColLines() {
         return trackEnds(
             getComputedStyle(grid).gridTemplateColumns,
@@ -455,38 +519,93 @@ document.addEventListener("DOMContentLoaded", () => {
     interact('.section').resizable({
         edges: { left: true, right: true, top: true, bottom: true },
         listeners: {
+            start(ev) {
+                // Capture layout for undo before resize starts
+                captureLayout();
+            },
             move(ev) {
                 const tgt = ev.target;
                 let w = ev.rect.width, h = ev.rect.height;
                 if (w < 150) w = 150;
                 if (h < 60) h = 60;
-                tgt.style.width = w + 'px';
-                tgt.style.height = h + 'px';
-                const dx = (parseFloat(tgt.dataset.dx) || 0) + ev.deltaRect.left;
-                const dy = (parseFloat(tgt.dataset.dy) || 0) + ev.deltaRect.top;
-                tgt.style.transform = `translate(${dx}px, ${dy}px)`;
-                tgt.dataset.dx = dx; tgt.dataset.dy = dy;
+
+                let gridChanged = false;
+
+                // Always clear pixel size at start of top/left resize
+                if (ev.edges.top || ev.edges.left) {
+                    tgt.style.width = '';
+                    tgt.style.height = '';
+                }
+
+                // Top-edge resizing (expand/shrink both ways)
+                if (ev.edges.top) {
+                    const dy = ev.deltaRect.top;
+                    const currentRow = parseInt(tgt.dataset.row);
+                    const currentSpan = parseInt(tgt.dataset.rowSpan);
+                    const gridRowHeight = grid.getBoundingClientRect().height / getRowLines().length;
+                    let moveRows = Math.round(dy / gridRowHeight);
+                    let newRow = currentRow + moveRows;
+                    let newSpan = currentSpan - moveRows;
+                    if (newRow > 0 && newSpan > 0 && newRow + newSpan - 1 <= getRowLines().length) {
+                        let occ = buildOcc(tgt);
+                        let canMove = true;
+                        for (let r = newRow; r < newRow + newSpan; r++) {
+                            for (let c = parseInt(tgt.dataset.col); c < parseInt(tgt.dataset.col) + parseInt(tgt.dataset.colSpan); c++) {
+                                if (occ[r]?.[c]) { canMove = false; break; }
+                            }
+                            if (!canMove) break;
+                        }
+                        if (canMove) {
+                            tgt.dataset.row = newRow;
+                            tgt.dataset.rowSpan = newSpan;
+                            tgt.style.gridRow = `${newRow} / span ${newSpan}`;
+                            gridChanged = true;
+                        }
+                    }
+                }
+                // Left-edge resizing (expand/shrink both ways)
+                if (ev.edges.left) {
+                    const dx = ev.deltaRect.left;
+                    const currentCol = parseInt(tgt.dataset.col);
+                    const currentColSpan = parseInt(tgt.dataset.colSpan);
+                    const gridColWidth = grid.getBoundingClientRect().width / getColLines().length;
+                    let moveCols = Math.round(dx / gridColWidth);
+                    let newCol = currentCol + moveCols;
+                    let newColSpan = currentColSpan - moveCols;
+                    if (newCol > 0 && newColSpan > 0 && newCol + newColSpan - 1 <= getColLines().length) {
+                        let occ = buildOcc(tgt);
+                        let canMove = true;
+                        for (let r = parseInt(tgt.dataset.row); r < parseInt(tgt.dataset.row) + parseInt(tgt.dataset.rowSpan); r++) {
+                            for (let c = newCol; c < newCol + newColSpan; c++) {
+                                if (occ[r]?.[c]) { canMove = false; break; }
+                            }
+                            if (!canMove) break;
+                        }
+                        if (canMove) {
+                            tgt.dataset.col = newCol;
+                            tgt.dataset.colSpan = newColSpan;
+                            tgt.style.gridColumn = `${newCol} / span ${newColSpan}`;
+                            gridChanged = true;
+                        }
+                    }
+                }
+                // If grid changed, clear pixel size so grid is visible (redundant, but safe)
+                if (gridChanged) {
+                    tgt.style.width = '';
+                    tgt.style.height = '';
+                } else if (!ev.edges.top && !ev.edges.left) {
+                    // Right/bottom edge: set pixel size
+                    tgt.style.width = w + 'px';
+                    tgt.style.height = h + 'px';
+                }
             },
             end(ev) {
                 const tgt = ev.target;
-                const dx = parseFloat(tgt.dataset.dx) || 0;
-                const dy = parseFloat(tgt.dataset.dy) || 0;
                 tgt.style.transform = '';
                 delete tgt.dataset.dx;
                 delete tgt.dataset.dy;
-                const box = tgt.getBoundingClientRect();
-                const colStart = colFromX(Math.floor(box.left + 1));
-                const colEnd   = colFromX(Math.ceil(box.right - 1));
-                const rowStart = rowFromY(Math.floor(box.top + 1));
-                const rowEnd   = rowFromY(Math.ceil(box.bottom - 1));
-                if (!colStart || !rowStart || !colEnd || !rowEnd) return;
-                captureLayout();
-                applyPos(tgt, {
-                    col: colStart,
-                    row: rowStart,
-                    colSpan: colEnd - colStart + 1,
-                    rowSpan: rowEnd - rowStart + 1
-                });
+                // Only keep pixel width/height, do not update grid span
+                // User can freely resize the section
             }
         },
         modifiers: [interact.modifiers.restrictEdges({ outer: 'parent', endOnly: true })],
@@ -522,6 +641,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveModal.classList.add('hidden');
         }));
 
+    // Convert the current grid layout to a <table> HTML string
+    function convertGridToTableHTML() {
+        // Save the full grid HTML for custom templates
+        return document.querySelector('.grid-container').outerHTML;
+    }
+
     async function saveTemplate(name) {
         const canvas = await html2canvas(grid, { backgroundColor: '#ffffff' });
         const img = canvas.toDataURL('image/png');
@@ -537,8 +662,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         });
 
-        const templateData = { name, img, layout };
+        // Generate the HTML table string for this template
+        const html = convertGridToTableHTML();
 
+        const templateData = { name, img, layout, html };
         if (editIdx !== null) {
             templates[+editIdx] = templateData;
             localStorage.removeItem('editingIndex');
@@ -553,10 +680,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
-
-
-
 
 </body>
 
