@@ -83,10 +83,10 @@
                                             <div>
                                                 <div>
                                                     <a href="{{ $notification->data['action_url'] ?? '#' }}" class="hover:text-blue">
-                                                            <span class="font-semibold">
-                                                                {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
-                                                            </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
-
+                                                        <span class="font-semibold">
+                                                            {{ $notification->data['course_code'] ?? 'N/A' }} - {{ $notification->data['bg_school_year'] ?? 'N/A' }}
+                                                        </span>: {{ $notification->data['message'] ?? 'No message provided.' }}
+                                                    </a>
                                                 </div>
                                                 <div class="text-gray text-sm pt-1">{{ $notification->created_at->format('F j, Y, g:i a') }}</div>
                                             </div>
