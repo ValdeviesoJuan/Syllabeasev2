@@ -97,14 +97,16 @@
                     {{$bgroup->course_semester}}
                 </td>
                 <td class="px-6 py-4">
-                    @foreach ($bleaders[$bgroup->bg_id] ?? [] as $leader)
+                    @forelse ($bleaders[$bgroup->bg_id] ?? [] as $leader)
                     <p>{{ $leader->lastname }}, {{ $leader->firstname }}</p>
-                    @endforeach
+                    @empty
+                    @endforelse
                 </td>
                 <td class="px-6 py-4">
-                    @foreach ($bmembers[$bgroup->bg_id] ?? [] as $member)
+                    @forelse ($bmembers[$bgroup->bg_id] ?? [] as $member)
                     <p>{{ $member->lastname }}, {{ $member->firstname }}</p>
-                    @endforeach
+                    @empty
+                    @endforelse
                 </td>
                 <td class="px-6 py-4 flex">
                     <form action="{{ route('chairperson.editBTeam', $bgroup->bg_id) }}" method="GET">

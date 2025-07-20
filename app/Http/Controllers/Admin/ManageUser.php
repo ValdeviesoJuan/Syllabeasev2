@@ -78,18 +78,41 @@ class ManageUser extends Controller
     {
         $user = $id;
         $users = User::all();
-        $all_roles = roles::all();
+        $all_roles = Roles::all();
+
         return view('Admin.user_roles_create', compact('all_roles', 'users', 'user'));
     }
     public function storeRole(Request $request)
     {
-            $validatedData = $request->validate([
+        $validatedData = $request->validate([
             'user_id' => 'required|exists:users,id',
             'role_id' => 'required|exists:roles,role_id',
         ]);
 
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+
+        switch ($validatedData['role_id']) {
+            
+            case $deanRoleId:
+                $entity_type = 'College';
+                break;
+            
+            case $chairRoleId:
+                $entity_type = 'Department';
+                break;
+            
+            default:  
+                $entity_type = '';
+                break;
+        }
+
         // Assign the role
-        UserRole::create($validatedData);
+        UserRole::create([
+            'user_id'   => $validatedData['user_id'],
+            'role_id'   => $validatedData['role_id'],
+            'entity_type' => $entity_type
+        ]);
 
         // Get the user and role for the email
         $user = User::findOrFail($request->user_id);
@@ -103,7 +126,7 @@ class ManageUser extends Controller
 
     public function editRoles(string $id)
     {
-        $all_roles = roles::all();
+        $all_roles = Roles::all();
 
         $roles = roles::leftJoin('user_roles', 'roles.role_id', '=', 'user_roles.role_id')
             ->get(['roles.*', 'user_roles.*']);
@@ -129,9 +152,25 @@ class ManageUser extends Controller
         $request->validate([
             'role_id' => 'required|integer',
         ]);
+
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+
+        if ($request->input('role_id') === $deanRoleId) {
+            $entity_type = 'College';
+
+        } else if ($request->input('role_id') === $chairRoleId) {
+            $entity_type = 'Department';
+
+        } else {
+            $entity_type = '';
+        }
+
         $roleUser->update([
             'role_id' => $request->input('role_id'),
+            'entity_type' => $entity_type
         ]);
+        
         return redirect()->route('admin.index')
             ->with('success', 'User Information Updated.');
     }

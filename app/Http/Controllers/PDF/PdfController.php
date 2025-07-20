@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PDF;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserRole;
 use App\Models\Roles;
 use App\Models\BayanihanGroupUsers;
 use App\Models\POE;
@@ -484,7 +485,7 @@ class PDFController extends Controller
         if ($data['tos']->tos_term == 'Midterm') {
             $document->setValue('tos_midterm', "/");
             $document->setValue('tos_final', "");
-        } else if ($data['tos']->tos_term == 'Midterm') {
+        } else if ($data['tos']->tos_term == 'Final') {
             $document->setValue('tos_midterm', "");
             $document->setValue('tos_final', "/");
         }
@@ -509,6 +510,24 @@ class PDFController extends Controller
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->first();
+
+        // Get chairperson of the department
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        // Get dean of the college
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
             ->first();
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
@@ -601,6 +620,8 @@ class PDFController extends Controller
             'instructors' => $instructors,
             'bLeaders' => $bLeaders,
             'bMembers' => $bMembers,
+            'chair' => $chair,
+            'dean' => $dean,
             'reviewForm' => $reviewForm,
             'syllabusVersions' => $syllabusVersions,
         ];
@@ -770,15 +791,50 @@ class PDFController extends Controller
         $insCount = count($instructors);
         $document->cloneRow('ins_firstname', $insCount);
         foreach ($instructors as $index => $instructor) {
-            $ins_firstname = $instructor['lastname'];
+            $ins_firstname = $instructor['firstname'];
             $ins_lastname = $instructor['lastname'];
+            $signatureFilename = $instructor['signature'];
+
+            $signaturePath = public_path('assets/signatures/' . $signatureFilename);
+
+            // Check if file exists and set image
+            if (!empty($signatureFilename) && file_exists($signaturePath)) {
+                $document->setImageValue('ins_signature#' . ($index + 1), [
+                    'path' => $signaturePath,
+                    'width' => 120,     // adjust as needed
+                    'height' => 50,     // adjust as needed
+                    'ratio' => true,
+                ]);
+            } else {
+                $document->setValue('ins_signature#' . ($index + 1), ''); // fallback
+            }
 
             $document->setValue('ins_firstname#' . ($index + 1), $ins_firstname);
             $document->setValue('ins_lastname#' . ($index + 1), $ins_lastname);
         }
 
+        $chairSignaturePath = public_path('assets/signatures/' . $data['chair']->signature);
+        $deanSignaturePath = public_path('assets/signatures/' . $data['dean']->signature);
+
         $document->setValue('syll_chair', $data['syll']->syll_chair);
+        if (!empty($data['chair']->signature) && file_exists($chairSignaturePath)) {
+            $document->setImageValue('syll_chair_signature', [
+                'path' => $chairSignaturePath,
+                'width' => 120,
+                'height' => 50,
+                'ratio' => true,
+            ]);
+        }
+
         $document->setValue('syll_dean', $data['syll']->syll_dean);
+        if (!empty($data['dean']->signature) && file_exists($deanSignaturePath)) {
+            $document->setImageValue('syll_dean_signature', [
+                'path' => $deanSignaturePath,
+                'width' => 120,
+                'height' => 50,
+                'ratio' => true,
+            ]);
+        }
 
         //For Syllabus Course Requirement Section
         $syll_course_requirements = htmlspecialchars_decode(($data['syll']->syll_course_requirements));

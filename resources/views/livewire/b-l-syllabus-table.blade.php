@@ -111,7 +111,7 @@
                     Version {{ $syllabus->version }}
                 </td>
                 <td class="px-6 py-4">
-                    <div class="
+                    <div class=" text-center
                     {{ $syllabus->status === 'Pending' ? 'w-[100%] px-1 bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
                     {{ $syllabus->status === 'Approved by Chair' ? 'w-[100%] px-1 bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
                     {{ $syllabus->status === 'Returned by Chair' ? 'w-[100%] px-1 bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : '' }}

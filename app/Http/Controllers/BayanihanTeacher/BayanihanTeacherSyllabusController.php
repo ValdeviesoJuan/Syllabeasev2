@@ -39,10 +39,6 @@ class BayanihanTeacherSyllabusController extends Controller
             ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->select('departments.department_id')
             ->first();
-
-        $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-            ->select('syllabus_instructors.*', 'syllabi.*')
-            ->get();
  
         if ($myDepartment) { 
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
@@ -61,6 +57,7 @@ class BayanihanTeacherSyllabusController extends Controller
                 })
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*', 'deadlines.*')
                 ->get();
+                
             $syllabiCount = $syllabus->count();
             $completedCount = $syllabus->filter(function ($item) {
                 return $item->status === 'Approved by Dean';
@@ -68,22 +65,18 @@ class BayanihanTeacherSyllabusController extends Controller
             $pendingCount = $syllabus->filter(function ($item) {
                 return $item->status === 'Pending';
             })->count();
+
         } else {
             $syllabus = [];
             $syllabiCount = 0;
             $completedCount = 0;
             $pendingCount = 0;
         }
-
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
             
         $user = Auth::user();
         $notifications = $user->notifications;
         
-        return view('BayanihanTeacher.Syllabus.syllList', compact('notifications', 'syllabi', 'instructors', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
+        return view('BayanihanTeacher.Syllabus.syllList', compact('notifications', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
     }
     public function index()
     {
@@ -245,6 +238,7 @@ class BayanihanTeacherSyllabusController extends Controller
     public function viewReviewForm($syll_id)
     {
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'syllabus_review_forms.syll_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
             ->first();

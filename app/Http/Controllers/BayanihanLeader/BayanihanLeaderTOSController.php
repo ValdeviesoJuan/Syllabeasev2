@@ -227,6 +227,18 @@ class BayanihanLeaderTOSController extends Controller
     }
     public function storeTos(Request $request, $syll_id)
     {
+        $syllabus = Syllabus::where('syll_id', $syll_id)->first();
+
+        $request->validate([
+            'tos_term' => 'required',
+            'tos_no_items' => 'required|integer',
+            'col_1_per' => 'required|numeric',
+            'col_2_per' => 'required|numeric',
+            'col_3_per' => 'required|numeric',
+            'col_4_per' => 'required|numeric',
+            'tos_cpys' => 'required',
+        ]);
+
         $existingMTos = Tos::where('syll_id',  $syll_id)->where('tos_term', 'Midterm')->first();
         $existingFTos = Tos::where('syll_id',  $syll_id)->where('tos_term', 'Final')->first();
 
@@ -238,20 +250,10 @@ class BayanihanLeaderTOSController extends Controller
             return redirect()->route('bayanihanleader.tos')->with('error', 'Midterm and Final TOS already exist for this Syllabus.');
         }
 
-        $syllabus = Syllabus::where('syll_id', $syll_id)->first();
-        $request->validate([
-            'tos_term' => 'required',
-            'tos_no_items' => 'required|integer',
-            'col_1_per' => 'required|numeric',
-            'col_2_per' => 'required|numeric',
-            'col_3_per' => 'required|numeric',
-            'col_4_per' => 'required|numeric',
-            'tos_cpys' => 'required',
-        ]);
-
         $tos = new Tos();
         $tos->syll_id = $syll_id;
         $tos->user_id = Auth::user()->id;
+        $tos->effectivity_date = $syllabus->effectivity_date;
         $tos->tos_term = $request->tos_term;
         $tos->tos_no_items = $request->tos_no_items;
         $tos->col_1_per = $request->col_1_per;

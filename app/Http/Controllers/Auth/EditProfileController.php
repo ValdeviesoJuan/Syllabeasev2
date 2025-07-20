@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
 class EditProfileController extends Controller
 {
@@ -20,14 +21,48 @@ class EditProfileController extends Controller
     {
         $user = User::find(Auth::user()->id);
 
+        // Validate fields (you can customize as needed)
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'email'     => 'required|email|max:255',
+            'phone'     => 'nullable|string|max:20',
+            'signature_image' => 'nullable|image|mimes:png|max:2048', // limit to PNGs
+        ], [
+            'signature_image.mimes' => 'Only PNG files are allowed for the signature image.',
+        ]);
+
+         // Handle signature image upload
+        if ($request->hasFile('signature_image')) {
+            $file = $request->file('signature_image');
+            $filename = 'signature_' . $user->id . '_' . '.' . $file->getClientOriginalExtension();
+            $destination = public_path('assets/signatures');
+
+            // Create the folder if it doesn't exist
+            if (!File::exists($destination)) {
+                File::makeDirectory($destination, 0755, true);
+            }
+
+            // Delete old signature if exists
+            if ($user->signature && File::exists($destination . '/' . $user->signature)) {
+                File::delete($destination . '/' . $user->signature);
+            }
+
+            // Move the uploaded file
+            $file->move($destination, $filename);
+
+            // Update user's signature path
+            $user->signature = $filename;
+        }
+
+        // Update other profile info
         $user->update([
             'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'email' => $request->email,
-            'prefix' => $request->prefix,
-            'suffix' => $request->suffix,
-            'phone' => $request->phone,
-            'email' => $request->email,
+            'lastname'  => $request->lastname,
+            'email'     => $request->email,
+            'prefix'    => $request->prefix,
+            'suffix'    => $request->suffix,
+            'phone'     => $request->phone,
         ]);
 
         return redirect()->back()->with('success', 'Profile Updated.');
@@ -36,7 +71,7 @@ class EditProfileController extends Controller
     {
         $user = Auth::user();
 
-        return view('All.editPassword', compact('user'));
+        return view('all.editpassword', compact('user'));
     }
     public function updatePassword(Request $request)
 {

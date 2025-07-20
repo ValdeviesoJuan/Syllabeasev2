@@ -1,6 +1,4 @@
 @extends('layouts.deanSidebar')
-{{-- @extends('layouts.deanNav') --}}
-
 @section('content')
 @include('layouts.modal')
 <!DOCTYPE html>
@@ -11,14 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dean Home</title>
     @vite('resources/css/app.css')
-    
-
     <style>
         .bg svg {
             transform: scaleY(-1);
             min-width: '1880'
         }
-
         body {
             background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
@@ -27,23 +22,6 @@
             background-size: contain; 
             background-color: #EEEEEE;
         }
-
-        /* body {
-            background-color: #e8e9e9;
-        } */
-
-        /* table, */
-        /* tbody {
-            border: 1px solid;
-            border-collapse: collapse;
-            padding: 4px;
-            border-color: black;
-        } */
-
-        /* th {
-            background-color: #2468d2;
-            color: white;
-        } */
     </style>
     <script>
         //JS for Searchable Select

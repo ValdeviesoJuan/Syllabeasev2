@@ -48,10 +48,6 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('departments.department_id')
             ->first();
 
-        $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-            ->select('syllabus_instructors.*', 'syllabi.*')
-            ->get();
-
         if ($myDepartment) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
@@ -72,16 +68,11 @@ class BayanihanLeaderSyllabusController extends Controller
         } else {
             $syllabus = [];
         }
-
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
             
         $user = Auth::user(); 
         $notifications = $user->notifications;
 
-        return view('BayanihanLeader.Syllabus.syllList', compact('notifications','syllabi', 'instructors', 'syllabus'));
+        return view('BayanihanLeader.Syllabus.syllList', compact('notifications', 'syllabus'));
     }
 
     public function viewSyllabus($syll_id)
@@ -92,7 +83,25 @@ class BayanihanLeaderSyllabusController extends Controller
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
-            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code', 'colleges.college_id')
+            ->first();
+
+        // Get chairperson of the department
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        // Get dean of the college
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
             ->first();
         
         $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
@@ -212,6 +221,8 @@ class BayanihanLeaderSyllabusController extends Controller
 
         return view('BayanihanLeader.Syllabus.syllView', compact(
             'syll',
+            'chair',
+            'dean',
             'instructors',
             'syll_id',
             'instructors',
@@ -560,8 +571,9 @@ class BayanihanLeaderSyllabusController extends Controller
     public function viewReviewForm($syll_id)
     {
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'syllabus_review_forms.syll_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
-            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->select('srf_checklists.*', 'syllabus_review_forms.*', 'syllabi.version')
             ->first();
 
         $srfResults = [];

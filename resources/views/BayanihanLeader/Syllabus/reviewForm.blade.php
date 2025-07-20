@@ -74,9 +74,9 @@ background-size: contain;
                                     </tr>
                                     <!-- Data Row -->
                                     <tr>
-                                        <td class="border border-gray-400 px-1 py-[2px]">02</td>
-                                        <td class="border border-gray-400 px-1 py-[2px]">03.01.23</td>
-                                        <td class="border border-gray-400 px-1 py-[2px]">1 of 2</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">{{$reviewForm->version}}</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">{{ \Carbon\Carbon::parse($reviewForm->effectivity_date)->format('m.d.y') }}</td>
+                                        <td class="border border-gray-400 px-1 py-[2px]">#</td>
                                     </tr>
                                 </tbody>
                             </table>
