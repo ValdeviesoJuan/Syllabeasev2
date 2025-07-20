@@ -46,7 +46,7 @@
       </div>
 
       <!-- 🔒 hidden default layout for html2canvas -->
-      <div id="default-layout" class="absolute -z-10 -left-[2000px] top-0 pointer-events-none select-none w-[1024px]">
+      <div id="default-layout" class="hidden w-[1024px] mx-auto">   
           <div class="syllabus-grid">
               <!-- Row 1 -->    
               <div class="syllabus-cell two-col" id="college-name">
@@ -130,36 +130,37 @@
       <!-- List container -->
       <div id="template-list" class="grid gap-6 grid-cols-1 sm:grid-cols-2">
 
-          <!-- Default template card -->
-          <div class="bg-white rounded-lg shadow-md p-4 relative max-w-xl mx-auto">
-              <div class="flex items-center mb-2 card-header" style="min-height:64px;">
-                  <label class="inline-flex items-center mr-2">
-                      <input type="radio" name="template" value="template0" class="form-radio text-green">
-                  </label>
+         <!-- Default template card -->
+        <div class="bg-white rounded-lg shadow-md p-4 relative w-full sm:max-w-xl mx-auto mt-6">
+            <div class="flex items-center mb-2 card-header" style="min-height:64px;">
+                <label class="inline-flex items-center mr-2">
+                    <input type="radio" name="template" value="template0" class="form-radio text-green">
+                </label>
+                <p class="flex-1 text-center text-blue-600 text-lg font-semibold">
+                    Default Template
+                </p>
+                <div class="flex space-x-2">
+                    <button id="default-del" class="text-red-600 hover:text-red-800 rounded px-2" title="Delete">
+                        <img src="{{ asset('assets/delete.svg') }}" class="w-5 h-5">
+                    </button>
+                    <button id="default-view" class="text-yellow-500 hover:text-yellow-700 rounded px-2" title="View">
+                        <img src="{{ asset('assets/view.svg') }}" class="w-5 h-5">
+                    </button>
+                    <button id="default-edit" class="text-blue-500 hover:text-blue-700 rounded px-2" title="Edit">
+                        <img src="{{ asset('assets/edit.svg') }}" class="w-5 h-5">
+                    </button>
+                </div>
+            </div>
 
-                  <p class="flex-1 text-center text-blue-600 text-lg font-semibold">
-                      Default Template
-                  </p>
+            <!-- Preview image for default template -->
+            <div class="border rounded mt-2 overflow-hidden max-h-full">
+                <img id="defaultTemplatePreview" class="w-full h-full object-contain rounded" alt="Default Template Preview">
+            </div>
+        </div>
 
-                  <div class="flex space-x-2">
-                      <button class="text-red-600 hover:text-red-800 rounded px-2" title="Delete">
-                          <img src="{{ asset('assets/delete.svg') }}" class="w-5 h-5">
-                      </button>
-                      <button class="text-yellow-500 hover:text-yellow-700 rounded px-2" title="View">
-                          <img src="{{ asset('assets/view.svg') }}" class="w-5 h-5">
-                      </button>
-                      <button class="text-blue-500 hover:text-blue-700 rounded px-2" title="Edit">
-                          <img src="{{ asset('assets/edit.svg') }}" class="w-5 h-5">
-                      </button>
-                  </div>
-              </div>
-
-              <div class="relative">
-                    <img id="default-preview" src="" alt="Template Preview" class="w-full object-cover rounded">
-              </div>
-          </div>
-
+           
       </div><!-- /#template-list -->
+
 
         <!-- 🔍 simple modal -->
         <div id="tplModal"
@@ -178,221 +179,260 @@
 </div>
 
 
+
+
         
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
 
-            /* 1. Build the default‑card thumbnail (unchanged) */
-            const layoutEl  = document.getElementById('default-layout');
-            const previewEl = document.getElementById('default-preview');
-            if (layoutEl && previewEl) {
-                const canvas = await html2canvas(layoutEl, {
-                    backgroundColor: '#ffffff', scale: 1
-                });
-                previewEl.className = 'w-full object-cover rounded';
-                previewEl.src       = canvas.toDataURL('image/png');
+        /* 1. Build the default‑card thumbnail (enhanced to update card preview) */
+        const layoutEl  = document.getElementById('default-layout');
+        const previewEl = document.getElementById('default-preview');
+        const templateCardPreviewEl = document.getElementById('defaultTemplatePreview'); // ✅ NEW
+
+        const savedDefault = localStorage.getItem('defaultTemplateImg');
+        if (savedDefault) {
+            if (previewEl) {
+                previewEl.className = 'w-full h-full object-cover rounded';
+                previewEl.src = savedDefault;
             }
-
-            // Active template state (persisted in localStorage)
-            let activeTemplateIdx = parseInt(localStorage.getItem('activeTemplateIdx') || '0', 10);
-
-            /* 2. Render saved templates ------------------------------------------------ */
-            const list = document.querySelector('#template-list');
-
-            function loadSaved() {
-                list.querySelectorAll('[data-tpl]').forEach(el => el.remove());
-                const saved = JSON.parse(localStorage.getItem('templates') || '[]');
-
-                saved.forEach((tpl, i) => {
-                    const card = document.createElement('div');
-                    card.dataset.tpl = i;
-                    card.className = "bg-white rounded-lg shadow-md p-4 relative max-w-xl mx-auto mt-6";
-                    // Radio value is 'template' + (i+1) for consistency
-                    card.innerHTML = `
-                    <div class="flex items-center mb-2 card-header" style="min-height:64px;">
-                        <label class="inline-flex items-center mr-2">
-                            <input type="radio" name="template" value="template${i+1}"
-                                    class="form-radio text-green">
-                        </label>
-                        <p class="flex-1 text-center text-blue-600 text-lg font-semibold">
-                            ${tpl.name}
-                        </p>
-                        <div class="flex space-x-2">
-                            <button class="btn-del text-red-600 rounded px-2" title="Delete">
-                                <img src="{{ asset('assets/delete.svg') }}" class="w-5 h-5">
-                            </button>
-                            <button class="btn-view text-yellow-500 rounded px-2" title="View">
-                                <img src="{{ asset('assets/view.svg') }}" class="w-5 h-5">
-                            </button>
-                            <button class="btn-edit text-blue-500 rounded px-2" title="Edit">
-                                <img src="{{ asset('assets/edit.svg') }}" class="w-5 h-5">
-                            </button>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <img src="${tpl.img}" alt="Template Preview"
-                            class="w-full object-cover rounded">
-                    </div>`;
-                    list.appendChild(card);
-                });
-
-                // Set active radio and highlight
-                setActiveTemplateUI();
+            if (templateCardPreviewEl) {
+                templateCardPreviewEl.className = 'w-full max-h-full object-contain rounded';
+                templateCardPreviewEl.src = savedDefault;
             }
-            loadSaved();
-
-            // Set active template UI
-            function setActiveTemplateUI() {
-                // Default card
-                const defaultRadio = list.querySelector('input[name="template"][value="template0"]');
-                const defaultCard = list.querySelector('input[name="template"][value="template0"]')?.closest('.bg-white');
-                if (defaultRadio) {
-                    defaultRadio.checked = activeTemplateIdx === 0;
-                    if (defaultCard) {
-                        if (activeTemplateIdx === 0) {
-                            defaultCard.classList.add('ring-2', 'ring-blue-500');
-                        } else {
-                            defaultCard.classList.remove('ring-2', 'ring-blue-500');
-                        }
-                    }
-                }
-                // Saved cards
-                list.querySelectorAll('[data-tpl]').forEach(card => {
-                    const idx = +card.dataset.tpl;
-                    const radio = card.querySelector('input[name="template"]');
-                    // activeTemplateIdx === idx+1 means radio value is 'template'+(idx+1)
-                    radio.checked = activeTemplateIdx === idx + 1;
-                    if (activeTemplateIdx === idx + 1) {
-                        card.classList.add('ring-2', 'ring-blue-500');
-                    } else {
-                        card.classList.remove('ring-2', 'ring-blue-500');
-                    }
-                });
-            }
-
-            // Listen for radio changes
-            list.addEventListener('change', e => {
-                if (e.target.name === 'template') {
-                    if (e.target.value === 'template0') {
-                        activeTemplateIdx = 0;
-                        localStorage.setItem('activeTemplateIdx', activeTemplateIdx);
-                        localStorage.setItem('activeTemplateData', JSON.stringify({type: 'default'}));
-                    } else {
-                        // Saved templates: value is 'template'+(idx+1)
-                        const idx = parseInt(e.target.value.replace('template', ''), 10) - 1;
-                        activeTemplateIdx = idx + 1;
-                        localStorage.setItem('activeTemplateIdx', activeTemplateIdx);
-                        const saved = JSON.parse(localStorage.getItem('templates') || '[]');
-                        if (saved[idx]) {
-                            localStorage.setItem('activeTemplateData', JSON.stringify(saved[idx]));
-                        }
-                    }
-                    setActiveTemplateUI();
-                }
-                if (!localStorage.getItem('activeTemplateData')) {
-                    localStorage.setItem('activeTemplateData', JSON.stringify({type: 'default'}));
-                }
+        } else if (layoutEl && previewEl && templateCardPreviewEl) {
+            layoutEl.classList.remove('hidden'); // ✅ Ensure it's visible to capture
+            const canvas = await html2canvas(layoutEl, {
+                backgroundColor: '#ffffff',
+                scale: 1
             });
+            const imgData = canvas.toDataURL('image/png');
+            localStorage.setItem('defaultTemplateImg', imgData); // ✅ Store image
 
-            /* 3. Build / reuse the View modal ----------------------------------------- */
-            let modalWrap = null;
-            function ensureModal() {
-                if (modalWrap) return;
-                modalWrap = document.createElement('div');
-                modalWrap.id = 'tplModal';
-                modalWrap.className =
-                'fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50';
+            previewEl.className = 'w-full object-cover rounded';
+            previewEl.src = imgData;
 
-                modalWrap.innerHTML = `
-                <div class="bg-white rounded-lg p-4 w-[90%] max-w-3xl">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 id="tplModalTitle" class="text-lg font-semibold"></h2>
-                        <button id="tplModalClose" class="text-red-600 text-xl">&times;</button>
-                    </div>
-                    <img id="tplModalImg"
-                        class="w-full max-h-[80vh] object-contain rounded border">
-                    <div class="text-right mt-4">
-                        <button id="tplModalEdit"
-                                class="px-4 py-1 bg-yellow text-white rounded">
-                            Edit in Builder
+            templateCardPreviewEl.className = 'w-full max-h-[200px] object-contain rounded';
+            templateCardPreviewEl.src = imgData;
+
+            layoutEl.classList.add('hidden'); // ✅ Hide again after capturing
+        }
+
+        // Active template state (persisted in localStorage)
+        let activeTemplateIdx = parseInt(localStorage.getItem('activeTemplateIdx') || '0', 10);
+
+        /* 2. Render saved templates ------------------------------------------------ */
+        const list = document.querySelector('#template-list');
+
+        function loadSaved() {
+            list.querySelectorAll('[data-tpl]').forEach(el => el.remove());
+            const saved = JSON.parse(localStorage.getItem('templates') || '[]');
+
+            saved.forEach((tpl, i) => {
+                const card = document.createElement('div');
+                card.dataset.tpl = i;
+                card.className = "bg-white rounded-lg shadow-md p-4 relative max-w-xl mx-auto mt-6";
+                card.innerHTML = `
+                <div class="flex items-center mb-2 card-header" style="min-height:64px;">
+                    <label class="inline-flex items-center mr-2">
+                        <input type="radio" name="template" value="template${i+1}"
+                                class="form-radio text-green">
+                    </label>
+                    <p class="flex-1 text-center text-blue-600 text-lg font-semibold">
+                        ${tpl.name}
+                    </p>
+                    <div class="flex space-x-2">
+                        <button class="btn-del text-red-600 rounded px-2" title="Delete">
+                            <img src="{{ asset('assets/delete.svg') }}" class="w-5 h-5">
+                        </button>
+                        <button class="btn-view text-yellow-500 rounded px-2" title="View">
+                            <img src="{{ asset('assets/view.svg') }}" class="w-5 h-5">
+                        </button>
+                        <button class="btn-edit text-blue-500 rounded px-2" title="Edit">
+                            <img src="{{ asset('assets/edit.svg') }}" class="w-5 h-5">
                         </button>
                     </div>
+                </div>
+                <div class="relative">
+                    <img src="${tpl.img}" alt="Template Preview"
+                        class="w-full object-cover rounded">
                 </div>`;
-                document.body.appendChild(modalWrap);
+                list.appendChild(card);
+            });
 
-                /* close modal on ✕ or backdrop */
-                modalWrap.addEventListener('click', e => {
-                    if (e.target.id === 'tplModalClose' || e.target === modalWrap)
-                        modalWrap.classList.add('hidden');
-                });
+            setActiveTemplateUI();
+        }
+        loadSaved();
+
+        function setActiveTemplateUI() {
+            const defaultRadio = list.querySelector('input[name="template"][value="template0"]');
+            const defaultCard = defaultRadio?.closest('.bg-white');
+            if (defaultRadio) {
+                defaultRadio.checked = activeTemplateIdx === 0;
+                if (defaultCard) {
+                    if (activeTemplateIdx === 0) {
+                        defaultCard.classList.add('ring-2', 'ring-blue-500');
+                    } else {
+                        defaultCard.classList.remove('ring-2', 'ring-blue-500');
+                    }
+                }
             }
 
-            /* 4. Delegated card‑button handlers --------------------------------------- */
-            list.addEventListener('click', e => {
-                const card = e.target.closest('[data-tpl]');
-                if (!card) return;                     // ignore clicks on default card
-                const idx   = +card.dataset.tpl;
-                const saved = JSON.parse(localStorage.getItem('templates') || '[]');
-
-                /* ─ Delete ─ */
-                if (e.target.closest('.btn-del')) {
-                    if (!confirm('Delete this template?')) return;
-                    saved.splice(idx, 1);
-                    localStorage.setItem('templates', JSON.stringify(saved));
-                    loadSaved();
-                    return;
-                }
-
-                /* ─ View ─ */
-                if (e.target.closest('.btn-view')) {
-                    ensureModal();
-                    const tpl = saved[idx];
-                    modalWrap.querySelector('#tplModalTitle').textContent = tpl.name;
-                    modalWrap.querySelector('#tplModalImg').src           = tpl.img;
-                    modalWrap.querySelector('#tplModalEdit').dataset.idx  = idx;
-                    modalWrap.classList.remove('hidden');
-                    return;
-                }
-
-                /* ─ Edit (card button) ─ */
-                if (e.target.closest('.btn-edit')) {
-                    localStorage.setItem('editingTemplate', JSON.stringify(saved[idx]));
-                    localStorage.setItem('editingIndex', idx);        // ← store index
-                    window.location.href = "{{ route('syllabus.template') }}";
+            list.querySelectorAll('[data-tpl]').forEach(card => {
+                const idx = +card.dataset.tpl;
+                const radio = card.querySelector('input[name="template"]');
+                radio.checked = activeTemplateIdx === idx + 1;
+                if (activeTemplateIdx === idx + 1) {
+                    card.classList.add('ring-2', 'ring-blue-500');
+                } else {
+                    card.classList.remove('ring-2', 'ring-blue-500');
                 }
             });
+        }
 
-            /* 5. “Edit in Builder” inside the modal ----------------------------------- */
-            document.addEventListener('click', e => {
-                if (e.target.id === 'tplModalEdit') {
-                    const idx = +e.target.dataset.idx;
+        list.addEventListener('change', e => {
+            if (e.target.name === 'template') {
+                if (e.target.value === 'template0') {
+                    activeTemplateIdx = 0;
+                    localStorage.setItem('activeTemplateIdx', activeTemplateIdx);
+                    localStorage.setItem('activeTemplateData', JSON.stringify({type: 'default'}));
+                } else {
+                    const idx = parseInt(e.target.value.replace('template', ''), 10) - 1;
+                    activeTemplateIdx = idx + 1;
+                    localStorage.setItem('activeTemplateIdx', activeTemplateIdx);
                     const saved = JSON.parse(localStorage.getItem('templates') || '[]');
-                    localStorage.setItem('editingTemplate', JSON.stringify(saved[idx]));
-                    localStorage.setItem('editingIndex', idx);        // ← store index
-                    window.location.href = "{{ route('syllabus.template') }}";
+                    if (saved[idx]) {
+                        localStorage.setItem('activeTemplateData', JSON.stringify(saved[idx]));
+                    }
                 }
-            });
-
-            /* 6. Countdown timer (left unchanged) ------------------------------------- */
-            const syll    = <?php echo json_encode($syll ?? null); ?>;
-            const dueDate = syll && syll.dl_syll ? new Date(syll.dl_syll) : null;
-            if (dueDate) {
-                const remain = document.getElementById('remaining-time');
-                const tick   = () => {
-                    const now  = new Date();
-                    const diff = dueDate - now;
-                    const d = Math.floor(diff / 86400000);
-                    const h = Math.floor((diff % 86400000) / 3600000);
-                    const m = Math.floor((diff % 3600000) / 60000);
-                    const s = Math.floor((diff % 60000) / 1000);
-                    if (remain) remain.textContent =
-                        `Remaining: ${d}d ${h}h ${m}m ${s}s`;
-                };
-                tick(); setInterval(tick, 1000);
+                setActiveTemplateUI();
+            }
+            if (!localStorage.getItem('activeTemplateData')) {
+                localStorage.setItem('activeTemplateData', JSON.stringify({type: 'default'}));
             }
         });
-    </script>
 
+        /* 3. Build / reuse the View modal ----------------------------------------- */
+        let modalWrap = null;
+        function ensureModal() {
+            if (modalWrap) return;
+            modalWrap = document.createElement('div');
+            modalWrap.id = 'tplModal';
+            modalWrap.className = 'fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50';
+            modalWrap.innerHTML = `
+            <div class="bg-white rounded-lg p-4 w-[90%] max-w-3xl">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 id="tplModalTitle" class="text-lg font-semibold"></h2>
+                    <button id="tplModalClose" class="text-red-600 text-xl">&times;</button>
+                </div>
+                <img id="tplModalImg" class="w-full max-h-[80vh] object-contain rounded border">
+                <div class="text-right mt-4">
+                    <button id="tplModalEdit" class="px-4 py-1 bg-yellow text-white rounded">
+                        Edit in Builder
+                    </button>
+                </div>
+            </div>`;
+            document.body.appendChild(modalWrap);
+
+            modalWrap.addEventListener('click', e => {
+                if (e.target.id === 'tplModalClose' || e.target === modalWrap)
+                    modalWrap.classList.add('hidden');
+            });
+        }
+
+        /* 4. Delegated card‑button handlers --------------------------------------- */
+        list.addEventListener('click', e => {
+            const card = e.target.closest('[data-tpl]');
+            if (!card) return;
+            const idx = +card.dataset.tpl;
+            const saved = JSON.parse(localStorage.getItem('templates') || '[]');
+
+            if (e.target.closest('.btn-del')) {
+                if (!confirm('Delete this template?')) return;
+                saved.splice(idx, 1);
+                localStorage.setItem('templates', JSON.stringify(saved));
+                loadSaved();
+                return;
+            }
+
+            if (e.target.closest('.btn-view')) {
+                ensureModal();
+                const tpl = saved[idx];
+                modalWrap.querySelector('#tplModalTitle').textContent = tpl.name;
+                modalWrap.querySelector('#tplModalImg').src           = tpl.img;
+                modalWrap.querySelector('#tplModalEdit').dataset.idx  = idx;
+                modalWrap.classList.remove('hidden');
+                return;
+            }
+
+            if (e.target.closest('.btn-edit')) {
+                localStorage.setItem('editingTemplate', JSON.stringify(saved[idx]));
+                localStorage.setItem('editingIndex', idx);
+                window.location.href = "{{ route('syllabus.template') }}";
+            }
+        });
+
+        /* 4.1 Handle Default Template Buttons ------------------------------------- */
+        document.getElementById('default-del')?.addEventListener('click', () => {
+            alert('Default template cannot be deleted.');
+        });
+
+        document.getElementById('default-view')?.addEventListener('click', async () => {
+            ensureModal();
+            const layoutEl = document.getElementById('default-layout');
+            const modalImg = document.getElementById('tplModalImg');
+            layoutEl.classList.remove('hidden');
+            const canvas = await html2canvas(layoutEl, {
+                backgroundColor: '#ffffff',
+                scale: 1
+            });
+            modalImg.src = canvas.toDataURL('image/png');
+            document.getElementById('tplModalTitle').textContent = "Default Template";
+            document.getElementById('tplModalEdit').dataset.idx = 'default';
+            document.getElementById('tplModal').classList.remove('hidden');
+            layoutEl.classList.add('hidden');
+        });
+
+        document.getElementById('default-edit')?.addEventListener('click', () => {
+            localStorage.setItem('editingTemplate', JSON.stringify({ type: 'default' }));
+            localStorage.setItem('editingIndex', 'default');
+            window.location.href = "{{ route('syllabus.template') }}";
+        });
+
+        /* 5. “Edit in Builder” inside the modal ----------------------------------- */
+        document.addEventListener('click', e => {
+            if (e.target.id === 'tplModalEdit') {
+                const idx = e.target.dataset.idx;
+                if (idx === 'default') {
+                    localStorage.setItem('editingTemplate', JSON.stringify({ type: 'default' }));
+                    localStorage.setItem('editingIndex', 'default');
+                } else {
+                    const saved = JSON.parse(localStorage.getItem('templates') || '[]');
+                    localStorage.setItem('editingTemplate', JSON.stringify(saved[idx]));
+                    localStorage.setItem('editingIndex', idx);
+                }
+                window.location.href = "{{ route('syllabus.template') }}";
+            }
+        });
+
+        /* 6. Countdown timer (left unchanged) ------------------------------------- */
+        const syll = <?php echo json_encode($syll ?? null); ?>;
+        const dueDate = syll && syll.dl_syll ? new Date(syll.dl_syll) : null;
+        if (dueDate) {
+            const remain = document.getElementById('remaining-time');
+            const tick = () => {
+                const now = new Date();
+                const diff = dueDate - now;
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                if (remain) remain.textContent = `Remaining: ${d}d ${h}h ${m}m ${s}s`;
+            };
+            tick(); setInterval(tick, 1000);
+        }
+    });
+</script>
 
     </body>
 
