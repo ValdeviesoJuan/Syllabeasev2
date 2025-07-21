@@ -42,12 +42,51 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="mb-3">
-                        <label for="tos_term" class="flex">Term</label>
-                        <select name="tos_term" id="tos_term" class="border border-[#a8a29e] rounded w-[200px] p-2">
-                            <option value="Midterm" @if(old('tos_term', $tos->tos_term) === 'Midterm') selected @endif>Midterm</option>
-                            <option value="Final" @if(old('tos_term', $tos->tos_term) === 'Final') selected @endif>Final</option>
+                    <!-- TOS Term Selector (example) -->
+                    <div class="mb-6">
+                        <label for="tos_term" class="block text-sm font-medium text-gray-700 mb-1">TOS Term</label>
+                        <select name="tos_term" id="tos_term" class="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2">
+                            <option value="Midterm" {{ old('tos_term', $tos->tos_term) === 'Midterm' ? 'selected' : '' }}>Midterm</option>
+                            <option value="Final" {{ old('tos_term', $tos->tos_term) === 'Final' ? 'selected' : '' }}>Final</option>
                         </select>
+                    </div>
+
+                    <!-- Midterm Topics -->
+                    <div id="midtermTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6 @if(old('tos_term', $tos->tos_term) !== 'Midterm') hidden @endif">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Midterm Topics</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            @foreach($midtermTopics as $topic)
+                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
+                                    <input 
+                                        type="checkbox" 
+                                        name="selected_topics[]" 
+                                        value="{{ $topic }}" 
+                                        class="accent-blue-600 w-4 h-4"
+                                        @if(in_array($topic, old('selected_topics', $selectedTopics ?? []))) checked @endif
+                                    >
+                                    <span class="text-sm text-gray-700">{{ $topic }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Final Topics -->
+                    <div id="finalTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6 @if(old('tos_term', $tos->tos_term) !== 'Final') hidden @endif">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Final Topics</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            @foreach($finalTopics as $topic)
+                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
+                                    <input 
+                                        type="checkbox" 
+                                        name="selected_topics[]" 
+                                        value="{{ $topic }}" 
+                                        class="accent-blue-600 w-4 h-4"
+                                        @if(in_array($topic, old('selected_topics', $selectedTopics ?? []))) checked @endif
+                                    >
+                                    <span class="text-sm text-gray-700">{{ $topic }}</span>
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
 
                     <div class="grid gap-6 mb-6 md:grid-cols-2 mr-6">
@@ -92,6 +131,23 @@
         </div>
     </div>
 </body>
+
+<script>
+    document.getElementById('tos_term').addEventListener('change', function () {
+        const term = this.value;
+        const midtermBox = document.getElementById('midtermTopicsBox');
+        const finalBox = document.getElementById('finalTopicsBox');
+
+        if (term === 'Midterm') {
+            midtermBox.classList.remove('hidden');
+            finalBox.classList.add('hidden');
+        } else if (term === 'Final') {
+            finalBox.classList.remove('hidden');
+            midtermBox.classList.add('hidden');
+        }
+    });
+</script>
+
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {
