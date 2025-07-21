@@ -77,16 +77,16 @@
                         <td class="px-6 py-4 flex">
                             <form action="{{ route('chairperson.viewCourse', $course->course_id) }}" method="GET">
                                 @csrf
-                                <button type="submit" class="hover:text-yellow hover:underlined px-1">View</button>
+                                <button type="submit" class="hover:text-yellow hover:underlined px-1 ">View</button>
                             </form>
                             <form action="{{ route('chairperson.editCourse', $course->course_id) }}" method="GET">
                                 @csrf
-                                <button type="submit" class="hover:text-yellow hover:underlined px-1">Edit</button>
+                                <button type="submit" class="hover:text-yellow hover:underlined px-1 text-green">Edit</button>
                             </form>
                             <form action="{{ route('chairperson.destroyCourse', $course->course_id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="hover:text-yellow hover:underlined px-1">Delete</button>
+                                <button type="submit" class="hover:text-yellow hover:underlined px-1 text-red">Delete</button>
                             </form>
                         </td>
                     </tr>

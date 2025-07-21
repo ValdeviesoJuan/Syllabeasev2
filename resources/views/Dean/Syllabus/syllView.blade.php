@@ -220,7 +220,7 @@
     </div>
 
     <!-- OUTER CONTAINER -->
-    <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
+    <div class="mx-auto mt-6 w-11/12 border-[1px] border-black bg-white font-serif text-sm p-4">
     <!-- HEADER SECTION -->
     <br>
     <div class="flex justify-center items-start mb-4">

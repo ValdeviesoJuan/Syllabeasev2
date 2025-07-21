@@ -56,7 +56,7 @@
         </select>
         <button wire:click="applyFilters" class="bg-blue5 hover:bg-blue focus:outline-none focus:border-blue cursor-pointer rounded text-white p-[4px] px-4 w-[12%] min-w-[100px] whitespace-nowrap">Apply Filters</button>
     </div>
-    <table class=" w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <table class=" w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
         <thead class="rounded text-xs text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" class="bg-blue5 rounded-tl px-6 py-3">

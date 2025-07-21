@@ -135,7 +135,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
             </div>
         </div>
     </div>
@@ -256,7 +256,7 @@
     <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white {{ isset($srf1) && $srf1['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
         <!-- 1st Header -->
         <tr>
-            <th colspan="2" class="font-medium border-2 border-solid px-4 {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
+            <th colspan="2" class="font-medium border-1 border-solid px-4 {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                 <span class="font-bold">{{$syll->college_description}}</span><br>
                 {{$syll->department_name}}
             </th>

@@ -180,51 +180,61 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.syllabus') }}" class="{{request()->route()->getName() == 'admin.syllabus' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 45.973 45.972" xml:space="preserve">
+                    <a href="{{ route('admin.syllabus') }}" class="{{request()->route()->getName() == 'bayanihanleader.syllabus' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
+                        <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 31.867 31.867" xml:space="preserve">
                             <g>
                                 <g>
-                                    <path d="M44.752,20.914L25.935,2.094c-0.781-0.781-1.842-1.22-2.946-1.22c-1.105,0-2.166,0.439-2.947,1.22L1.221,20.914
-            c-1.191,1.191-1.548,2.968-0.903,4.525c0.646,1.557,2.165,2.557,3.85,2.557h2.404v13.461c0,2.013,1.607,3.642,3.621,3.642h3.203
-            V32.93c0-0.927,0.766-1.651,1.692-1.651h6.223c0.926,0,1.673,0.725,1.673,1.651v12.168h12.799c2.013,0,3.612-1.629,3.612-3.642
-            V27.996h2.411c1.685,0,3.204-1,3.85-2.557C46.3,23.882,45.944,22.106,44.752,20.914z" />
+                                    <path d="M24.963,2.609C24.963,1.168,23.795,0,22.356,0H4.421C3.038,0,1.917,1.121,1.917,2.504v21.762
+			c0,1.441,1.168,2.609,2.609,2.609h17.827c1.441,0,2.609-1.168,2.609-2.609L24.963,2.609L24.963,2.609z M22.364,22.294
+			c0,1.095-0.889,1.983-1.983,1.983H6.498c-1.095,0-1.983-0.889-1.983-1.983V4.514c0-1.095,0.888-1.983,1.983-1.983h13.883
+			c1.094,0,1.981,0.888,1.981,1.983L22.364,22.294L22.364,22.294z"></path>
+                                    <path d="M25.989,4.993v2.599c0.791,0,1.435,0.643,1.435,1.435v18.875c0,0.792-0.644,1.435-1.435,1.435H10.876
+			c-0.755,0-1.368-0.612-1.368-1.368H6.977v1.289c0,1.441,1.168,2.609,2.609,2.609h17.757c1.439,0,2.607-1.169,2.607-2.609V7.602
+			c0-1.441-1.168-2.609-2.607-2.609H25.989z"></path>
+                                    <path d="M7.799,8.411H19.31c0.707,0,1.279-0.558,1.279-1.265S20.017,5.88,19.31,5.88H7.799c-0.707,0-1.279,0.559-1.279,1.266
+			C6.521,7.853,7.092,8.411,7.799,8.411z"></path>
+                                    <path d="M7.799,12.651H19.31c0.707,0,1.279-0.561,1.279-1.265c0-0.707-0.572-1.265-1.279-1.265H7.799
+			c-0.707,0-1.279,0.558-1.279,1.265C6.521,12.09,7.092,12.651,7.799,12.651z"></path>
+                                    <path d="M7.799,16.891H19.31c0.707,0,1.279-0.56,1.279-1.265c0-0.706-0.572-1.265-1.279-1.265H7.799
+			c-0.707,0-1.279,0.559-1.279,1.265C6.521,16.331,7.092,16.891,7.799,16.891z"></path>
+                                    <path d="M7.799,20.994H19.31c0.707,0,1.279-0.559,1.279-1.266c0-0.705-0.572-1.267-1.279-1.267H7.799
+			c-0.707,0-1.279,0.562-1.279,1.267C6.521,20.436,7.092,20.994,7.799,20.994z"></path>
                                 </g>
                             </g>
                         </svg>
                         <span class="ms-3">Syllabus</span>
                     </a>
                 </li>
+
                 <li>
-                    <a href="{{ route('admin.tos') }}" class="{{request()->route()->getName() == 'admin.tos' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 45.973 45.972" xml:space="preserve">
-                            <g>
-                                <g>
-                                    <path d="M44.752,20.914L25.935,2.094c-0.781-0.781-1.842-1.22-2.946-1.22c-1.105,0-2.166,0.439-2.947,1.22L1.221,20.914
-            c-1.191,1.191-1.548,2.968-0.903,4.525c0.646,1.557,2.165,2.557,3.85,2.557h2.404v13.461c0,2.013,1.607,3.642,3.621,3.642h3.203
-            V32.93c0-0.927,0.766-1.651,1.692-1.651h6.223c0.926,0,1.673,0.725,1.673,1.651v12.168h12.799c2.013,0,3.612-1.629,3.612-3.642
-            V27.996h2.411c1.685,0,3.204-1,3.85-2.557C46.3,23.882,45.944,22.106,44.752,20.914z" />
-                                </g>
+                    <a href="{{ route('admin.tos') }}" class="{{request()->route()->getName() == 'auditor.tos' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">
+                        <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" inkscape:export-filename="courses.svg" inkscape:export-xdpi="79.62088" inkscape:export-ydpi="79.62088" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                            <sodipodi:namedview id="namedview1" pagecolor="#505050" bordercolor="#eeeeee" borderopacity="1" inkscape:showpageshadow="0" inkscape:pageopacity="0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#505050" inkscape:document-units="mm" />
+                            <defs id="defs1" />
+                            <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(-15.755283,-77.661276)">
+                                <rect style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.231;stroke-linecap:round" id="rect1" width="179.53818" height="179.53816" x="15.755282" y="77.66127" ry="22.909351" />
+                                <text xml:space="preserve" style="font-weight:bold;font-size:79.1731px;font-family:Octarine;-inkscape-font-specification:'Octarine, Bold';fill:#2468d2;fill-opacity:1;fill-rule:evenodd;stroke-width:0.547526;stroke-linecap:round" x="25.193558" y="190.14262" id="text2" transform="scale(0.9670732,1.0340479)">
+                                    <tspan sodipodi:role="line" id="tspan2" style="fill:#2468d2;fill-opacity:1;stroke-width:0.547526" x="25.193558" y="190.14262">TOS</tspan>
+                                </text>
                             </g>
                         </svg>
-                        <span class="ms-3">TOS</span>
+
+                        <span class="flex-1 ms-3 whitespace-nowrap">TOS</span>
                     </a>
                 </li>
 
+
                 <li>
-                    <a href="{{ route('admin.college') }}" class="{{request()->route()->getName() == 'admin.college' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 45.973 45.972" xml:space="preserve">
-                            <g>
-                                <g>
-                                    <path d="M44.752,20.914L25.935,2.094c-0.781-0.781-1.842-1.22-2.946-1.22c-1.105,0-2.166,0.439-2.947,1.22L1.221,20.914
-			c-1.191,1.191-1.548,2.968-0.903,4.525c0.646,1.557,2.165,2.557,3.85,2.557h2.404v13.461c0,2.013,1.607,3.642,3.621,3.642h3.203
-			V32.93c0-0.927,0.766-1.651,1.692-1.651h6.223c0.926,0,1.673,0.725,1.673,1.651v12.168h12.799c2.013,0,3.612-1.629,3.612-3.642
-			V27.996h2.411c1.685,0,3.204-1,3.85-2.557C46.3,23.882,45.944,22.106,44.752,20.914z" />
-                                </g>
-                            </g>
+                    <a href="{{ route('admin.college') }}" class="{{ request()->route()->getName() == 'admin.college' ? 'bg-blue4' : '' }} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
+                        <svg class="w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2z"></path>
+                            <path d="M4 10v10h2v-4h2v4h2V10H4zm10 0v10h2v-4h2v4h2V10h-6z"></path>
                         </svg>
                         <span class="ms-3">College</span>
                     </a>
                 </li>
+
+
 
                 <li>
                     <a href="{{ route('admin.department') }}" class="{{request()->route()->getName() == 'admin.department' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">

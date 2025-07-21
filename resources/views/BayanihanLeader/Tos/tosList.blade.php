@@ -65,7 +65,7 @@
     <div class="mt-[6%] ml-[4px]">
         <livewire:b-l-create-tos />
     </div>
-    <div class="m-auto pb-12 p-8 bg-white mt-[10px] p-2 shadow-lg rounded  w-11/12">
+    <div class="m-auto pb-12 p-8 bg-white mt-[10px]  shadow-lg rounded  w-full">
         <div class="flex justify-center align-items-center">
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden mb-6">
