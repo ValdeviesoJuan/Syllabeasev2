@@ -113,6 +113,7 @@ class BayanihanLeaderSyllabusController extends Controller
         $previousReviewForm = null;
         $previousChecklistItems = [];
         $previousChecklistSRF = collect();
+        $previousDeanFeedback = [];
 
         if ($previousSyllabus) {
             $previousStatus = $previousSyllabus->status;
@@ -128,6 +129,8 @@ class BayanihanLeaderSyllabusController extends Controller
                     $previousChecklistSRF = $previousChecklistItems->keyBy('srf_no');
                 }
                 
+            } else if ($previousStatus === "Returned by Dean") {
+                $previousDeanFeedback = SyllabusDeanFeedback::where('syll_id', $previousSyllabus->syll_id)->first();
             }
         }
 
@@ -262,7 +265,8 @@ class BayanihanLeaderSyllabusController extends Controller
             'previousStatus',
             'previousReviewForm',
             'previousChecklistItems',
-            'previousChecklistSRF'
+            'previousChecklistSRF',
+            'previousDeanFeedback'
         ))->with('success', 'Switched to Edit Mode');
     }
     public function commentSyllabus($syll_id)
@@ -437,7 +441,8 @@ class BayanihanLeaderSyllabusController extends Controller
 
         $syllabus->syll_dean = ($dean->prefix ? $dean->prefix . ' ' : '') . $dean->firstname . ' ' . $dean->lastname . ' ' . $dean->suffix;
         $syllabus->syll_chair = ($chair->prefix ? $chair->prefix . ' ' : '') . $chair->firstname . ' ' . $chair->lastname . ' ' . $chair->suffix;
-
+        
+        $syllabus->status = "Draft";
         $syllabus->version = 1;
         $syllabus->save();
 
@@ -468,6 +473,7 @@ class BayanihanLeaderSyllabusController extends Controller
         //add: Only show bg groups that they leads
         $instructors = SyllabusInstructor::all();
         $users = User::all();
+
         $user = Auth::user(); 
         $notifications = $user->notifications;
         
@@ -520,8 +526,19 @@ class BayanihanLeaderSyllabusController extends Controller
         if (!$syllabus) {
             return redirect()->route('bayanihanleader.home')->with('error', 'Syllabus not found.');
         }
+
         $syllabus->chair_submitted_at = Carbon::now();
-        $syllabus->status = 'Pending';
+
+        if ($syllabus->status == "Draft") {
+            $syllabus->status = 'Pending Chair Review';
+
+        } else if ($syllabus->status == "Requires Revision (Chair)") {
+            $syllabus->status = 'Revised for Chair';
+
+        } else if ($syllabus->status == "Requires Revision (Dean)") {
+            $syllabus->status = 'Revised for Dean';
+        }
+
         $syllabus->save();
 
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
@@ -640,7 +657,17 @@ class BayanihanLeaderSyllabusController extends Controller
         
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
-            $newSyllabus->status = null;
+
+            if ($oldSyllabus->status == "Returned by Chair") {
+                $newSyllabus->status = "Requires Revision (Chair)";
+
+            } else if ($oldSyllabus->status == "Returned by Dean") {
+                $newSyllabus->status = "Requires Revision (Dean)";
+
+            } else {
+                $newSyllabus->status = null;
+            }
+
             $newSyllabus->chair_submitted_at = null;
             $newSyllabus->dean_submitted_at = null;
             $newSyllabus->chair_rejected_at = null;
@@ -711,7 +738,7 @@ class BayanihanLeaderSyllabusController extends Controller
         
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
-            $newSyllabus->status = null;
+            $newSyllabus->status = "Draft";
             $newSyllabus->chair_submitted_at = null;
             $newSyllabus->dean_submitted_at = null;
             $newSyllabus->chair_rejected_at = null;

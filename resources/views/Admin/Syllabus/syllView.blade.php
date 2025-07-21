@@ -1142,7 +1142,7 @@
             });
             var closeModalButton2 = document.getElementById("closeModalButton2");
 
-            closeModalButton.addEventListener("click", function() {
+            closeModalButton2.addEventListener("click", function() {
                 feedbackModal.style.display = "none";
                 overlay.style.display = "none";
             });

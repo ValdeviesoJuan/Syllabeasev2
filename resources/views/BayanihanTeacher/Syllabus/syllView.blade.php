@@ -105,7 +105,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has already been submitted, and further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has already been submitted to the Department Chair, further edits are no longer permitted.
             </div>
         </div>
     </div>
@@ -120,7 +120,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has already been submitted, and further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has been returned by the Department Chair for revisions. 
             </div>
         </div>
         <div class="flex mt-3 mx-auto">
@@ -176,7 +176,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the Department Chair and is awaiting Dean approval; further edits are no longer permitted.
             </div>
         </div>
     </div>
@@ -190,7 +190,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been <span class="font-semibold text-green">approved</span> by the chair and the dean; further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has already been <span class="font-semibold text-green">approved</span> by the chair and the dean; further edits are no longer permitted.
             </div>
         </div>
     </div>

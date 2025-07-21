@@ -84,7 +84,7 @@ class ChairSyllabusController extends Controller
     {
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
-            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') // Corrected
+            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id')
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -308,7 +308,6 @@ class ChairSyllabusController extends Controller
             ->get()
             ->groupBy('syll_id');
             
-
         // Create Review Form 
         $srf = new SyllabusReviewForm();
         $srf->syll_id = $syll->syll_id;

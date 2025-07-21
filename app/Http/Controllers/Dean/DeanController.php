@@ -19,11 +19,11 @@ class DeanController extends Controller
     {
         $user = Auth::user();
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $college_id = UserRole::where('user_id', Auth::id())
+        $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->select('user_roles.entity_id')
             ->first();
+        $college_id = $dean->entity_id;
             
         if ($college_id) {
             $college = College::where('college_id', $college_id)

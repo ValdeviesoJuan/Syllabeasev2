@@ -111,14 +111,26 @@
                     Version {{$syllabus->version}}
                 </td>
                 <td class="px-6 py-4">
-                    <button class="
-                    {{ $syllabus->status === 'Pending' ? 'w-[100%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Approved by Chair' ? 'w-[100%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Returned by Chair' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}
-                    {{ $syllabus->status === 'Approved by Dean' ? 'w-[100%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $syllabus->status === 'Returned by Dean' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
-                        {{$syllabus->status}}
-                    </button>
+                    @php
+                        $status = $syllabus->status;
+                        $statusClasses = [
+                            'Draft' => 'bg-gray-200 text-gray-600 border-gray-400',
+                            'Pending Chair Review' => 'bg-amber-100 text-amber-600 border-amber-300',
+                            'Returned by Chair' => 'bg-rose-200 text-rose-600 border-rose-400',
+                            'Requires Revision (Chair)' => 'bg-red-100 text-red-500 border-red-300',
+                            'Revised for Chair' => 'bg-blue-100 text-blue-500 border-blue-300',
+                            'Approved by Chair' => 'bg-green-100 text-green-600 border-green-300',
+                            'Returned by Dean' => 'bg-rose-300 text-rose-700 border-rose-500',
+                            'Requires Revision (Dean)' => 'bg-pink-100 text-pink-500 border-pink-300',
+                            'Revised for Dean' => 'bg-blue-200 text-blue-600 border-blue-400',
+                            'Approved by Dean' => 'bg-emerald-200 text-emerald-600 border-emerald-400',
+                        ];
+                        $classes = $statusClasses[$status] ?? 'bg-gray-100 text-gray-500 border-gray-300';
+                    @endphp
+
+                    <div class="w-full text-center px-1 py-1 border-2 rounded-lg {{ $classes }}">
+                        {{ $syllabus->status }}
+                    </div>
                 </td>
                 <td class="px-6 py-4 flex">
                     <form class="" action="{{ route('bayanihanteacher.commentSyllabus', $syllabus->syll_id) }}" method="GET">

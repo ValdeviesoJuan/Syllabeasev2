@@ -43,11 +43,11 @@ class DeanSyllabusController extends Controller
     public function index()
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $college_id = UserRole::where('user_id', Auth::id())
+        $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->select('user_roles.entity_id')
             ->first();
+        $college_id = $dean->entity_id;
         
         if ($college_id) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {

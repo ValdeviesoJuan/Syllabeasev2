@@ -23,13 +23,13 @@ class DeanSyllabusTable extends Component
         'department_code' => null,
     ];
     public function render()
-    {
+    { 
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $college_id = UserRole::where('user_id', Auth::id())
+        $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->select('user_roles.entity_id')
             ->first();
+        $college_id = $dean->entity_id;
 
         if ($college_id) {
             
@@ -42,7 +42,6 @@ class DeanSyllabusTable extends Component
                     ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND dean_submitted_at IS NOT NULL)'));                            
                 })
                 ->where('syllabi.college_id', '=', $college_id)
-                ->whereNotNull('syllabi.dean_submitted_at')
                 ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
                 ->join('departments', 'departments.department_id', 'syllabi.department_id')
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
