@@ -25,20 +25,18 @@ class DeanReports extends Component
     ];
     public function render()
     {
-        $user = Auth::user();
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $college_id = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->select('user_roles.entity_id')
+            ->first();
 
-        $college = UserRole::where('user_roles.entity_type', 'College')
-            ->where('user_roles.role_id', $deanRoleId)
-            ->where('user_roles.user_id', $user->id)
-            ->firstOrFail();
-
-        $college_id = $college->entity_id;
-
-        $departments = Department::where('departments.college_id', $college_id)
-            ->select('departments.*')
-            ->get();
         if ($college_id) {
+            $departments = Department::where('departments.college_id', $college_id)
+                ->select('departments.*')
+                ->get();
+
             $syllabi = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
                     ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND dean_submitted_at IS NOT NULL)'));
@@ -82,6 +80,9 @@ class DeanReports extends Component
             $distinctBayanihanTeams = $syllabi->pluck('bg_id')->unique()->count();
         } else {
             $syllabi = [];
+            $departments = [];
+            $syllabiCount = 0;
+            $distinctBayanihanTeams = 0;
         }
         return view('livewire.dean-reports', ['syllabi' => $syllabi, 'filters' => $this->filters, 'departments' => $departments, 'syllabiCount' => $syllabiCount, 'distinctBayanihanTeams' => $distinctBayanihanTeams]);
     }

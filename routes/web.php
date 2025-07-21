@@ -286,7 +286,6 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
     Route::get('/syllabus', [ChairSyllabusController::class, 'index'])->name('chairperson.syllabus');
     Route::get('/syllabus/viewSyllabus/{syll_id}', [ChairSyllabusController::class, 'viewSyllabus'])->name('chairperson.viewSyllabus');
     Route::put('/syllabus/approveSyllabus/{syll_id}', [ChairSyllabusController::class, 'approveSyllabus'])->name('chairperson.approveSyllabus');
-    Route::PUT('/syllabus/rejectSyllabus/{syll_id}', [ChairSyllabusController::class, 'rejectSyllabus'])->name('chairperson.rejectSyllabus');
     Route::post('/syllabus/return/{syll_id}', [ChairSyllabusController::class, 'returnSyllabus'])->name('chairperson.returnSyllabus');
     Route::get('/syllabus/reviewForm/{syll_id}', [ChairSyllabusController::class, 'reviewForm'])->name('chairperson.reviewForm');
     Route::get('/syllabus/commentSyllabus/{syll_id}', [ChairSyllabusController::class, 'commentSyllabus'])->name('chairperson.commentSyllabus');
@@ -306,7 +305,7 @@ Route::group(['prefix' => 'chairperson', 'middleware' => ['auth', 'isChair']], f
 
 //Dean
 Route::group(['prefix' => 'dean', 'middleware' => ['auth', 'isDean']], function () {
-    Route::get('/', [DeanController::class, 'index'])->name('dean.home');
+    Route::get('/home', [DeanController::class, 'index'])->name('dean.home');
     Route::get('/chairs', [DeanController::class, 'chairperson'])->name('dean.chairs');
     Route::get('/departments', [DeanController::class, 'departments'])->name('dean.departments');
 

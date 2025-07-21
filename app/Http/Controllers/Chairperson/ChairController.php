@@ -25,13 +25,12 @@ class ChairController extends Controller
     public function index()
     {
         $users = User::all();
-
-        $chair = UserRole::where('user_id', Auth::id())
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $department_id = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
-
-        $department_id = $chair->entity_id;
+            ->where('role_id', '=', $chairRoleId)
+            ->select('user_roles.entity_id')
+            ->first();
 
         $bgroups = BayanihanGroup::with('members', 'leaders')
             ->join('courses', 'bayanihan_groups.course_id', '=', 'courses.course_id')
@@ -52,7 +51,6 @@ class ChairController extends Controller
             ->groupBy('bg_id');
 
         $user = Auth::user(); 
-        
         $notifications = $user->notifications;
 
         return view('Chairperson.Home.home', compact('users', 'bgroups', 'bmembers', 'bleaders', 'notifications'));

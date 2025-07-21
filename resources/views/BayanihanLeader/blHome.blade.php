@@ -147,56 +147,6 @@
                         </a>
                     </div>
                 </div>
-
-                <!-- <div id="icon" class="m-5 flex items-center bg-white h-fit rounded justify-center p-1 shadow-2xl hover:scale-110 transition ease-in-out">
-                    <div class="m-5 bg-pink w-fit h-content rounded-full">
-                        <div class="p-4">
-                            <svg fill="#ff5d9b" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" xml:space="preserve">
-                                <g>
-                                    <g>
-                                        <path d="M57,44h-6h-6c-3.3,0-6,2.7-6,6v9c0,1.1,0.5,2.1,1.2,2.8c0.7,0.7,1.7,1.2,2.8,1.2v9c0,3.3,2.7,6,6,6h2h2
-                                        c3.3,0,6-2.7,6-6v-9c1.1,0,2.1-0.4,2.8-1.2c0.7-0.7,1.2-1.7,1.2-2.8v-9C63,46.7,60.3,44,57,44z" />
-                                    </g>
-                                    <g>
-                                        <circle cx="51" cy="33" r="7" />
-                                    </g>
-                                    <g>
-                                        <path d="M36.6,66.7c-0.2-0.2-0.5-0.4-0.7-0.6c-1.9-2-3-4.5-3-7.1v-9c0-3.2,1.3-6.2,3.4-8.3c0.6-0.6,0.1-1.7-0.7-1.7
-                                        c-1.7,0-3.6,0-3.6,0h-6c-3.3,0-6,2.7-6,6v9c0,1.1,0.5,2.1,1.2,2.8c0.7,0.7,1.7,1.2,2.8,1.2v9c0,3.3,2.7,6,6,6h2h2
-                                        c0.9,0,1.7-0.2,2.4-0.5c0.4-0.2,0.6-0.5,0.6-0.9c0-1.2,0-4,0-5.1C37,67.2,36.9,66.9,36.6,66.7z" />
-                                    </g>
-                                    <g>
-                                        <circle cx="32" cy="29" r="7" />
-                                    </g>
-                                    <g>
-                                        <path d="M76,40h-6c0,0-1.9,0-3.6,0c-0.9,0-1.3,1-0.7,1.7c2.1,2.2,3.4,5.1,3.4,8.3v9c0,2.6-1,5.1-3,7.1
-                                        c-0.2,0.2-0.4,0.4-0.7,0.6c-0.2,0.2-0.4,0.5-0.4,0.8c0,1.1,0,3.8,0,5.1c0,0.4,0.2,0.8,0.6,0.9c0.7,0.3,1.5,0.5,2.4,0.5h2h2
-                                        c3.3,0,6-2.7,6-6v-9c1.1,0,2.1-0.4,2.8-1.2c0.7-0.7,1.2-1.7,1.2-2.8v-9C82,42.7,79.3,40,76,40z" />
-                                    </g>
-                                    <g>
-                                        <circle cx="70" cy="29" r="7" />
-                                    </g>
-                                </g>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex flex-col mr-6 pt-5">
-                        <div class="text-3xl font-semibold text-pink2">
-                            N
-                        </div>
-                        <div class=" ml-0 text-pink2">
-                            Bayanihan Teams
-                        </div>
-                        <div class="text-green justify-end flex mt-2 mb-1">
-                            <div class="w-fit bg-pink rounded-full p-1">
-                                <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="#ff5d9b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
             </div>
         </div>
 <div class="mt-[100px] pb-12 m-auto p-8 bg-slate-100  shadow-lg  rounded-lg w-full">
@@ -205,127 +155,66 @@
             <div class="mt-2 text-blue text-2xl font-semibold">
                 Syllabi
             </div>
-            <div class="flex gap-6 py-4"> <!-- FLEX CONTAINER -->
+                <div class="flex gap-6 py-4"> <!-- FLEX CONTAINER -->
+                    <!-- Create Syllabus button (left) -->
+                    <a href="{{ route('bayanihanleader.createSyllabus') }}"
+                        class="whitespace-nowrap w-50 rounded mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                        style="background: #d7ecf9;"
+                        onmouseover="this.style.background='#c3dff3';"
+                        onmouseout="this.style.background='#d7ecf9';">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                        </svg>
+                        Create Syllabus
+                    </a>
 
-   
-    <!-- Create Syllabus button (left) -->
-    <a href="{{ route('bayanihanleader.createSyllabus') }}"
-        class="whitespace-nowrap w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
-        style="background: #d7ecf9;"
-        onmouseover="this.style.background='#c3dff3';"
-        onmouseout="this.style.background='#d7ecf9';">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-        </svg>
-        Create Syllabus
-    </a>
-
-    <!-- Create Template button (right) -->
-    <a href="{{ route('bayanihanleader.createTemplate') }}"
-        class="whitespace-nowrap w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
-        style="background: #d7ecf9;"
-        onmouseover="this.style.background='#c3dff3';"
-        onmouseout="this.style.background='#d7ecf9';">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-        </svg>
-        Select Template
-    </a>
-
-</div>
-
-                
+                    <!-- Create Template button (right) -->
+                    <a href="{{ route('bayanihanleader.createTemplate') }}"
+                        class="whitespace-nowrap w-50 rounded mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                        style="background: #d7ecf9;"
+                        onmouseover="this.style.background='#c3dff3';"
+                        onmouseout="this.style.background='#d7ecf9';">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                        </svg>
+                        Select Template
+                    </a>
+                </div>
 
             <livewire:b-l-syllabus-table />
 
-            <!-- Syllabus Cards                                
-            <div class="m-8 mb-10">
-                <div class="grid grid-cols-5 gap-5 mt-2">
-                    @forelse ($syllabus as $key => $syll)
-                    <div class="border border-gray3 sshadow-xl w-58 h-72 h-auto min-h-fit bg-white rounded-xl shadow-xl hover:scale-105 transition ease-in-out">
-                        <div class="ml-[155px] flex justify-end">
-                            <div class="bg-beige2 text-gray rounded-full w-max px-3 absolute mt-2 mr-2 bg-opacity-75">
-                                {{$syll->status}}
-                            </div>
-                        </div>
-                        <div class="w-fit">
-                            @php
-                            $imageIndex = $key % 10 + 1; // Cycle through images 1-10
-                            @endphp
-                            <img class="rounded-t-xl h-40" src="/assets/bg/{{ $imageIndex }}.png" alt="{{ $syll->course_title }}">
-                        </div>
-                        <div class="text-xl font-semibold mx-3 text-neutral-900 mt-1">
-                            {{ $syll->course_title }}
-                        </div>
-                        <div class="text-neutral-900 font-semibold text-lg mx-3 mb-2">
-                            {{ $syll->course_code }}
-                        </div>
-                        <div class="text-neutral-900 font-medium mx-3">
-                            {{ $syll->bg_school_year }}
-                        </div>
-                        <div class="text-neutral-900 font-medium mx-3">
-                            {{ $syll->course_semester }}
-                        </div>
-                        <div class="text-neutral-900 mx-3 text-sm">
-                            Due by : {{ $syll-> dl_syll}}
-                        </div>
-                        <div class="text-neutral-900 mx-3 text-sm" id="remaining-time">
-                            Remaining : Calculating...
-                        </div>
-                        <div class="flex flex-row justify-center">
-                        <div class="mr-3 justify-end flex">
-                            <form action="{{ route('bayanihanleader.destroySyllabus', $syll->syll_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this syllabus entry?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="shadow-lg rounded-full bg-blue text-white py-1 px-3 my-4">Delete</button>
-                            </form>
-                        </div>
-                        <div class="flex">
-                            <form action="{{ route('bayanihanleader.viewSyllabus', $syll->syll_id) }}" method="GET">
-                                @csrf
-                                <button type="submit" class="shadow-lg rounded-full bg-blue text-white py-1 px-3 my-4">View</button>
-                            </form>
-                        </div>
-                    </div>
-                    </div>
-                    @empty
-                    <p class="ml-2">No Syllabus Found</p>
-                    @endforelse
-                </div>
-            </div> -->
         </div>
     </div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var syll = <?php echo json_encode($syll ?? null); ?>;
-            var dueDate = syll && syll.dl_syll ? new Date(syll.dl_syll) : null;
-
-            if (dueDate) {
-                function updateRemainingTime() {
-                    var now = new Date();
-                    var timeDifference = dueDate - now;
-                    var days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                    var hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    var minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-
-                    var remainingTimeElement = document.getElementById('remaining-time');
-                    remainingTimeElement.innerText = 'Remaining: ' + days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
-                }
-
-                updateRemainingTime();
-                setInterval(updateRemainingTime, 1000);
-            }
-        });
-    </script>
 </body>
-</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var syll = <?php echo json_encode($syll ?? null); ?>;
+        var dueDate = syll && syll.dl_syll ? new Date(syll.dl_syll) : null;
+
+        if (dueDate) {
+            function updateRemainingTime() {
+                var now = new Date();
+                var timeDifference = dueDate - now;
+                var days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+                var remainingTimeElement = document.getElementById('remaining-time');
+                remainingTimeElement.innerText = 'Remaining: ' + days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+            }
+
+            updateRemainingTime();
+            setInterval(updateRemainingTime, 1000);
+        }
+    });
+</script>
 </html>
 @endsection

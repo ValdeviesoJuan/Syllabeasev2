@@ -109,7 +109,7 @@
 </head>
 
 <body class="font-thin ">
-    @if($syll->dean_rejected_at == null && $syll->status == 'Approved by Chair')
+    @if($syll->dean_submitted_at != null && $syll->dean_rejected_at == null && $syll->status == 'Approved by Chair')
     <div class="flex justify-center">
         <div class="bg-pink py-2 px-3 text-white rounded shadow-lg hover:scale-105 transition ease-in-out mx-2">
             <div class="flex items-center space-x-2 ">
@@ -270,14 +270,12 @@
                 </tr>
                 <!-- Data Row -->
                 <tr>
-                    <td class="border border-gray-400 px-2 py-1">01</td>
-                    <td class="border border-gray-400 px-2 py-1">03.01.23</td>
-                    <td class="border border-gray-400 px-2 py-1">1 of 2</td>
+                    <td class="border border-gray-400 px-2 py-1">{{ $syll->version }}</td>
+                    <td class="border border-gray-400 px-2 py-1">{{ \Carbon\Carbon::parse($syll->effectivity_date)->format('m.d.y') }}</td>
+                    <td class="border border-gray-400 px-2 py-1">#</td>
                 </tr>
             </tbody>
         </table>
- 
-
 
         </div>
     </div>

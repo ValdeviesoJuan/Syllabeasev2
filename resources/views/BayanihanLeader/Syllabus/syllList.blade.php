@@ -1,10 +1,8 @@
-<!-- @-extends('layouts.blNav') -->
 @extends('layouts.blSidebar')
 @section('content')
 @include('layouts.modal')
 <!DOCTYPE html>
 <html lang="en">
-    
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,28 +10,22 @@
         <title>SyllabEase</title>
         @vite('resources/css/app.css')
         <style>
-        .bg svg {
-            transform: scaleY(-1);
-            min-width: '1880'
-        }
-
-        body {
-            background-image: url("{{ asset('assets/Wave.png') }}");
-            background-repeat: no-repeat;
-            background-position: top;
-            background-attachment: fixed;
-            background-size: contain;
-        } 
-        body{
-            background-color: #eaeaea;
-        }
-    </style>
-        <style>
             .bg svg {
                 transform: scaleY(-1);
                 min-width: '1880'
             }
-
+            body {
+                background-image: url("{{ asset('assets/Wave.png') }}");
+                background-repeat: no-repeat;
+                background-position: top;
+                background-attachment: fixed;
+                background-size: contain;
+            } 
+            body{
+                background-color: #eaeaea;
+            }
+        </style>
+        <style>
             body {
                 background-color: #EEEEEE;
             }
@@ -100,8 +92,6 @@
             </div>
         </span>
         <livewire:b-l-syllabus-table />
-    </div>
-    </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

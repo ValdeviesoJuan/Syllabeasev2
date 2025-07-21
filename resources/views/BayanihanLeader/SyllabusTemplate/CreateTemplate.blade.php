@@ -132,7 +132,7 @@
 
           <!-- Default template card -->
           <div class="bg-white rounded-lg shadow-md p-4 relative max-w-xl mx-auto">
-              <div class="flex items-center mb-2">
+              <div class="flex items-center mb-2 card-header" style="min-height:64px;">
                   <label class="inline-flex items-center mr-2">
                       <input type="radio" name="template" value="template0" class="form-radio text-green">
                   </label>
@@ -193,6 +193,9 @@
                 previewEl.src       = canvas.toDataURL('image/png');
             }
 
+            // Active template state (persisted in localStorage)
+            let activeTemplateIdx = parseInt(localStorage.getItem('activeTemplateIdx') || '0', 10);
+
             /* 2. Render saved templates ------------------------------------------------ */
             const list = document.querySelector('#template-list');
 
@@ -203,12 +206,12 @@
                 saved.forEach((tpl, i) => {
                     const card = document.createElement('div');
                     card.dataset.tpl = i;
-                    card.className   =
-                    "bg-white rounded-lg shadow-md p-4 relative max-w-xl mx-auto mt-6";
+                    card.className = "bg-white rounded-lg shadow-md p-4 relative max-w-xl mx-auto mt-6";
+                    // Radio value is 'template' + (i+1) for consistency
                     card.innerHTML = `
-                    <div class="flex items-center mb-2">
+                    <div class="flex items-center mb-2 card-header" style="min-height:64px;">
                         <label class="inline-flex items-center mr-2">
-                            <input type="radio" name="template" value="${i}"
+                            <input type="radio" name="template" value="template${i+1}"
                                     class="form-radio text-green">
                         </label>
                         <p class="flex-1 text-center text-blue-600 text-lg font-semibold">
@@ -232,8 +235,64 @@
                     </div>`;
                     list.appendChild(card);
                 });
+
+                // Set active radio and highlight
+                setActiveTemplateUI();
             }
             loadSaved();
+
+            // Set active template UI
+            function setActiveTemplateUI() {
+                // Default card
+                const defaultRadio = list.querySelector('input[name="template"][value="template0"]');
+                const defaultCard = list.querySelector('input[name="template"][value="template0"]')?.closest('.bg-white');
+                if (defaultRadio) {
+                    defaultRadio.checked = activeTemplateIdx === 0;
+                    if (defaultCard) {
+                        if (activeTemplateIdx === 0) {
+                            defaultCard.classList.add('ring-2', 'ring-blue-500');
+                        } else {
+                            defaultCard.classList.remove('ring-2', 'ring-blue-500');
+                        }
+                    }
+                }
+                // Saved cards
+                list.querySelectorAll('[data-tpl]').forEach(card => {
+                    const idx = +card.dataset.tpl;
+                    const radio = card.querySelector('input[name="template"]');
+                    // activeTemplateIdx === idx+1 means radio value is 'template'+(idx+1)
+                    radio.checked = activeTemplateIdx === idx + 1;
+                    if (activeTemplateIdx === idx + 1) {
+                        card.classList.add('ring-2', 'ring-blue-500');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-blue-500');
+                    }
+                });
+            }
+
+            // Listen for radio changes
+            list.addEventListener('change', e => {
+                if (e.target.name === 'template') {
+                    if (e.target.value === 'template0') {
+                        activeTemplateIdx = 0;
+                        localStorage.setItem('activeTemplateIdx', activeTemplateIdx);
+                        localStorage.setItem('activeTemplateData', JSON.stringify({type: 'default'}));
+                    } else {
+                        // Saved templates: value is 'template'+(idx+1)
+                        const idx = parseInt(e.target.value.replace('template', ''), 10) - 1;
+                        activeTemplateIdx = idx + 1;
+                        localStorage.setItem('activeTemplateIdx', activeTemplateIdx);
+                        const saved = JSON.parse(localStorage.getItem('templates') || '[]');
+                        if (saved[idx]) {
+                            localStorage.setItem('activeTemplateData', JSON.stringify(saved[idx]));
+                        }
+                    }
+                    setActiveTemplateUI();
+                }
+                if (!localStorage.getItem('activeTemplateData')) {
+                    localStorage.setItem('activeTemplateData', JSON.stringify({type: 'default'}));
+                }
+            });
 
             /* 3. Build / reuse the View modal ----------------------------------------- */
             let modalWrap = null;

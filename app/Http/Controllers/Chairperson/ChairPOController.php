@@ -21,28 +21,31 @@ class ChairPOController extends Controller
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
             ->firstOrFail();
 
-        $department_id = $chairperson->entity_id;
+        if ($chairperson) {
+            $department_id = $chairperson->entity_id;
+            $department_name = UserRole::where('user_roles.user_id', '=', Auth::id())
+                ->join('departments', 'user_roles.entity_id', '=', 'departments.department_id')
+                ->where('entity_type', '=', 'Department')
+                ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                ->select('departments.department_name')
+                ->first();
 
-        $department_name = UserRole::where('user_roles.user_id', '=', Auth::id())
-            ->join('departments', 'user_roles.entity_id', '=', 'departments.department_id')
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->select('departments.department_name')
-            ->first()
-            ->department_name;
+            $today = now()->toDateString();
 
-        $today = now()->toDateString();
-
-        $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
-            ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.entity_type', '=', 'Department')
-            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            // ->where('user_roles.start_validity', '<=', $today)
-            // ->where('user_roles.end_validity', '>=', $today)
-            ->where('user_roles.user_id', Auth::id())
-            ->orderBy('program_outcomes.po_letter', 'asc')
-            ->select('departments.*', 'program_outcomes.*')
-            ->get();
+            $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
+                ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
+                ->where('user_roles.entity_type', '=', 'Department')
+                ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                // ->where('user_roles.start_validity', '<=', $today)
+                // ->where('user_roles.end_validity', '>=', $today)
+                ->where('user_roles.user_id', Auth::id())
+                ->orderBy('program_outcomes.po_letter', 'asc')
+                ->select('departments.*', 'program_outcomes.*')
+                ->get();
+        } else {
+            $department_name = "";
+            $programOutcomes = [];
+        }
 
         $user = Auth::user(); 
         $notifications = $user->notifications;

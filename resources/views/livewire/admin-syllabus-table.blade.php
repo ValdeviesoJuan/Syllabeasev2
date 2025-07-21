@@ -107,14 +107,26 @@
                 <td>{{$syllabus->dean_approved_at}}</td>
                 <td>Version {{$syllabus->version}}</td>
                 <td class="mr-[200px]">
-                    <button class="
-                        {{ $syllabus->status === 'Pending' ? 'w-[80%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
-                        {{ $syllabus->status === 'Approved by Chair' ? 'w-[80%]  bg-emerald-300 text-emerald-600 border-2 border-emerald-500  rounded-lg' : '' }}
-                        {{ $syllabus->status === 'Returned by Chair' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}
-                        {{ $syllabus->status === 'Approved by Dean' ? 'w-[80%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                        {{ $syllabus->status === 'Returned by Dean' ? 'w-[80%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
-                        {{$syllabus->status}}
-                    </button>
+                    @php
+                        $status = $syllabus->status;
+                        $statusStyles = [
+                            'Draft' => 'background-color: #D1D5DB; color: #4B5563; border-color: #9CA3AF;', // gray
+                            'Pending Chair Review' => 'background-color: #FEF3C7; color: #D97706; border-color: #FCD34D;', // amber
+                            'Returned by Chair' => 'background-color: #FECACA; color: #E11D48; border-color: #F87171;', // rose
+                            'Requires Revision (Chair)' => 'background-color: #FEE2E2; color: #EF4444; border-color: #FCA5A5;', // red
+                            'Revised for Chair' => 'background-color: #DBEAFE; color: #3B82F6; border-color: #93C5FD;', // blue
+                            'Approved by Chair' => 'background-color: #D1FAE5; color: #059669; border-color: #6EE7B7;', // green
+                            'Returned by Dean' => 'background-color: #FDA4AF; color: #BE123C; border-color: #FB7185;', // darker rose
+                            'Requires Revision (Dean)' => 'background-color: #FCE7F3; color: #EC4899; border-color: #F9A8D4;', // pink
+                            'Revised for Dean' => 'background-color: #BFDBFE; color: #2563EB; border-color: #93C5FD;', // blue
+                            'Approved by Dean' => 'background-color: #A7F3D0; color: #047857; border-color: #6EE7B7;', // emerald
+                        ];
+                        $style = $statusStyles[$status] ?? 'background-color: #F3F4F6; color: #6B7280; border-color: #D1D5DB;';
+                    @endphp
+
+                    <div class="w-full text-center px-1 py-1 border-2 rounded-lg" style="{{ $style }}">
+                        {{ $syllabus->status }}
+                    </div>
                 </td>
                 <td>
                     <div>

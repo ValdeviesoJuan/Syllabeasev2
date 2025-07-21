@@ -20,13 +20,11 @@ class DeanDeadlineController extends Controller
     public function deadline()
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-
-        $dean = UserRole::where('user_id', Auth::id())
+        $college_id = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->firstOrFail();
-
-        $college_id = $dean->entity_id;
+            ->select('user_roles.entity_id')
+            ->first();
 
         if ($college_id) {
             $deadlines = Deadline::where('deadlines.college_id', $college_id)->get();
@@ -36,6 +34,7 @@ class DeanDeadlineController extends Controller
 
         $user = Auth::user(); 
         $notifications = $user->notifications;
+        
         return view('Dean.Deadline.dlList', compact('notifications', 'deadlines'));
     }
     public function createDeadline()

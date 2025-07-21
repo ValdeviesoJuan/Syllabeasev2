@@ -26,6 +26,7 @@ class BLSyllabusTable extends Component
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('bayanihan_groups.bg_id')
             ->get();
+            
             if ($myGroup) {
                 $myGroupBgIds = $myGroup->pluck('bg_id')->toArray();
                 $syllabi = BayanihanGroup::join('syllabi', function ($join) {

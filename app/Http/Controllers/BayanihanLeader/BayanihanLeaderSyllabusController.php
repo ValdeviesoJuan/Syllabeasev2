@@ -48,10 +48,6 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('departments.department_id')
             ->first();
 
-        $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-            ->select('syllabus_instructors.*', 'syllabi.*')
-            ->get();
-
         if ($myDepartment) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
@@ -72,16 +68,11 @@ class BayanihanLeaderSyllabusController extends Controller
         } else {
             $syllabus = [];
         }
-
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
             
         $user = Auth::user(); 
         $notifications = $user->notifications;
 
-        return view('BayanihanLeader.Syllabus.syllList', compact('notifications','syllabi', 'instructors', 'syllabus'));
+        return view('BayanihanLeader.Syllabus.syllList', compact('notifications', 'syllabus'));
     }
 
     public function viewSyllabus($syll_id)
@@ -92,7 +83,25 @@ class BayanihanLeaderSyllabusController extends Controller
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
-            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code', 'colleges.college_id')
+            ->first();
+
+        // Get chairperson of the department
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        // Get dean of the college
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
             ->first();
         
         $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
@@ -104,6 +113,7 @@ class BayanihanLeaderSyllabusController extends Controller
         $previousReviewForm = null;
         $previousChecklistItems = [];
         $previousChecklistSRF = collect();
+        $previousDeanFeedback = [];
 
         if ($previousSyllabus) {
             $previousStatus = $previousSyllabus->status;
@@ -119,6 +129,8 @@ class BayanihanLeaderSyllabusController extends Controller
                     $previousChecklistSRF = $previousChecklistItems->keyBy('srf_no');
                 }
                 
+            } else if ($previousStatus === "Returned by Dean") {
+                $previousDeanFeedback = SyllabusDeanFeedback::where('syll_id', $previousSyllabus->syll_id)->first();
             }
         }
 
@@ -136,12 +148,8 @@ class BayanihanLeaderSyllabusController extends Controller
         $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
             ->get();
 
-        // foreach ($courseOutcomes as $courseOutcome) {
-        //     $copos = SyllabusCoPO::where('syll_co_id', '=', $courseOutcome->syll_co_id)
-        //         ->get();
-        // }
         $copos = SyllabusCoPO::where('syll_id', '=', $syll_id)
-        ->get();
+            ->get();
 
         $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
             ->select('users.*', 'syllabus_instructors.*')
@@ -192,12 +200,7 @@ class BayanihanLeaderSyllabusController extends Controller
         for ($i = 1; $i <= 19; $i++) {
             ${"srf{$i}"} = null;
         }
-
-        $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
-            ->where('syllabus_review_forms.syll_id', $syll_id)
-            ->select('srf_checklists.*', 'syllabus_review_forms.*')
-            ->first();
-
+        
         for ($i = 1; $i <= 19; $i++) {
             ${"srf{$i}"} = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
                 ->where('syll_id', $syll_id)
@@ -205,13 +208,26 @@ class BayanihanLeaderSyllabusController extends Controller
                 ->first();
         }
 
+        $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->where('syllabus_review_forms.syll_id', $syll_id)
+            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->first();
+
+
         $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->select('syllabi.*')
             ->get();
+        
+        $isLatest = Syllabus::where('bg_id', $syll->bg_id)
+            ->orderByRaw('CAST(version AS UNSIGNED) DESC')
+            ->value('syll_id') == $syll->syll_id;
+
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
 
         return view('BayanihanLeader.Syllabus.syllView', compact(
             'syll',
+            'chair',
+            'dean',
             'instructors',
             'syll_id',
             'instructors',
@@ -251,7 +267,9 @@ class BayanihanLeaderSyllabusController extends Controller
             'previousStatus',
             'previousReviewForm',
             'previousChecklistItems',
-            'previousChecklistSRF'
+            'previousChecklistSRF',
+            'previousDeanFeedback',
+            'isLatest'
         ))->with('success', 'Switched to Edit Mode');
     }
     public function commentSyllabus($syll_id)
@@ -426,7 +444,8 @@ class BayanihanLeaderSyllabusController extends Controller
 
         $syllabus->syll_dean = ($dean->prefix ? $dean->prefix . ' ' : '') . $dean->firstname . ' ' . $dean->lastname . ' ' . $dean->suffix;
         $syllabus->syll_chair = ($chair->prefix ? $chair->prefix . ' ' : '') . $chair->firstname . ' ' . $chair->lastname . ' ' . $chair->suffix;
-
+        
+        $syllabus->status = "Draft";
         $syllabus->version = 1;
         $syllabus->save();
 
@@ -457,6 +476,7 @@ class BayanihanLeaderSyllabusController extends Controller
         //add: Only show bg groups that they leads
         $instructors = SyllabusInstructor::all();
         $users = User::all();
+
         $user = Auth::user(); 
         $notifications = $user->notifications;
         
@@ -509,8 +529,19 @@ class BayanihanLeaderSyllabusController extends Controller
         if (!$syllabus) {
             return redirect()->route('bayanihanleader.home')->with('error', 'Syllabus not found.');
         }
+
         $syllabus->chair_submitted_at = Carbon::now();
-        $syllabus->status = 'Pending';
+
+        if ($syllabus->status == "Draft") {
+            $syllabus->status = 'Pending Chair Review';
+
+        } else if ($syllabus->status == "Requires Revision (Chair)") {
+            $syllabus->status = 'Revised for Chair';
+
+        } else if ($syllabus->status == "Requires Revision (Dean)") {
+            $syllabus->status = 'Revised for Dean';
+        }
+
         $syllabus->save();
 
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
@@ -560,8 +591,9 @@ class BayanihanLeaderSyllabusController extends Controller
     public function viewReviewForm($syll_id)
     {
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'syllabus_review_forms.syll_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
-            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->select('srf_checklists.*', 'syllabus_review_forms.*', 'syllabi.version')
             ->first();
 
         $srfResults = [];
@@ -628,7 +660,17 @@ class BayanihanLeaderSyllabusController extends Controller
         
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
-            $newSyllabus->status = null;
+
+            if ($oldSyllabus->status == "Returned by Chair") {
+                $newSyllabus->status = "Requires Revision (Chair)";
+
+            } else if ($oldSyllabus->status == "Returned by Dean") {
+                $newSyllabus->status = "Requires Revision (Dean)";
+
+            } else {
+                $newSyllabus->status = null;
+            }
+
             $newSyllabus->chair_submitted_at = null;
             $newSyllabus->dean_submitted_at = null;
             $newSyllabus->chair_rejected_at = null;
@@ -699,7 +741,7 @@ class BayanihanLeaderSyllabusController extends Controller
         
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
-            $newSyllabus->status = null;
+            $newSyllabus->status = "Draft";
             $newSyllabus->chair_submitted_at = null;
             $newSyllabus->dean_submitted_at = null;
             $newSyllabus->chair_rejected_at = null;

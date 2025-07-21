@@ -19,21 +19,26 @@ class ChairPOEController extends Controller
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
             ->firstOrFail();
+        
+        if ($chairperson) {
+            $department_id = $chairperson->entity_id;
 
-        $department_id = $chairperson->entity_id;
+            $today = now()->toDateString();
 
-        $today = now()->toDateString();
-
-        $poes = POE::join('departments', 'poes.department_id', '=', 'departments.department_id')
-            ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.entity_type', '=', 'Department')
-            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            // ->where('user_roles.start_validity', '<=', $today)
-            // ->where('user_roles.end_validity', '>=', $today)
-            ->where('user_roles.user_id', Auth::user()->id)
-            ->orderBy('poes.poe_code', 'asc')
-            ->select('departments.*', 'poes.*')
-            ->get();
+            $poes = POE::join('departments', 'poes.department_id', '=', 'departments.department_id')
+                ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
+                ->where('user_roles.entity_type', '=', 'Department')
+                ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                // ->where('user_roles.start_validity', '<=', $today)
+                // ->where('user_roles.end_validity', '>=', $today)
+                ->where('user_roles.user_id', Auth::user()->id)
+                ->orderBy('poes.poe_code', 'asc')
+                ->select('departments.*', 'poes.*')
+                ->get();
+        } else {
+            $department_id = '';
+            $poes = [];
+        }
 
         $user = Auth::user();
         $notifications = $user->notifications;

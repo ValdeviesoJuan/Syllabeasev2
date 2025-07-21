@@ -10,8 +10,9 @@ class DocController extends Controller
     public function downloadReviewForm($syll_id)
     {
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'syllabus_review_forms.syll_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
-            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->select('srf_checklists.*', 'syllabus_review_forms.*', 'syllabi.version')
             ->first();
 
         $srfResults = [];
@@ -71,13 +72,16 @@ class DocController extends Controller
         $date = date('Y-m-d');
         $document = new \PhpOffice\PhpWord\TemplateProcessor('doc/ReviewFormTemplate.docx');
 
+        $formattedDate = date('m.d.y', strtotime($data['reviewForm']->effectivity_date));
+        $document->setValue('effectivity_date', $formattedDate);
+        $document->setValue('version', $data['reviewForm']->version);
+
         $document->setValue('srf_course_code', $data['reviewForm']->srf_course_code);
         $document->setValue('srf_title', $data['reviewForm']->srf_title);
         $document->setValue('srf_sem_year', $data['reviewForm']->srf_sem_year);
         $document->setValue('srf_faculty', $data['reviewForm']->srf_faculty);
         $document->setValue('srf_date', $data['reviewForm']->srf_date);
         $document->setValue('srf_reviewed_by', $data['reviewForm']->srf_reviewed_by);
-
 
         $document->setValue('srf_yes_no_1', $data['srf1']->srf_yes_no);
         $document->setValue('srf_remarks_1', $data['srf1']->srf_remarks);
@@ -88,6 +92,5 @@ class DocController extends Controller
         $name = 'Review Form' . '.docx';
         $document->saveAs(storage_path() . "/word/{$name}");
         return response()->download(storage_path() . "/word/{$name}");
-
     }
 }

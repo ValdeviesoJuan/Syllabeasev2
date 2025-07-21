@@ -9,6 +9,7 @@ use App\Models\Syllabus;
 use App\Models\SyllabusCotCoM;
 use App\Models\SyllabusCourseOutcome;
 use App\Models\SyllabusCourseOutlineMidterm;
+use App\Models\SyllabusCourseOutlinesFinal;
 use App\Models\Tos;
 use App\Models\TosRows;
 use App\Models\User;
@@ -62,11 +63,29 @@ class BayanihanLeaderTOSController extends Controller
             ->select('syllabi.*', 'courses.*', 'bayanihan_groups.*')
             ->where('syllabi.syll_id', $syll_id)
             ->first();
-            
+
+        $midtermTopics = SyllabusCourseOutlineMidterm::where('syll_id', $syll_id)
+            ->pluck('syll_topics')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $finalTopics = SyllabusCourseOutlinesFinal::where('syll_id', $syll_id)
+            ->pluck('syll_topics')
+            ->filter()
+            ->unique()
+            ->values();
+
         $user = Auth::user();
         $notifications = $user->notifications;
 
-        return view('bayanihanleader.tos.tosCreate', compact('notifications', 'syllabus', 'syll_id'));
+        return view('bayanihanleader.tos.tosCreate', compact(
+            'notifications',
+            'syllabus',
+            'syll_id',
+            'midtermTopics',
+            'finalTopics'
+        ));
     }
     public function viewTos($tos_id)
     {
@@ -152,14 +171,33 @@ class BayanihanLeaderTOSController extends Controller
             ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->select('syllabi.*', 'courses.*', 'bayanihan_groups.*')
             ->first();
-        $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+
+        $tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')
+            ->first();
+
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
             ->get();
+
+        // ✅ Extract midterm and final topics
+        $midtermTopics = [];
+        $finalTopics = [];
+        foreach ($tos_rows as $row) {
+            if (stripos($row->tos_r_topic, 'midterm') !== false) {
+                $midtermTopics[] = $row->tos_r_topic;
+            } elseif (stripos($row->tos_r_topic, 'final') !== false) {
+                $finalTopics[] = $row->tos_r_topic;
+            }
+        }
+
+        // ✅ Remove duplicates
+        $midtermTopics = array_unique($midtermTopics);
+        $finalTopics = array_unique($finalTopics);
 
         $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
@@ -168,6 +206,7 @@ class BayanihanLeaderTOSController extends Controller
             ->where('tos.tos_id', '=', $tos_id)
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
+
         $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
             ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
@@ -175,11 +214,22 @@ class BayanihanLeaderTOSController extends Controller
             ->where('tos.tos_id', '=', $tos_id)
             ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
-            
+
         $user = Auth::user();
         $notifications = $user->notifications;
 
-        return view('bayanihanleader.tos.tosEdit', compact('notifications', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'syllabus', 'syll_id'));
+        return view('bayanihanleader.tos.tosEdit', compact(
+            'notifications',
+            'tos_rows',
+            'tos',
+            'tos_id',
+            'bMembers',
+            'bLeaders',
+            'syllabus',
+            'syll_id',
+            'midtermTopics',
+            'finalTopics'
+        ));
     }
 
     public function commentTos($tos_id)
@@ -227,6 +277,18 @@ class BayanihanLeaderTOSController extends Controller
     }
     public function storeTos(Request $request, $syll_id)
     {
+        $syllabus = Syllabus::where('syll_id', $syll_id)->first();
+
+        $request->validate([
+            'tos_term' => 'required',
+            'tos_no_items' => 'required|integer',
+            'col_1_per' => 'required|numeric',
+            'col_2_per' => 'required|numeric',
+            'col_3_per' => 'required|numeric',
+            'col_4_per' => 'required|numeric',
+            'tos_cpys' => 'required',
+        ]);
+
         $existingMTos = Tos::where('syll_id',  $syll_id)->where('tos_term', 'Midterm')->first();
         $existingFTos = Tos::where('syll_id',  $syll_id)->where('tos_term', 'Final')->first();
 
@@ -238,20 +300,10 @@ class BayanihanLeaderTOSController extends Controller
             return redirect()->route('bayanihanleader.tos')->with('error', 'Midterm and Final TOS already exist for this Syllabus.');
         }
 
-        $syllabus = Syllabus::where('syll_id', $syll_id)->first();
-        $request->validate([
-            'tos_term' => 'required',
-            'tos_no_items' => 'required|integer',
-            'col_1_per' => 'required|numeric',
-            'col_2_per' => 'required|numeric',
-            'col_3_per' => 'required|numeric',
-            'col_4_per' => 'required|numeric',
-            'tos_cpys' => 'required',
-        ]);
-
         $tos = new Tos();
         $tos->syll_id = $syll_id;
         $tos->user_id = Auth::user()->id;
+        $tos->effectivity_date = $syllabus->effectivity_date;
         $tos->tos_term = $request->tos_term;
         $tos->tos_no_items = $request->tos_no_items;
         $tos->col_1_per = $request->col_1_per;
@@ -266,11 +318,14 @@ class BayanihanLeaderTOSController extends Controller
         $tos->save();
         $tableName = $request->tos_term === 'Final' ? 'syllabus_course_outlines_finals' : 'syllabus_course_outlines_midterms';
 
-        $syllabus = Syllabus::join($tableName, $tableName . '.syll_id', '=', 'syllabi.syll_id')
-            ->where('syllabi.syll_id', $syll_id)
-            ->select('syllabi.*', $tableName . '.*')
-            ->get();
+        $selectedTopics = $request->input('selected_topics', []);
 
+        $outlineModel = $request->tos_term === 'Final' ? SyllabusCourseOutlinesFinal::class : SyllabusCourseOutlineMidterm::class;
+
+        $selectedEntries = $outlineModel::where('syll_id', $syll_id)
+            ->whereIn('syll_topics', $selectedTopics)
+            ->get();
+        
         if ($tos) {
             // Calculate the values based on the percentages
             $col1Exp = $tos->tos_no_items * ($tos->col_1_per / 100);
@@ -308,15 +363,15 @@ class BayanihanLeaderTOSController extends Controller
 
         $totalNoHours = 0;
 
-        if ($syllabus->isNotEmpty()) {
+        if ($syllabus) {
             // Calculate the total syll_allotted_time
-            $totalNoHours = $syllabus->sum('syll_allotted_hour');
+            $totalNoHours = $selectedEntries->sum('syll_allotted_hour');
 
-            foreach ($syllabus as $co) {
+            foreach ($selectedEntries as $co) {
                 $tos_row = new TosRows();
                 $tos_row->tos_id = $tos->tos_id;
                 $tos_row->tos_r_topic = $co->syll_topics;
-                $tos_row->tos_r_no_hours = $co->syll_allotted_hour;
+                $tos_row->tos_r_no_hours = $co->syll_allotted_hour ?? 0;
                 $tos_row->save();
             }
 
@@ -517,15 +572,15 @@ class BayanihanLeaderTOSController extends Controller
 
         $totalNoHours = 0;
 
-        if ($syllabus->isNotEmpty()) {
+        if ($syllabus) {
             // Calculate the total syll_allotted_time
-            $totalNoHours = $syllabus->sum('syll_allotted_hour');
+            $totalNoHours = $selectedEntries->sum('syll_allotted_hour');
 
-            foreach ($syllabus as $co) {
+            foreach ($selectedEntries as $co) {
                 $tos_row = new TosRows();
                 $tos_row->tos_id = $tos->tos_id;
                 $tos_row->tos_r_topic = $co->syll_topics;
-                $tos_row->tos_r_no_hours = $co->syll_allotted_hour;
+                $tos_row->tos_r_no_hours = $co->syll_allotted_hour ?? 0;
                 $tos_row->save();
             }
 

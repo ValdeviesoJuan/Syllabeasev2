@@ -95,7 +95,7 @@
                     <td class="px-6 py-4">Version {{ $tos->tos_version }}</td>
                     <td class="px-6 py-4">
                         <button class="
-                            {{ $tos->status === 'Approved by Chair' ? 'w-[80%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}">
+                        {{ $tos->tos_status === 'Approved by Chair' ? 'w-[100%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}">
                             {{ $tos->tos_status }}
                         </button>
                     </td>

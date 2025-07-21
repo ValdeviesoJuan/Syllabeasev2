@@ -103,7 +103,8 @@
 </head>
 
 <body class="font-thin mt-14">
-    @if($syll->chair_submitted_at != null && $syll->status == 'Pending')
+    <!-- Pending Chair Review -->
+    @if($syll->chair_submitted_at != null && $syll->dean_submitted_at == null && $syll->chair_rejected_at == null)
     <div class="flex justify-end mr-28">
         <form action="{{ route('chairperson.reviewForm', $syll_id) }}" method="get">
             @csrf
@@ -124,7 +125,8 @@
             </button>
         </form>
     </div>
-    @elseif($syll->dean_submitted_at != null && $syll->status == 'Approved by Chair')
+    <!-- Approved by Chair -->
+    @elseif($syll->dean_submitted_at != null && $syll->chair_submitted != null && $syll->chair_rejected_at == null && $syll->status == 'Approved by Chair')
     <div class="flex flex-col border-2 border-green3 bg-white bg-opacity-75 w-[500px] rounded-lg h-[85px] mt-2 mx-auto">
         <div class="flex items-center justify-center">
             <div class="mx-1">
@@ -133,11 +135,12 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
+                <span class="font-semibold">Notice:</span> This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
             </div>
         </div>
     </div>
-    @elseif($syll->status == 'Returned by Chair')
+    <!-- Returned by Chair -->
+    @elseif($syll->chair_submitted != null && $syll->chair_rejected_at != null && $syll->status == 'Returned by Chair')
     <div class="flex flex-col border-2 border-green3 bg-white bg-opacity-75 w-[500px] rounded-lg h-[90px] mt-2 mx-auto">
         <div class="flex items-center justify-center">
             <div class="mx-1">
@@ -157,7 +160,8 @@
             </form>
         </div>
     </div>
-    @elseif($syll->dean_rejected_at != null && $syll->status == 'Returned by Dean')
+    <!-- Returned by Dean -->
+    @elseif($syll->dean_submitted_at != null && $syll->dean_rejected_at != null && $syll->status == 'Returned by Dean')
     <div class="flex flex-col border-2 border-blue3 bg-white bg-opacity-75 w-[500px] rounded-lg h-[110px] mt-2 mx-auto">
         <div class="flex items-center justify-center">
             <div class="mx-1">
@@ -190,77 +194,8 @@
         </div>
     </div>
     @endif
-    <!-- <div class="bg-green2 py-2 px-3 text-white rounded shadow-lg hover:scale-105 transition ease-in-out">
-                <form action="{{ route('chairperson.approveSyllabus', $syll_id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="flex items-center space-x-2 ">
-                        <svg fill="#31a858" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <style>
-                                    .cls-1 {
-                                        fill-rule: evenodd;
-                                    }
-                                </style>
-                            </defs>
-                            <path id="accept" class="cls-1" d="M1008,120a12,12,0,1,1,12-12A12,12,0,0,1,1008,120Zm0-22a10,10,0,1,0,10,10A10,10,0,0,0,1008,98Zm-0.08,14.333a0.819,0.819,0,0,1-.22.391,0.892,0.892,0,0,1-.72.259,0.913,0.913,0,0,1-.94-0.655l-2.82-2.818a0.9,0.9,0,0,1,1.27-1.271l2.18,2.184,4.46-7.907a1,1,0,0,1,1.38-.385,1.051,1.051,0,0,1,.36,1.417Z" transform="translate(-996 -96)" />
-                        </svg>
-                        <button type="submit" class="btn btn-primary text-green">Approve</button>
-
-                    </div>
-                </form>
-            </div> -->
-
-    <!-- <div class="bg-pink py-2 px-3 text-white rounded shadow-lg hover:scale-105 transition ease-in-out">
-                <div class="flex items-center space-x-2 ">
-                    <svg width="20px" height="20px" fill="#ff5d9b" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                        <g id="Layer_2" data-name="Layer 2">
-                            <g id="invisible_box" data-name="invisible box">
-                                <rect width="48" height="48" fill="none" />
-                            </g>
-                            <g id="icons_Q2" data-name="icons Q2">
-                                <path d="M24,2A22,22,0,1,0,46,24,21.9,21.9,0,0,0,24,2ZM6.1,21.9a18,18,0,0,1,29.1-12L9.9,35.2A18.1,18.1,0,0,1,6.1,21.9ZM26,41.9A18.2,18.2,0,0,1,12.7,38L38,12.8a17.6,17.6,0,0,1,3.9,13.3A18.1,18.1,0,0,1,26,41.9Z" />
-                            </g>
-                        </g>
-                    </svg>
-                    <button id="rejectButton" type="submit" class="btn btn-primary text-pink2">Reject</button>
-                </div>
-            </div> -->
-
-    <!-- Feedback modal
-            <div class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white w-[500px] h-[520px] rounded-lg shadow-lg feedback-modal">
-
-                <div class="mt-5">
-                    <div class="flex flex-row justify-between mx-[50px] mt-5">
-                        <div class="text-lg font-semibold">
-                            Give feedback
-                        </div>
-                        <button id="closeModalButton" class="hover:bg-gray3 p-1 rounded-full">
-                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z" fill="#454545" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="mx-[50px] text-gray2">
-                        Could you please provide more information on why the syllabus submission was rejected?
-                    </div>
-                    <form action="{{ route('chairperson.rejectSyllabus', $syll_id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="mx-[50px] mt-5 ">
-                            <textarea class="resize-none border border-blue  focus:border-blue w-[400px] rounded-lg p-2" name="syll_chair_feedback_text" id="syll_chair_feedback_text" rows="13"></textarea>
-                        </div>
-                        <div class="flex justify-end mr-[50px]">
-                            <button type="submit" class="bg-blue px-3 py-2 rounded-lg text-white hover:bg-blue3">Submit</button>
-                        </div>
-                        </form>
-                </div>
-                
-            </div>
-
-        </div> -->
- <!-- OUTER CONTAINER -->
-    <div class="mx-auto mt-6 w-11/12 border-[1px] border-black bg-white font-serif text-sm p-4">
+    <!-- OUTER CONTAINER -->
+    <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
     <!-- HEADER SECTION -->
     <br>
     <div class="flex justify-center items-start mb-4">
@@ -310,9 +245,9 @@
                 </tr>
                 <!-- Data Row -->
                 <tr>
-                    <td class="border border-gray-400 px-2 py-1">01</td>
-                    <td class="border border-gray-400 px-2 py-1">03.01.23</td>
-                    <td class="border border-gray-400 px-2 py-1">1 of 2</td>
+                    <td class="border border-gray-400 px-2 py-1">{{ $syll->version }}</td>
+                    <td class="border border-gray-400 px-2 py-1">{{ \Carbon\Carbon::parse($syll->effectivity_date)->format('m.d.y') }}</td>
+                    <td class="border border-gray-400 px-2 py-1">#</td>
                 </tr>
             </tbody>
         </table>

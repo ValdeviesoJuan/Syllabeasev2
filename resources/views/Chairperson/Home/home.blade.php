@@ -30,23 +30,6 @@
             background-size: contain; 
             background-color: #EEEEEE;
         }
-
-        /* body {
-            background-color: #e8e9e9;
-        } 
-
-         table,
-        tbody {
-            border: 1px solid;
-            border-collapse: collapse;
-            padding: 4px;
-            border-color: black;
-        } 
-
-         th {
-            background-color: #2468d2;
-            color: white;
-        } 
     </style>
     <script>
         //JS for Searchable Select
@@ -86,36 +69,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </body>
 

@@ -43,17 +43,11 @@ class DeanSyllabusController extends Controller
     public function index()
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-
         $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->firstOrFail();
-
+            ->first();
         $college_id = $dean->entity_id;
-
-        $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-            ->select('syllabus_instructors.*', 'syllabi.*')
-            ->get();
         
         if ($college_id) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
@@ -65,27 +59,30 @@ class DeanSyllabusController extends Controller
                 ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
                 ->get();
+            
+            $ApprovedSyllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
+                ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
+                ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
+                ->where('syllabi.department_id', '=', $college_id)
+                ->where('syllabi.status', '=', 'Chair Approved')
+                ->whereNotNull('syllabi.dean_submitted_at')
+                ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
+                ->get();
+
+            $RejectedSyllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
+                ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
+                ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
+                ->where('syllabi.department_id', '=', $college_id)
+                ->where('syllabi.status', '=', 'Chair Rejected')
+                ->whereNotNull('syllabi.chair_rejected_at')
+                ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
+                ->get();
+                
         } else {
             $syllabus = [];
+            $ApprovedSyllabus = [];
+            $RejectedSyllabus = [];
         }
-
-        $ApprovedSyllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-            ->where('syllabi.department_id', '=', $college_id)
-            ->where('syllabi.status', '=', 'Chair Approved')
-            ->whereNotNull('syllabi.dean_submitted_at')
-            ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-            ->get();
-
-        $RejectedSyllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-            ->where('syllabi.department_id', '=', $college_id)
-            ->where('syllabi.status', '=', 'Chair Rejected')
-            ->whereNotNull('syllabi.chair_rejected_at')
-            ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-            ->get();
 
         $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
             ->select('users.*', 'syllabus_instructors.*')
