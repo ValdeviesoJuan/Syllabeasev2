@@ -195,11 +195,13 @@
                     View Syllabus Review Form
                 </a>
             </div>
-            <div class="">
-                <a href="{{ route('bayanihanleader.replicateSyllabus', $syll_id) }}" method="post" class="m-2 p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">
-                    Replicate Syllabus
-                </a>
-            </div>
+            @if($isLatest)
+                <div class="">
+                    <a href="{{ route('bayanihanleader.replicateSyllabus', $syll_id) }}" method="post" class="m-2 p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">
+                        Replicate Syllabus
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
     <!-- Returned by Dean  -->
@@ -216,12 +218,15 @@
                 <span class="font-semibold">Notice:</span> This syllabus has been returned by the Dean for revisions.
             </div>
         </div>
+        
         <div class="flex mt-3 mx-auto">
             <div class="">
-                <button id="viewFeedback" type="submit" class="p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue">View Feedback</button>
-                <a href="{{ route('bayanihanleader.replicateSyllabus', $syll_id) }}" method="post" class="m-2 p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">
-                    Replicate Syllabus
-                </a>
+                <button id="viewFeedback" type="submit" class="p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">View Feedback</button>
+                @if($isLatest)
+                    <a href="{{ route('bayanihanleader.replicateSyllabus', $syll_id) }}" method="post" class="m-2 p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">
+                        Replicate Syllabus
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -507,7 +512,7 @@
                 </div>
             @elseif($previousStatus === 'Returned by Dean')
                 <!-- Feedback by Dean Button -->
-                <button id="viewDeanFeedback" type="button" class="flex items-center ml-6 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded shadow-lg space-x-2 cursor-pointer">
+                <button id="viewDeanFeedback" type="button" class="flex items-center ml-6 text-white bg-blue hover:bg-blue-600 px-3 py-2 rounded shadow-lg space-x-2 cursor-pointer border border-blue">
                     View Dean Feedback
                 </button>
 
@@ -730,7 +735,8 @@
                                         {{ isset($srf4) && $srf4['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                         (showPrev && {{ isset($previousChecklistSRF[4]) && $previousChecklistSRF[4]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                 }"
-                                class="border-2 border-solid font-medium  text-start text-top px-4">
+                                class="border-2 border-solid font-medium  text-start text-top px-4"
+                            >
                                 Pre-requisite(s): {{$syll->course_pre_req}} <br>
                                 Co-requisite(s): {{$syll->course_co_req}}
                             </td>
@@ -742,7 +748,8 @@
                                         {{ isset($srf6) && $srf6['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                         (showPrev && {{ isset($previousChecklistSRF[6]) && $previousChecklistSRF[6]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                 }"
-                                class="items-start border-2 border-solid font-medium text-left px-4">
+                                class="items-start border-2 border-solid font-medium text-left px-4"
+                            >
                                 Instructor:
                                 @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
                                 @if ($loop->first)
@@ -780,7 +787,8 @@
                                         {{ isset($srf9) && $srf9['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                         (showPrev && {{ isset($previousChecklistSRF[9]) && $previousChecklistSRF[9]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                 }"
-                                class="items-start border-2 border-solid font-medium text-left px-4">
+                                class="items-start border-2 border-solid font-medium text-left px-4"
+                            >
                                 <span class="text-left font-bold">
                                     I. Course Description:</span><br>
                                 {{ $syll->syll_course_description }}
@@ -794,7 +802,8 @@
                                         {{ isset($srf11) && $srf11['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                         (showPrev && {{ isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                 }"
-                                class=" border-2 border-solid font-medium px-4 ">
+                                class=" border-2 border-solid font-medium px-4 "
+                            >
                                 <span class="text-left font-bold">
                                     II. Course Outcome:</span><br>
                                 <table class="m-10 mx-auto border-2 border-solid w-11/12">
@@ -1196,9 +1205,9 @@
                                 Approved by:
                             </div>
                             @if($syll->dean_approved_at != null && $dean->signature)
-                                <div class="flex justify-center mt-5">
-                                    <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
-                                </div>
+                            <div class="flex justify-center mt-5">
+                                <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
+                            </div>
                             @else
                             <div class="flex justify-center mt-20">
 

@@ -396,6 +396,9 @@ class PDFController extends Controller
         setlocale(LC_TIME, 'es');
         $document = new TemplateProcessor('doc/Tos-Template.docx');
 
+        $formattedDate = date('m.d.y', strtotime($data['tos']->effectivity_date));
+        $document->setValue('effectivity_date', $formattedDate);
+        $document->setValue('version', $data['tos']->tos_version);
         $document->setValue('tos_term', $data['tos']->tos_term);
         $document->setValue('course_code', $data['tos']->course_code);
         $document->setValue('course_title', $data['tos']->course_title);
@@ -631,6 +634,7 @@ class PDFController extends Controller
 
         $formattedDate = date('m.d.y', strtotime($data['syll']->effectivity_date));
         $document->setValue('effective_date', $formattedDate);
+        $document->setValue('version', $data['syll']->version);
         
         $document->setValue('college_description', $data['syll']->college_description);
         $document->setValue('department_name', $data['syll']->department_name);

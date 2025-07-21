@@ -89,6 +89,9 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             z-index: 1001;
         }
+        .force-full-red-border {
+            border: 3px solid red !important;
+        }
     </style>
             @livewireStyles
 
@@ -147,7 +150,7 @@
         </div>
         <div class="flex mt- mx-auto">
             <div class="">
-                <button id="viewFeedback" type="submit" class="p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue">View Feedback</button>
+                <button id="viewFeedback" type="submit" class="p-2 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue border border-blue">View Feedback</button>
             </div>
         </div>
     </div>
@@ -255,16 +258,32 @@
  
         </div>
     </div>
-    <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white">
+    <!-- SYLLABUS TABLE -->
+    <table x-data="{ showPrev: false }" class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white" 
+        x-init="
+            const toggle = document.getElementById('toggleRevisions');
+            toggle.addEventListener('change', () => showPrev = toggle.checked);"
+    >
         <!-- 1st Header -->
-        
         <tr>
-            <th colspan="2" class="font-medium border-2 border-solid px-4">
+            <th colspan="2" 
+                :class="{
+                    'force-full-red-border': 
+                        {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                        (showPrev && {{ isset($previousChecklistSRF[2]) && $previousChecklistSRF[2]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                }"
+                class="font-medium border-2 border-solid px-4">
                 <span class="font-bold">{{$syll->college_description}}</span><br>
                 {{$syll->department_name}}
             </th>
 
-            <th class="font-medium border-2 border-solid text-left px-4 w-2/6">
+            <th :class="{
+                    'force-full-red-border': 
+                        {{ isset($srf3) && $srf3['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                        (showPrev && {{ isset($previousChecklistSRF[3]) && $previousChecklistSRF[3]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                }"
+                class="font-medium border-2 border-solid text-left px-4 w-2/6"
+            >
                 <span class="font-bold underline underline-offset-4">Syllabus<br></span>
                 Course Title :<span class="font-bold">{{$syll->course_title}}<br></span>
                 Course Code: {{$syll->course_code}}<br>
@@ -273,7 +292,13 @@
         </tr>
         <!-- 2nd Header -->
         <tr class="">
-            <td class="border-2 border-solid font-medium  text-sm text-left px-4 text-justify align-top">
+            <td :class="{
+                    'force-full-red-border': 
+                        {{ isset($srf8) && $srf8['srf_yes_no'] === 'no' || isset($srf10) && $srf10['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                        (showPrev && {{ isset($previousChecklistSRF[8]) && $previousChecklistSRF[8]->srf_yes_no === 'no' || isset($previousChecklistSRF[10]) && $previousChecklistSRF[10]->srf_yes_no === 'no'? 'true' : 'false' }})
+                }"
+                class="border-2 border-solid font-medium text-sm text-left px-2 text-justify align-top"
+            >
                 <!-- VISION -->
                 <div class="mt-2 mb-8">
                     <span class="font-bold">USTP Vision<br><br></span>
@@ -355,12 +380,24 @@
             <td colspan="2" class="w-[10/12] align-top">
                 <table class="my-4 mx-2 ">
                     <tr class="">
-                        <td class="border-2 border-solid font-medium text-left px-4 w-1/2">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf5) && $srf5['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[5]) && $previousChecklistSRF[5]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium text-left px-4 w-1/2"
+                        >
                             Semester/Year: {{$syll->course_semester}} SY{{$syll->bg_school_year}}<br>
                             Class Schedule:{!! nl2br(e($syll->syll_class_schedule)) !!}<br>
                             Bldg./Rm. No. {{$syll->syll_bldg_rm}}
                         </td>
-                        <td class="border-2 border-solid font-medium  text-start text-top px-4">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf4) && $srf4['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[4]) && $previousChecklistSRF[4]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium  text-start text-top px-4"
+                        >
                             <div class="absolute right-[120px]">
                                 <livewire:header-comment-modal :syll_id="$syll->syll_id" />
                             </div>
@@ -370,7 +407,13 @@
                     </tr>
 
                     <tr>
-                        <td class="items-start border-2 border-solid font-medium text-left px-4">
+                        <td :class="{
+                                    'force-full-red-border': 
+                                        {{ isset($srf6) && $srf6['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                        (showPrev && {{ isset($previousChecklistSRF[6]) && $previousChecklistSRF[6]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                }"
+                            class="items-start border-2 border-solid font-medium text-left px-4"
+                        >
                             Instructor:
                             <!-- @foreach ($instructors[$syll->syll_id] ?? [] as $instructor)
                             <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
@@ -394,13 +437,25 @@
                             {{ $instructor->phone }}
                             @endforeach <br>
                         </td>
-                        <td class="border-2 border-solid font-medium text-left px-4">
+                        <td :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf7) && $srf7['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[7]) && $previousChecklistSRF[7]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium text-left px-4"
+                        >
                             Consultation Schedule: {!! nl2br(e($syll->syll_ins_consultation)) !!}<br>
                             Bldg rm no: {{$syll->syll_ins_bldg_rm}}
                         </td>
                     </tr>
                     <tr>
-                        <td colspan=2 class="items-start border-2 border-solid font-medium text-left px-4 ">
+                        <td colspan=2 :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf9) && $srf9['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[9]) && $previousChecklistSRF[9]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="items-start border-2 border-solid font-medium text-left px-4"
+                        >
                             <span class="text-left font-bold">
                                 I. Course Descripion:</span><br>
                             {{ $syll->syll_course_description }}
@@ -408,7 +463,13 @@
                     </tr>
                     <tr class="">
                         <!-- course_outcome table-->
-                        <td colspan=2 class=" border-2 border-solid font-medium px-4 ">
+                        <td colspan=2 :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf11) && $srf11['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class=" border-2 border-solid font-medium px-4 "
+                        >
                             <span class="text-left font-bold">
                                 II. Course Outcome:</span><br>
                             <table class="m-10 mx-auto border-2 border-solid w-11/12">
@@ -452,28 +513,63 @@
                                 III. Course Outline:</span><br>
                             <table class="m-5 mx-auto border-2 border-solid w-">
                                 <tr class="border-2 border-solid ">
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf13) && $srf13['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[13]) && $previousChecklistSRF[13]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Alloted Time
                                     </th>
                                     <th class="border-2 border-solid">
                                         Course Outcomes (C)
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Intended Learning Outcome (ILO)
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Topics
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf15) && $srf15['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[15]) && $previousChecklistSRF[15]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Suggested Readings
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf16) && $srf16['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[16]) && $previousChecklistSRF[16]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Teaching Learning Activities
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf17) && $srf17['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[17]) && $previousChecklistSRF[17]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Assessment Tasks/Tools
                                     </th>
-                                    <th class="border-2 border-solid">
+                                    <th :class="{
+                                            'force-full-red-border': 
+                                                {{ isset($srf19) && $srf19['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                                (showPrev && {{ isset($previousChecklistSRF[19]) && $previousChecklistSRF[19]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                        }"
+                                        class="border-2 border-solid">
                                         Grading Criteria
                                     </th>
                                     <th class="border-2 border-solid">
@@ -579,7 +675,12 @@
                     </tr>
                     <!-- course Requirements -->
                     <tr class="crq border-2">
-                        <td colspan="2" class="border-2 border-solid font-medium">
+                        <td colspan="2" :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf18) && $srf18['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[18]) && $previousChecklistSRF[18]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                            }"
+                            class="border-2 border-solid font-medium">
                             <span class="text-left font-bold">
                                 IV. Course Requirements:
                             </span><br>
@@ -588,80 +689,78 @@
                             </div>
                         </td>
                     </tr>
+                </table>
+                <div class="grid grid-cols-3 m-3">
+                    <div class="">
+                        <div class="flex justify-center">
+                            Prepared By:
+                        </div>
+                        @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
+                        <div>
+                            @if($syll->chair_submitted_at != null && $instructor->signature)
+                            <div class="flex justify-center mt-20">
+                                <img src="{{ asset('assets/signatures/' . $instructor->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                            </div>
+                            @else
+                            <div class="flex justify-center mt-20">
 
+                            </div>
+                            @endif
+                            <div class="flex justify-center font-semibold underline">
+                                {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
+                            </div>
+                            <div class="flex justify-center">
+                                Instructor
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div>
+                        <div class="flex justify-center">
+                            Checked and Recommended for Approval:
+                        </div>
+                        @if($syll->dean_submitted_at != null && $chair->signature)
+                        <div class="flex justify-center mt-5">
+                            <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
+                        </div>
+                        @else
+                        <div class="flex justify-center mt-20">
 
+                        </div>
+                        @endif
+                        <div class="flex justify-center font-semibold underline">
+                            {{ strtoupper($syll->syll_chair) }}
+                        </div>
+                        <div class="flex justify-center">
+                            Department Chair
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-center">
+                            Approved by:
+                        </div>
+                        @if($syll->dean_approved_at != null && $dean->signature)
+                        <div class="flex justify-center mt-5">
+                            <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
+                        </div>
+                        @else
+                        <div class="flex justify-center mt-20">
+
+                        </div>
+                        @endif
+                        <div class="flex justify-center font-semibold underline">
+                            {{ strtoupper($syll->syll_dean) }}
+                        </div>
+                        <div class="flex justify-center">
+                            Dean
+                        </div>
+                    </div>
+                </div>
+            </td>
         </tr>
-
     </table>
-
-    <div class="grid grid-cols-3 m-3">
-        <div class="">
-            <div class="flex justify-center">
-                Prepared By:
-            </div>
-            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
-            <div>
-                @if($syll->chair_submitted_at != null)
-                <div class="flex justify-center mt-20">
-                    sgd
-                </div>
-                @else
-                <div class="flex justify-center mt-20">
-
-                </div>
-                @endif
-                <div class="flex justify-center font-semibold underline">
-                    {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
-                </div>
-                <div class="flex justify-center">
-                    Instructor
-                </div>
-            </div>
-            @endforeach
-        </div>
-        <div>
-            <div class="flex justify-center">
-                Checked and Recommended for Approval:
-            </div>
-            @if($syll->dean_submitted_at != null)
-            <div class="flex justify-center mt-20">
-                sgd
-            </div>
-            @else
-            <div class="flex justify-center mt-20">
-
-            </div>
-            @endif
-            <div class="flex justify-center font-semibold underline">
-                {{ strtoupper($syll->syll_chair) }}
-            </div>
-            <div class="flex justify-center">
-                Chairperson, {{$syll->department_name}}
-            </div>
-        </div>
-        <div>
-            <div class="flex justify-center">
-                Approved by:
-            </div>
-            @if($syll->dean_approved_at != null)
-            <div class="flex justify-center mt-20">
-                sgd
-            </div>
-            @else
-            <div class="flex justify-center mt-20">
-
-            </div>
-            @endif
-            <div class="flex justify-center font-semibold underline">
-                {{ strtoupper($syll->syll_dean) }}
-            </div>
-            <div class="flex justify-center">
-                Dean, {{$syll->college_code}}
-            </div>
-        </div>
-    </div>
-    </td>
-    </table>
+</div>
+</body>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

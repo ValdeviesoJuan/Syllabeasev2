@@ -61,7 +61,7 @@ class BayanihanLeaderHomeController extends Controller
                 return $item->status === 'Approved by Dean';
             })->count();
             $pendingCount = $syllabus->filter(function ($item) {
-                return $item->status === 'Pending';
+                return $item->status === 'Pending Chair Review';
             })->count();
 
         } else {
