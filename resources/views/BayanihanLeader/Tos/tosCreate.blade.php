@@ -42,7 +42,7 @@
                     <div class="">
                         <div class="mb-3">
                             <label for="tos_term" class="flex">Term</label>
-                            <select name="tos_term" id="tos_term" class="border border-[#a8a29e] rounded w-[200px] p-2">
+                            <select name="tos_term" id="tos_term" class="border border-[#a8a29e] rounded w-[200px] p-2" onchange="toggleTopics()">
                                 <option value="Midterm">Midterm</option>
                                 <option value="Final">Final</option>
                             </select>
@@ -56,6 +56,30 @@
                         <div class="mb-3">
                             <label for="tos_no_items" class="flex" >Curricular Program/Year/Section:</label>
                                 <input type="text" name="tos_cpys" id="tos_cpys" class="border w-max border-[#a8a29e] rounded w-[400px] p-2" required>
+                        </div>
+                    </div>
+
+                    <div id="midtermTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Midterm Topics</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            @foreach($midtermTopics as $topic)
+                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
+                                    <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
+                                    <span class="text-sm text-gray-700">{{ $topic }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div id="finalTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6 hidden">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Final Topics</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            @foreach($finalTopics as $topic)
+                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
+                                    <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
+                                    <span class="text-sm text-gray-700">{{ $topic }}</span>
+                                </label>
+                            @endforeach
                         </div>
                     </div>
 
@@ -89,6 +113,25 @@
         </div>
     </div>
 </body>
+
+<script>
+    function toggleTopics() {
+        const term = document.getElementById('tos_term').value;
+        const midtermBox = document.getElementById('midtermTopicsBox');
+        const finalBox = document.getElementById('finalTopicsBox');
+
+        if (term === 'Midterm') {
+            midtermBox.classList.remove('hidden');
+            finalBox.classList.add('hidden');
+        } else if (term === 'Final') {
+            midtermBox.classList.add('hidden');
+            finalBox.classList.remove('hidden');
+        }
+    }
+
+    // Call on page load to reflect initial state
+    document.addEventListener('DOMContentLoaded', toggleTopics);
+</script>
 
 <script>
     const inputs = {
