@@ -14,14 +14,14 @@
         <!-- Left Panel -->
         <div class="relative w-[40%] flex items-center justify-center px-6 bg-white overflow-hidden">
 
-            <!-- Top Right fuckiign Smooth Side Blob -->
+            <!-- Top Right Smooth Side Blob -->
             <svg class="absolute top-0 right-0 z-0 pointer-events-none" width="360" height="260" viewBox="0 0 360 260"
                 fill="none" xmlns="http://www.w3.org/2000/svg" style="right:-60px; top:-40px;">
                 <path fill="#3188CFFF"
                     d="M360,0 Q330,90 270,120 Q210,150 180,90 Q150,30 90,60 Q30,90 0,0 L360,0Z" />
             </svg>
 
-            <!-- Bottom Left fuckiign Smooth Side Blob -->
+            <!-- Bottom Left Smooth Side Blob -->
             <svg class="absolute bottom-0 left-0 z-0 pointer-events-none" width="420" height="300" viewBox="0 0 420 300"
                 fill="none" xmlns="http://www.w3.org/2000/svg" style="left:-120px; bottom:-60px;">
                 <path fill="#3188CFFF"
@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Headings -->
-                <h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                <h2 class="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                         Login
                 </h2>
 

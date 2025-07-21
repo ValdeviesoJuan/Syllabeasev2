@@ -40,7 +40,6 @@ class ChairSyllabusTable extends Component
                     })
                     // ->where('syllabi.status', 'Pending')
                     ->where('syllabi.department_id', '=', $department_id)
-                    // ->whereNotNull('syllabi.chair_submitted_at')
                     ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
                     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
                     ->where(function ($query){

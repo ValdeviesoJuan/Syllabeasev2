@@ -31,6 +31,20 @@
                 <p>{{ session('error') }}.</p>
             </div>
         </div>
+    @elseif ($errors->any())
+        <div role="alert">
+            <div style="background-color: #FF1744; color: #fff; font-weight: bold; border-radius: 0.375rem 0.375rem 0 0; padding: 0.5rem 1rem;">
+                Validation Error
+            </div>
+            <div style="border: 1px solid #FF1744; border-top: 0; border-radius: 0 0 0.375rem 0.375rem; background-color: #FF8A80; padding: 1rem; color: #FF1744;">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @break  {{-- Only show the first error --}}
+                    @endforeach
+                </ul>
+            </div>
+        </div>
     @endif
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -39,6 +53,6 @@
         $('.pop-up').fadeIn(400); 
         setTimeout(function() {
             $('.pop-up').fadeOut(400); 
-        }, 2000);
+        }, 5000);
     });
 </script>

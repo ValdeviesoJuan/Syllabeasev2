@@ -23,28 +23,25 @@ class DeanSyllabusTable extends Component
         'department_code' => null,
     ];
     public function render()
-    {
-        $user = Auth::user();
-
+    { 
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-
-        $college = UserRole::where('user_roles.entity_type', 'College')
-            ->where('user_roles.role_id', $deanRoleId)
-            ->where('user_roles.user_id', $user->id)
-            ->firstOrFail();
-        $college_id = $college->entity_id;
-
-        $departments = Department::where('departments.college_id', $college_id)
-            ->select('departments.*')
-            ->get();
+        $dean = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->first();
+        $college_id = $dean->entity_id;
 
         if ($college_id) {
+            
+            $departments = Department::where('departments.college_id', $college_id)
+                ->select('departments.*')
+                ->get();
+
             $syllabi = BayanihanGroup::join('syllabi', function ($join) {
                     $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
                     ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND dean_submitted_at IS NOT NULL)'));                            
                 })
                 ->where('syllabi.college_id', '=', $college_id)
-                ->whereNotNull('syllabi.dean_submitted_at')
                 ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
                 ->join('departments', 'departments.department_id', 'syllabi.department_id')
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
@@ -77,6 +74,7 @@ class DeanSyllabusTable extends Component
                 ->paginate(10);
         } else {
             $syllabi = [];
+            $departments = [];
         }
 
         return view('livewire.dean-syllabus-table', ['syllabi' => $syllabi, 'filters' => $this->filters, 'departments' => $departments]);

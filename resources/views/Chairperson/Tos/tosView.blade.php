@@ -143,9 +143,9 @@
                 </tr>
                 <!-- Data Row -->
                 <tr>
-                    <td class="border border-gray-400 px-2 py-1">01</td>
-                    <td class="border border-gray-400 px-2 py-1">03.01.23</td>
-                    <td class="border border-gray-400 px-2 py-1">1 of 2</td>
+                    <td class="border border-gray-400 px-2 py-1">{{ $tos->tos_version }}</td>
+                    <td class="border border-gray-400 px-2 py-1">{{ \Carbon\Carbon::parse($tos->effectivity_date)->format('m.d.y') }}</td>
+                    <td class="border border-gray-400 px-2 py-1">#</td>
                 </tr>
             </tbody>
         </table>

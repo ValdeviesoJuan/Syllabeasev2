@@ -19,31 +19,35 @@ class DeanController extends Controller
     {
         $user = Auth::user();
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-
-        $college = College::join('user_roles', function ($join) use ($deanRoleId, $user) {
-                $join->on('user_roles.entity_id', '=', 'colleges.college_id')
-                    ->where('user_roles.entity_type', 'College')
-                    ->where('user_roles.role_id', $deanRoleId)
-                    ->where('user_roles.user_id', $user->id);
-            })
-            ->select('colleges.*')
-            ->firstOrFail();
+        $dean = UserRole::where('user_id', Auth::id())
+            ->where('entity_type', '=', 'College')
+            ->where('role_id', '=', $deanRoleId)
+            ->first();
+        $college_id = $dean->entity_id;
             
-        $departments = Department::where('college_id', $college->college_id)
-            ->paginate(10);
-        
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        if ($college_id) {
+            $college = College::where('college_id', $college_id)
+                ->first();
 
-        $chairs = Department::join('user_roles', function ($join) use ($chairRoleId) {  
-                $join->on('user_roles.entity_id', '=', 'departments.department_id')
-                    ->where('user_roles.entity_type', 'Department')
-                    ->where('user_roles.role_id', $chairRoleId);
-            })
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->join('colleges', 'colleges.college_id', '=', 'departments.college_id')
-            ->where('colleges.college_id', $college->college_id)
-            ->select('departments.*', 'user_roles.*', 'users.*')
-            ->paginate(10);
+            $departments = Department::where('college_id', $college_id)
+                ->paginate(10);
+            
+            $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+            $chairs = Department::join('user_roles', function ($join) use ($chairRoleId) {  
+                    $join->on('user_roles.entity_id', '=', 'departments.department_id')
+                        ->where('user_roles.entity_type', 'Department')
+                        ->where('user_roles.role_id', $chairRoleId);
+                })
+                ->join('users', 'users.id', '=', 'user_roles.user_id')
+                ->join('colleges', 'colleges.college_id', '=', 'departments.college_id')
+                ->where('colleges.college_id', $college_id)
+                ->select('departments.*', 'user_roles.*', 'users.*')
+                ->paginate(10);
+        } else {
+            $college = [];
+            $departments = [];
+            $chairs = [];
+        }
 
         $notifications = $user->notifications;
 

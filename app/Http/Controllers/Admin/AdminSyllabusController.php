@@ -299,8 +299,9 @@ class AdminSyllabusController extends Controller
     public function viewReviewForm($syll_id)
     {
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'syllabus_review_forms.syll_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
-            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->select('srf_checklists.*', 'syllabus_review_forms.*', 'syllabi.version')
             ->first();
 
         $srfResults = [];

@@ -19,24 +19,24 @@ class BayanihanLeaderHomeController extends Controller
             ->join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
             ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
             ->join('departments', 'departments.department_id', '=', 'curricula.department_id')
-            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.user_id', '=', Auth::id())
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('departments.department_id')
             ->first();
 
-        $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-            ->select('syllabus_instructors.*', 'syllabi.*')
-            ->get();
+        // $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
+        //     ->select('syllabus_instructors.*', 'syllabi.*')
+        //     ->get();
 
-        $mySyllabus = BayanihanGroup::join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
-            ->where('bayanihan_group_users.bg_role', '=', 'leader')
-            ->where('syllabi.department_id', '=', $myDepartment->department_id)
-            ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-            ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
-            ->distinct()
-            ->get();
+        // $mySyllabus = BayanihanGroup::join('syllabi', 'syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+        //     ->join('bayanihan_group_users', 'bayanihan_group_users.bg_id', '=', 'bayanihan_groups.bg_id')
+        //     ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+        //     ->where('bayanihan_group_users.bg_role', '=', 'leader')
+        //     ->where('syllabi.department_id', '=', $myDepartment->department_id)
+        //     ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
+        //     ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*')
+        //     ->distinct()
+        //     ->get();
 
         if ($myDepartment) {
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
@@ -55,25 +55,25 @@ class BayanihanLeaderHomeController extends Controller
                 })
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*', 'deadlines.*')
                 ->get();
+
+            $syllabiCount = $syllabus->count();
+            $completedCount = $syllabus->filter(function ($item) {
+                return $item->status === 'Approved by Dean';
+            })->count();
+            $pendingCount = $syllabus->filter(function ($item) {
+                return $item->status === 'Pending Chair Review';
+            })->count();
+
         } else {
             $syllabus = [];
+            $syllabiCount = 0;
+            $completedCount = 0;
+            $pendingCount = 0;
         }
 
-        $syllabiCount = $syllabus->count();
-        $completedCount = $syllabus->filter(function ($item) {
-            return $item->status === 'Approved by Dean';
-        })->count();
-        $pendingCount = $syllabus->filter(function ($item) {
-            return $item->status === 'Pending';
-        })->count();
-
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
-            
         $user = Auth::user(); 
         $notifications = $user->notifications;
-        return view('BayanihanLeader.blHome', compact('notifications','syllabi', 'instructors', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
+
+        return view('BayanihanLeader.blHome', compact('notifications', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
     }
 }

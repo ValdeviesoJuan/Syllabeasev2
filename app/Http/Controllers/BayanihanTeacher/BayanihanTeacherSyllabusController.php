@@ -5,7 +5,8 @@ namespace App\Http\Controllers\BayanihanTeacher;
 use App\Http\Controllers\Controller;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanGroupUsers;
-use App\Models\User;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\Syllabus;
 use App\Models\College;
 use App\Models\POE;
@@ -39,10 +40,6 @@ class BayanihanTeacherSyllabusController extends Controller
             ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->select('departments.department_id')
             ->first();
-
-        $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
-            ->select('syllabus_instructors.*', 'syllabi.*')
-            ->get();
  
         if ($myDepartment) { 
             $syllabus = BayanihanGroup::join('syllabi', function ($join) {
@@ -61,29 +58,26 @@ class BayanihanTeacherSyllabusController extends Controller
                 })
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*', 'deadlines.*')
                 ->get();
+                
             $syllabiCount = $syllabus->count();
             $completedCount = $syllabus->filter(function ($item) {
                 return $item->status === 'Approved by Dean';
             })->count();
             $pendingCount = $syllabus->filter(function ($item) {
-                return $item->status === 'Pending';
+                return $item->status === 'Pending Chair Review';
             })->count();
+
         } else {
             $syllabus = [];
             $syllabiCount = 0;
             $completedCount = 0;
             $pendingCount = 0;
         }
-
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
             
         $user = Auth::user();
         $notifications = $user->notifications;
         
-        return view('BayanihanTeacher.Syllabus.syllList', compact('notifications', 'syllabi', 'instructors', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
+        return view('BayanihanTeacher.Syllabus.syllList', compact('notifications', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
     }
     public function index()
     {
@@ -123,7 +117,7 @@ class BayanihanTeacherSyllabusController extends Controller
                 return $item->status === 'Approved by Dean';
             })->count();
             $pendingCount = $syllabus->filter(function ($item) {
-                return $item->status === 'Pending';
+                return $item->status === 'Pending Chair Review';
             })->count();
 
         } else {
@@ -155,12 +149,27 @@ class BayanihanTeacherSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
+            ->first();
+
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
-
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -180,10 +189,12 @@ class BayanihanTeacherSyllabusController extends Controller
 
         $courseOutlines = SyllabusCourseOutlineMidterm::where('syll_id', '=', $syll_id)
             ->with('courseOutcomes')
+            ->orderBy('syll_row_no', 'asc')
             ->get();
 
         $courseOutlinesFinals = SyllabusCourseOutlinesFinal::where('syll_id', '=', $syll_id)
             ->with('courseOutcomes')
+            ->orderBy('syll_row_no', 'asc')
             ->get();
 
         $cotCos = SyllabusCotCoM::join('syllabus_course_outcomes', 'syllabus_cot_cos_midterms.syll_co_id', '=', 'syllabus_course_outcomes.syll_co_id')
@@ -211,6 +222,17 @@ class BayanihanTeacherSyllabusController extends Controller
             ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = null;
+        }
+
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
+                ->where('syll_id', $syll_id)
+                ->where('srf_no', $i)
+                ->first();
+        }
+
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
@@ -224,6 +246,8 @@ class BayanihanTeacherSyllabusController extends Controller
         
         return view('BayanihanTeacher.Syllabus.syllView', compact(
             'syll',
+            'chair',
+            'dean',
             'instructors',
             'syll_id',
             'instructors',
@@ -239,12 +263,32 @@ class BayanihanTeacherSyllabusController extends Controller
             'poes',
             'reviewForm',
             'syllabusVersions',
-            'feedback'
+            'feedback',
+            'srf1',
+            'srf2',
+            'srf3',
+            'srf4',
+            'srf5',
+            'srf6',
+            'srf7',
+            'srf8',
+            'srf9',
+            'srf10',
+            'srf11',
+            'srf12',
+            'srf13',
+            'srf14',
+            'srf15',
+            'srf16',
+            'srf18',
+            'srf17',
+            'srf19',
         ));
     }
     public function viewReviewForm($syll_id)
     {
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'syllabus_review_forms.syll_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
             ->first();
