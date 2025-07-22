@@ -84,13 +84,14 @@
                                     </li>
                                 </ul>
 
-                                <form action="{{ route('admin.destroy',$user->id) }}" method="Post">
+                                <form action="{{ route('admin.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="mt-3 text-red font-medium  hover:text-white hover:scale-110 text-sm rounded-lg" type="submit" class="">
+                                    <button class="mt-3 text-red font-medium hover:text-white hover:scale-110 text-sm rounded-lg" type="submit">
                                         Delete
                                     </button>
                                 </form>
+
                             </div>
                         </td>
                         

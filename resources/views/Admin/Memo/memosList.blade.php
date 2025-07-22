@@ -222,7 +222,7 @@
             <!-- File Upload -->
             <div class="mb-4">
                 <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload Files (PDF only)</label>
-                <input type="file" name="files[]" accept="application/pdf" multiple required
+                <input type="file" name="files[]" accept="application/pdf" multiple 
                     class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
             </div>
 

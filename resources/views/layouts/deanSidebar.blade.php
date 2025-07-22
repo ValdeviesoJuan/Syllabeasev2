@@ -14,12 +14,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 
-<script>
-    //JS for Searchable Select
-    $(document).ready(function() {
-        $('.select2').select2(); // Initialize Select2 
-    });
-</script>
+
 
 <body>
 

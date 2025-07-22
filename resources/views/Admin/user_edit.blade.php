@@ -45,6 +45,14 @@
                     <label class="flex" for="lastname">Last Name</label>
                     <input type="text" name="lastname" id="lastname" class="px-1 py-[6px] w-full border border-[#a8a29e] rounded border-gray" value="{{ $user->lastname }}">
                 </div>
+                 <div class="form-group mb-4">
+                    <label class="flex" for="prefix">Prefix</label>
+                    <input type="text" name="prefix" id="prefix" class="px-1 py-[6px] w-full border border-[#a8a29e] rounded border-gray" value="{{ $user->prefix }}">
+                </div>
+                 <div class="form-group mb-4">
+                    <label class="flex" for="suffix">Suffix</label>
+                    <input type="text" name="suffix" id="suffix" class="px-1 py-[6px] w-full border border-[#a8a29e] rounded border-gray" value="{{ $user->suffix }}">
+                </div>
 
                 <div class="form-group mb-4">
                     <label class="flex" for="phone">Phone Number</label>
