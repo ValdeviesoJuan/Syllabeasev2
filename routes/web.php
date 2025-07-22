@@ -454,21 +454,31 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     //Admin TOS Audit Trail
     Route::get('/tos/auditTrail/{tos_id}', [AdminAuditController::class, 'viewTosAudit'])->name('admin.viewTosAudit');
 
-    //Admin: Memo & Deadline Controller
-    Route::get('admin/deadline', [AdminDeadlineController::class, 'deadline'])->name('admin.deadline');
-    Route::get('/createdeadline', [AdminDeadlineController::class, 'createDeadline'])->name('admin.createDeadline');
-    Route::post('/storeDeadline', [AdminDeadlineController::class, 'storeDeadline'])->name('admin.storeDeadline');
-    Route::get('/editDeadline/{dl_id}', [AdminDeadlineController::class, 'editDeadline'])->name('admin.editDeadline');
-    Route::put('updateDeadline/{dl_id}', [AdminDeadlineController::class, 'updateDeadline'])->name('admin.updateDeadline');
-    Route::delete('/destroyDeadline/{dl_id}', [AdminDeadlineController::class, 'destroyDeadline'])->name('admin.destroyDeadline');
+    // Admin: Deadlines
+    Route::get('/admin/deadline', [AdminDeadlineController::class, 'deadline'])->name('admin.deadline');
+    Route::get('/admin/deadline/create', [AdminDeadlineController::class, 'createDeadline'])->name('admin.createDeadline');
+    Route::post('/admin/deadline/store', [AdminDeadlineController::class, 'storeDeadline'])->name('admin.storeDeadline');
+    Route::get('/admin/deadline/{dl_id}/edit', [AdminDeadlineController::class, 'editDeadline'])->name('admin.editDeadline');
+    Route::put('/admin/deadline/{dl_id}', [AdminDeadlineController::class, 'updateDeadline'])->name('admin.updateDeadline');
+    Route::delete('/admin/deadline/{dl_id}', [AdminDeadlineController::class, 'destroyDeadline'])->name('admin.destroyDeadline');
 
-    Route::get('admin/memos', [AdminMemoController::class, 'index'])->name('admin.memo');
-    Route::get('/admin/memo/{id}', [AdminMemoController::class, 'show'])->name('dean.showMemo');
+    // Admin: Memos
+    Route::get('/admin/memos', [AdminMemoController::class, 'index'])->name('admin.memo');
+    Route::get('/admin/memo/{id}', [AdminMemoController::class, 'show'])->name('admin.showMemo');
     Route::get('/admin/memo/{id}/download/{filename}', [AdminMemoController::class, 'download'])->name('admin.downloadMemo');
-    // Route::post('/dean/memo/store', [AdminMemoController::class, 'store'])->name('dean.memo.store');
-    // Route::get('/dean/memos/{id}/edit', [AdminMemoController::class, 'edit'])->name('dean.memo.edit');
-    // Route::put('/dean/memos/{id}', [AdminMemoController::class, 'update'])->name('dean.memo.update');
-    // Route::delete('/dean/memos/{id}', [AdminMemoController::class, 'destroy'])->name('dean.memo.destroy');
+    Route::post('/admin/memo/store', [AdminMemoController::class, 'store'])->name('admin.memo.store');
+    Route::get('/admin/memo/{id}/edit', [AdminMemoController::class, 'edit'])->name('admin.memo.edit');
+    Route::put('/admin/memo/{id}', [AdminMemoController::class, 'update'])->name('admin.memo.update');
+    Route::delete('/admin/memo/{id}', [AdminMemoController::class, 'destroy'])->name('admin.memo.destroy');
+
+    // Dean: Memos
+    Route::get('/dean/memos', [DeanMemoController::class, 'index'])->name('dean.memo');
+    Route::get('/dean/memo/{id}', [DeanMemoController::class, 'show'])->name('dean.showMemo');
+    Route::get('/dean/memo/{id}/download/{filename}', [DeanMemoController::class, 'download'])->name('dean.downloadMemo');
+    Route::post('/dean/memo/store', [DeanMemoController::class, 'store'])->name('dean.memo.store');
+    Route::get('/dean/memo/{id}/edit', [DeanMemoController::class, 'edit'])->name('dean.memo.edit');
+    Route::put('/dean/memo/{id}', [DeanMemoController::class, 'update'])->name('dean.memo.update');
+    Route::delete('/dean/memo/{id}', [DeanMemoController::class, 'destroy'])->name('dean.memo.destroy');
 
     //Admin: PO Controller
     Route::get('admin/department/{department_id}/program_outcome', [AdminPOController::class, 'viewPo'])->name('admin.viewPo');
