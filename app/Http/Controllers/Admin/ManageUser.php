@@ -59,6 +59,8 @@ class ManageUser extends Controller
         User::join('user_roles', 'users.id', '=', 'user_roles.user_id')
             ->where('id', $id)->update([
                 'firstname' => $request->firstname,
+                'prefix' => $request->prefix,
+                'suffix' => $request->suffix,
                 'lastname' => $request->lastname,
                 'phone' => $request->phone,
                 'email' => $request->email,

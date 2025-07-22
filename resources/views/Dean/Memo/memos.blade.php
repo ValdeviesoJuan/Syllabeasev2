@@ -83,7 +83,7 @@
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr onclick="handleRowClick(event, '{{ route('dean.memo.show', $memo->id) }}')"
+                <tr onclick="handleRowClick(event, '{{ route('dean.showMemo', $memo->id) }}')"
                     class="bg-white rounded shadow-sm cursor-pointer transition"
                     style="transition: background-color 0.2s ease;"
                     onmouseover="this.style.backgroundColor='#e6f0ff';"
@@ -139,7 +139,7 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div onclick="window.location.href='{{ route('dean.memo.show', $memo->id) }}'"
+        <div onclick="window.location.href='{{ route('dean.showMemo', $memo->id) }}'"
             class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
 
             {{-- Title --}}

@@ -655,6 +655,7 @@
                     (showPrev && {{ isset($previousChecklistSRF[1]) && $previousChecklistSRF[1]->srf_yes_no === 'no' ? 'true' : 'false' }})
             }"
         >
+
             <!-- 1st Header -->
             <tr>
                 <th colspan="2" 
