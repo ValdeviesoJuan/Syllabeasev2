@@ -105,6 +105,24 @@ class DeanSyllabusController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
+        // Get chairperson of the department
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        // Get dean of the college
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
+            ->first();
+
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
@@ -164,6 +182,26 @@ class DeanSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('poes.*')
             ->get();
+        
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = null;
+        }
+        
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
+                ->where('syll_id', $syll_id)
+                ->where('srf_no', $i)
+                ->first();
+        }
+
+        $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
+            ->where('syllabus_review_forms.syll_id', $syll_id)
+            ->select('srf_checklists.*', 'syllabus_review_forms.*')
+            ->first();
+
+        $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
+            ->select('syllabi.*')
+            ->get();
             
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
 
@@ -173,6 +211,8 @@ class DeanSyllabusController extends Controller
         return view('Dean.Syllabus.syllView', compact(
             'notifications',
             'syll',
+            'chair',
+            'dean',
             'instructors',
             'syll_id',
             'instructors',
@@ -186,8 +226,28 @@ class DeanSyllabusController extends Controller
             'bLeaders',
             'bMembers',
             'poes',
-            'feedback'
-
+            'syllabusVersions',
+            'feedback',
+            'reviewForm',
+            'srf1',
+            'srf2',
+            'srf3',
+            'srf4',
+            'srf5',
+            'srf6',
+            'srf7',
+            'srf8',
+            'srf9',
+            'srf10',
+            'srf11',
+            'srf12',
+            'srf13',
+            'srf14',
+            'srf15',
+            'srf16',
+            'srf18',
+            'srf17',
+            'srf19',
         ));
     }
     public function returnSyllabus(Request $request, $syll_id)

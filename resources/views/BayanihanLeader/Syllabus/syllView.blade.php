@@ -11,6 +11,7 @@
     <title>SyllabEase</title>
     @vite('resources/css/app.css')
     <x-head.tinymce-config />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <script src="https://cdn.tiny.cloud/1/ux8hih2n6kvrupg3ywetf1kdoav78vf12hcudnuhz6ftkl0x/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         function handleConfirmation() {
@@ -946,8 +947,14 @@
                                                     {{ isset($srf13) && $srf13['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                     (showPrev && {{ isset($previousChecklistSRF[13]) && $previousChecklistSRF[13]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                             }"
-                                            class="border-2 border-solid">
+                                            class="border-2 border-solid relative">
                                             Allotted Time
+
+                                            @livewire('srf-remark', [
+                                                'srf' => $srf13 ?? null,
+                                                'prevSrf' => $previousChecklistSRF[13] ?? null,
+                                                'remark' => $srf13['srf_remarks'] ?? ($previousChecklistSRF[13]->srf_remarks ?? null)
+                                            ], key('srf13-th-remark'))
                                         </th>
                                         <th class="border-2 border-solid">
                                             Course Outcomes (C)

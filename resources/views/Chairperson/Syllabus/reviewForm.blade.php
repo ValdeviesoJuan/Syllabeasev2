@@ -88,6 +88,7 @@
                       </div>
                     </div>
                 </div>
+                <!-- SYLLABUS TABLE -->
                 <table class="mt-2 mx-auto border-2 border-solid w-10/12 font-serif text-sm bg-white">
                     <!-- 1st Header -->
                     <tr>
@@ -122,9 +123,6 @@
                                 <tr>
                                     <td class="items-start border-2 border-solid font-medium text-left px-4">
                                         Instructor:
-                                        <!-- @foreach ($instructors[$syll->syll_id] ?? [] as $instructor)
-                            <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
-                            @endforeach <br> -->
                                         @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
                                         @if ($loop->first)
                                         <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
@@ -149,6 +147,7 @@
                                         Bldg rm no: {{$syll->syll_ins_bldg_rm}}
                                     </td>
                                 </tr>
+
                                 <tr>
                                     <td colspan=2 class="items-start border-2 border-solid font-medium text-left px-4 ">
                                         <span class="text-left font-bold">
@@ -156,6 +155,7 @@
                                         {{ $syll->syll_course_description }}
                                     </td>
                                 </tr>
+
                                 <tr class="">
                                     <!-- course_outcome table-->
                                     <td colspan=2 class=" border-2 border-solid font-medium px-4">
@@ -280,9 +280,6 @@
                                                     </div>
                                                 </td>
                                                 <td class="border-2 border-solid">
-                                                    <!-- @foreach ($cotCosF->get($cotf->syll_co_out_id, []) as $index => $coo)
-                                        {{ $coo->syll_co_code }}@unless($loop->last),@endunless
-                                        @endforeach -->
                                                     @foreach ($cotCosF->get($cotf->syll_co_out_id, []) as $index => $coo)
                                                     {{ $coo->syll_co_code }}@unless($loop->last),@endunless
                                                     @endforeach
@@ -329,82 +326,78 @@
                                         </div>
                                     </td>
                                 </tr>
+                            </table>
+                            <div class="grid grid-cols-3 m-3">
+                                <div class="">
+                                    <div class="flex justify-center">
+                                        Prepared By:
+                                    </div>
+                                    @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
+                                    <div>
+                                        @if($syll->chair_submitted_at != null && $instructor->signature)
+                                        <div class="flex justify-center mt-20">
+                                            <img src="{{ asset('assets/signatures/' . $instructor->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                                        </div>
+                                        @else
+                                        <div class="flex justify-center mt-20">
 
+                                        </div>
+                                        @endif
+                                        <div class="flex justify-center font-semibold underline">
+                                            {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
+                                        </div>
+                                        <div class="flex justify-center">
+                                            Instructor
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div>
+                                    <div class="flex justify-center">
+                                        Checked and Recommended for Approval:
+                                    </div>
+                                    @if($syll->dean_submitted_at != null && $chair->signature)
+                                    <div class="flex justify-center mt-5">
+                                        <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
+                                    </div>
+                                    @else
+                                    <div class="flex justify-center mt-20">
 
+                                    </div>
+                                    @endif
+                                    <div class="flex justify-center font-semibold underline">
+                                        {{ strtoupper($syll->syll_chair) }}
+                                    </div>
+                                    <div class="flex justify-center">
+                                        Department Chair
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-center">
+                                        Approved by:
+                                    </div>
+                                    @if($syll->dean_approved_at != null && $dean->signature)
+                                    <div class="flex justify-center mt-5">
+                                        <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
+                                    </div>
+                                    @else
+                                    <div class="flex justify-center mt-20">
+
+                                    </div>
+                                    @endif
+                                    <div class="flex justify-center font-semibold underline">
+                                        {{ strtoupper($syll->syll_dean) }}
+                                    </div>
+                                    <div class="flex justify-center">
+                                        Dean
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
-
-                </table>
-                <div class="grid grid-cols-3 m-3">
-                    <div class="">
-                        <div class="flex justify-center">
-                            Prepared By:
-                        </div>
-                        @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
-                        <div>
-                            @if($syll->chair_submitted_at != null)
-                            <div class="flex justify-center mt-20">
-                                sgd
-                            </div>
-                            @else
-                            <div class="flex justify-center mt-20">
-
-                            </div>
-                            @endif
-                            <div class="flex justify-center font-semibold underline">
-                                {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
-                            </div>
-                            <div class="flex justify-center">
-                                Instructor
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div>
-                        <div class="flex justify-center">
-                            Checked and Recommended for Approval:
-                        </div>
-                        @if($syll->dean_submitted_at != null)
-                        <div class="flex justify-center mt-20">
-                            sgd
-                        </div>
-                        @else
-                        <div class="flex justify-center mt-20">
-
-                        </div>
-                        @endif
-                        <div class="flex justify-center font-semibold underline">
-                            {{ strtoupper($syll->syll_chair) }}
-                        </div>
-                        <div class="flex justify-center">
-                            Chairperson, {{$syll->department_name}}
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-center">
-                            Approved by:
-                        </div>
-                        @if($syll->dean_approved_at != null)
-                        <div class="flex justify-center mt-20">
-                            sgd
-                        </div>
-                        @else
-                        <div class="flex justify-center mt-20">
-
-                        </div>
-                        @endif
-                        <div class="flex justify-center font-semibold underline">
-                            {{ strtoupper($syll->syll_dean) }}
-                        </div>
-                        <div class="flex justify-center">
-                            Dean, {{$syll->college_code}}
-                        </div>
-                    </div>
-                </div>
-                </td>
                 </table>
             </div>
-        </div>
-        </div>
+        </div> 
         <!-- REVIEW FORM -->
         <div id="review_form" class="rounded-xl overflow-auto w-[50%] flex flex-col border  justify-center border-gray3  bg-white bg-opacity-100  rounded shadow-lg font-sans">
             <!-- HEADER SECTION -->
@@ -694,7 +687,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
     <script>
     $(document).ready(function () {

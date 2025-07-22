@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auditor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\Syllabus;
 use App\Models\SyllabusInstructor;
 use App\Models\ProgramOutcome;
@@ -20,7 +22,6 @@ use App\Models\SrfChecklist;
 use App\Models\SyllabusDeanFeedback;
 use App\Models\BayanihanGroup;
 use App\Models\BayanihanGroupUsers;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class AuditorSyllabusController extends Controller
@@ -46,6 +47,22 @@ class AuditorSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
+
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
+            ->first();
 
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -97,6 +114,17 @@ class AuditorSyllabusController extends Controller
             ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get();
 
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = null;
+        }
+
+        for ($i = 1; $i <= 19; $i++) {
+            ${"srf{$i}"} = SrfChecklist::join('syllabus_review_forms', 'syllabus_review_forms.srf_id', '=', 'srf_checklists.srf_id')
+                ->where('syll_id', $syll_id)
+                ->where('srf_no', $i)
+                ->first();
+        }
+
         $reviewForm = SyllabusReviewForm::join('srf_checklists', 'srf_checklists.srf_id', '=', 'syllabus_review_forms.srf_id')
             ->where('syllabus_review_forms.syll_id', $syll_id)
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
@@ -111,6 +139,8 @@ class AuditorSyllabusController extends Controller
 
         return view('auditor.syllabus.syllView', compact(
             'syll',
+            'chair',
+            'dean',
             'instructors',
             'syll_id',
             'instructors',
@@ -126,7 +156,26 @@ class AuditorSyllabusController extends Controller
             'poes',
             'reviewForm',
             'syllabusVersions',
-            'feedback'
+            'feedback',
+            'srf1',
+            'srf2',
+            'srf3',
+            'srf4',
+            'srf5',
+            'srf6',
+            'srf7',
+            'srf8',
+            'srf9',
+            'srf10',
+            'srf11',
+            'srf12',
+            'srf13',
+            'srf14',
+            'srf15',
+            'srf16',
+            'srf18',
+            'srf17',
+            'srf19',
         ));
     }
     public function viewReviewForm($syll_id)
@@ -185,7 +234,6 @@ class AuditorSyllabusController extends Controller
             'srf18',
             'srf17',
             'srf19'
-        ))
-            ->with('success', 'Syllabus submission successful.');
+        ))->with('success', 'Syllabus submission successful.');
     }
 }

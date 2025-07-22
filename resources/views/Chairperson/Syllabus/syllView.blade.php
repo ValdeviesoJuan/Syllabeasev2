@@ -127,55 +127,58 @@
     </div>
     <!-- Approved by Chair -->
     @elseif($syll->dean_submitted_at != null && $syll->chair_submitted != null && $syll->chair_rejected_at == null && $syll->status == 'Approved by Chair')
-    <div class="flex flex-col border-2 border-green3 bg-white bg-opacity-75 w-[500px] rounded-lg h-[85px] mt-2 mx-auto">
+    <div class="flex flex-col border-2 border-[#28a745] bg-[#d4edda] bg-opacity-80 w-[500px] rounded-lg h-[85px] mt-2 mx-auto">
         <div class="flex items-center justify-center">
-            <div class="mx-1">
-                <svg fill="#73d693" width="40px" height="40px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15.5 3c-7.456 0-13.5 6.044-13.5 13.5s6.044 13.5 13.5 13.5 13.5-6.044 13.5-13.5-6.044-13.5-13.5-13.5zM15.5 27c-5.799 0-10.5-4.701-10.5-10.5s4.701-10.5 10.5-10.5 10.5 4.701 10.5 10.5-4.701 10.5-10.5 10.5zM15.5 10c-0.828 0-1.5 0.671-1.5 1.5v5.062c0 0.828 0.672 1.5 1.5 1.5s1.5-0.672 1.5-1.5v-5.062c0-0.829-0.672-1.5-1.5-1.5zM15.5 20c-0.828 0-1.5 0.672-1.5 1.5s0.672 1.5 1.5 1.5 1.5-0.672 1.5-1.5-0.672-1.5-1.5-1.5z"></path>
+            <div class="mx-2">
+                <svg fill="#28a745" width="40px" height="40px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.5 3c-7.456 0-13.5 6.044-13.5 13.5s6.044 13.5 13.5 13.5 13.5-6.044 13.5-13.5-6.044-13.5-13.5-13.5zM15.5 27c-5.799 0-10.5-4.701-10.5-10.5s4.701-10.5 10.5-10.5 10.5 4.701 10.5 10.5-4.701 10.5-10.5 10.5z"/>
+                    <path d="M13.5 15.5l2 2 4-4-1.5-1.5-2.5 2.5-0.5-0.5z"/>
                 </svg>
             </div>
-            <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has already been approved by the chair and is awaiting dean approval; further edits are no longer permitted.
+            <div class="mt-1 text-[#155724]">
+                <span class="font-semibold">Notice:</span> This syllabus has been <strong>approved by the Chair</strong> and is awaiting Dean approval; further edits are not permitted.
             </div>
         </div>
     </div>
     <!-- Returned by Chair -->
-    @elseif($syll->chair_submitted != null && $syll->chair_rejected_at != null && $syll->status == 'Returned by Chair')
-    <div class="flex flex-col border-2 border-green3 bg-white bg-opacity-75 w-[500px] rounded-lg h-[90px] mt-2 mx-auto">
+    @elseif($syll->chair_submitted_at != null && $syll->chair_rejected_at != null && $syll->status == 'Returned by Chair')
+    <div class="flex flex-col border-2 border-[#007bff] bg-[#cce5ff] bg-opacity-80 w-[500px] rounded-lg h-[110px] mt-2 mx-auto">
         <div class="flex items-center justify-center">
-            <div class="mx-1">
-                <svg fill="#73d693" width="40px" height="40px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15.5 3c-7.456 0-13.5 6.044-13.5 13.5s6.044 13.5 13.5 13.5 13.5-6.044 13.5-13.5-6.044-13.5-13.5-13.5zM15.5 27c-5.799 0-10.5-4.701-10.5-10.5s4.701-10.5 10.5-10.5 10.5 4.701 10.5 10.5-4.701 10.5-10.5 10.5zM15.5 10c-0.828 0-1.5 0.671-1.5 1.5v5.062c0 0.828 0.672 1.5 1.5 1.5s1.5-0.672 1.5-1.5v-5.062c0-0.829-0.672-1.5-1.5-1.5zM15.5 20c-0.828 0-1.5 0.672-1.5 1.5s0.672 1.5 1.5 1.5 1.5-0.672 1.5-1.5-0.672-1.5-1.5-1.5z"></path>
+            <div class="mx-2">
+                <svg fill="#007bff" width="40px" height="40px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0C7.163 0 0 7.163 0 16s7.163 16 16 16 16-7.163 16-16S24.837 0 16 0zM18 22h-4v-4h4v4zm0-6h-4V8h4v8z"/>
                 </svg>
             </div>
-            <div class="mt-1">
-                <span class="font-semibold">Notice: </span>This syllabus has been returned for revisions.
+            <div class="mt-1 text-[#004085]">
+                <span class="font-semibold">Notice:</span> This syllabus has been <strong>returned by the Chair</strong> for further revisions.
             </div>
         </div>
-
-        <div class="flex mt-1 mx-auto">
+        <div class="flex mt-2 mx-auto">
             <form action="{{ route('chairperson.viewReviewForm', $syll_id) }}" method="get">
                 @csrf
-                <button id="viewFeedback" type="submit" class="p-2 mb-1 items-center rounded shadow hover:text-white hover:bg-green hover:bg-blue hover:border-none text-[#73d693] font-bold border-solid border-2 border-[#73d693]">View Review Form</button>
+                <button type="submit" class="px-4 py-2 text-[#007bff] border border-[#007bff] font-bold rounded hover:bg-[#007bff] hover:text-white transition">
+                    View Review Form
+                </button>
             </form>
         </div>
     </div>
     <!-- Returned by Dean -->
     @elseif($syll->dean_submitted_at != null && $syll->dean_rejected_at != null && $syll->status == 'Returned by Dean')
-    <div class="flex flex-col border-2 border-blue3 bg-white bg-opacity-75 w-[500px] rounded-lg h-[110px] mt-2 mx-auto">
+    <div class="flex flex-col border-2 border-[#007bff] bg-[#cce5ff] bg-opacity-80 w-[500px] rounded-lg h-[110px] mt-2 mx-auto">
         <div class="flex items-center justify-center">
-            <div class="mx-1">
-                <svg fill="#2468d2" width="40px" height="40px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <title>notice1</title>
-                    <path d="M15.5 3c-7.456 0-13.5 6.044-13.5 13.5s6.044 13.5 13.5 13.5 13.5-6.044 13.5-13.5-6.044-13.5-13.5-13.5zM15.5 27c-5.799 0-10.5-4.701-10.5-10.5s4.701-10.5 10.5-10.5 10.5 4.701 10.5 10.5-4.701 10.5-10.5 10.5zM15.5 10c-0.828 0-1.5 0.671-1.5 1.5v5.062c0 0.828 0.672 1.5 1.5 1.5s1.5-0.672 1.5-1.5v-5.062c0-0.829-0.672-1.5-1.5-1.5zM15.5 20c-0.828 0-1.5 0.672-1.5 1.5s0.672 1.5 1.5 1.5 1.5-0.672 1.5-1.5-0.672-1.5-1.5-1.5z"></path>
+            <div class="mx-2">
+                <svg fill="#007bff" width="40px" height="40px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0C7.163 0 0 7.163 0 16c0 8.837 7.163 16 16 16s16-7.163 16-16C32 7.163 24.837 0 16 0zM18 22h-4v-4h4v4zm0-6h-4V8h4v8z"/>
                 </svg>
             </div>
-            <div class="mt-1">
-                <span class="font-semibold">Notice:</span> This syllabus has been returned by the Dean for further revision.
+            <div class="mt-1 text-[#004085]">
+                <span class="font-semibold">Notice:</span> This syllabus has been <strong>returned by the Dean</strong> for further revision.
             </div>
         </div>
-        <div class="flex mt-1 mx-auto">
-                <button id="viewFeedback" type="submit" class="p-2 mb-1 items-center rounded shadow hover:text-white hover:bg-blue hover:bg-blue text-blue">View Feedback</button>
+        <div class="flex mt-2 mx-auto">
+            <button id="viewFeedback" type="submit" class="px-4 py-2 text-[#007bff] border border-[#007bff] font-bold rounded hover:bg-[#007bff] hover:text-white transition">
+                View Feedback
+            </button>
         </div>
     </div>
     <div class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white  rounded-lg shadow-lg view-feedback-modal">
@@ -193,6 +196,24 @@
             </div>
         </div>
     </div>
+    <!-- Approved by Dean -->
+    @elseif($syll->dean_approved_at != null && $syll->status == 'Approved by Dean')
+        <div class="flex flex-col bg-white bg-opacity-75 w-[500px] rounded-lg h-[70px] mt-2 mx-auto"
+            style="border: 2px solid #6ee7b7;">
+            <div class="flex items-center justify-center">
+                <div class="mx-1">
+                    <svg fill="#73d693" width="40px" height="40px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <title>notice1</title>
+                        <path d="M15.5 3c-7.456 0-13.5 6.044-13.5 13.5s6.044 13.5 13.5 13.5 13.5-6.044 13.5-13.5-6.044-13.5-13.5-13.5zM15.5 27c-5.799 0-10.5-4.701-10.5-10.5s4.701-10.5 10.5-10.5 10.5 4.701 10.5 10.5-4.701 10.5-10.5 10.5zM15.5 10c-0.828 0-1.5 0.671-1.5 1.5v5.062c0 0.828 0.672 1.5 1.5 1.5s1.5-0.672 1.5-1.5v-5.062c0-0.829-0.672-1.5-1.5-1.5zM15.5 20c-0.828 0-1.5 0.672-1.5 1.5s0.672 1.5 1.5 1.5 1.5-0.672 1.5-1.5-0.672-1.5-1.5-1.5z"></path>
+                    </svg>
+                </div>
+                <div class="mt-1">
+                    <span class="font-semibold">Notice:</span> This syllabus has already been
+                    <span class="font-semibold" style="color:#059669;">approved</span> by the Dean;
+                    further edits are no longer permitted.
+                </div>
+            </div>
+        </div>
     @endif
     <!-- OUTER CONTAINER -->
     <div class="mx-auto mt-6 w-11/12 border-[3px] border-black bg-white font-serif text-sm p-4">
@@ -393,6 +414,7 @@
                             Bldg rm no: {{$syll->syll_ins_bldg_rm}}
                         </td>
                     </tr>
+
                     <tr>
                         <td colspan=2 class="items-start border-2 border-solid font-medium text-left px-4 {{ isset($srf9) && $srf9['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">
                             <span class="text-left font-bold">
@@ -400,6 +422,7 @@
                             {{ $syll->syll_course_description }}
                         </td>
                     </tr>
+                    
                     <tr class="">
                         <!-- course_outcome table-->
                         <td colspan=2 class=" border-2 border-solid font-medium px-4 {{ isset($srf11) && $srf11['srf_yes_no'] === 'no' || isset($srf12) && $srf12['srf_yes_no'] === 'no' ? 'force-full-red-border': '' }}">

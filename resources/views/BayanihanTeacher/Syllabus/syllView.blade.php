@@ -93,8 +93,7 @@
             border: 3px solid red !important;
         }
     </style>
-            @livewireStyles
-
+    @livewireStyles
 </head>
 
 <body class="font-thin ">
@@ -179,7 +178,7 @@
                 </svg>
             </div>
             <div class="mt-1">
-                <span class="font-semibold">Notice:</span>This syllabus has already been approved by the Department Chair and is awaiting Dean approval; further edits are no longer permitted.
+                <span class="font-semibold">Notice: </span>This syllabus has already been approved by the Department Chair and is awaiting Dean approval; further edits are no longer permitted.
             </div>
         </div>
     </div>
@@ -198,7 +197,7 @@
         </div>
     </div>
     @endif
-     <!-- OUTER CONTAINER -->
+    <!-- OUTER CONTAINER -->
     <div class="mx-auto mt-6 w-11/12 border-[1px] border-black bg-white font-serif text-sm p-4">
     <!-- HEADER SECTION -->
     <br>
@@ -761,34 +760,32 @@
     </table>
 </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var rejectButton = document.getElementById("viewFeedback");
+        var feedbackModal = document.querySelector(".view-feedback-modal");
+        var overlay = document.getElementById("overlay");
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var rejectButton = document.getElementById("viewFeedback");
-            var feedbackModal = document.querySelector(".view-feedback-modal");
-            var overlay = document.getElementById("overlay");
-
-            rejectButton.addEventListener("click", function() {
-                feedbackModal.style.display = "block";
-                overlay.style.display = "block";
-            });
-
-            // Close modal functionality
-            var closeModalButton2 = document.getElementById("closeModalButton2");
-
-            closeModalButton2.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
-            var closeModalButton2 = document.getElementById("closeModalButton2");
-
-            closeModalButton.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
+        rejectButton.addEventListener("click", function() {
+            feedbackModal.style.display = "block";
+            overlay.style.display = "block";
         });
-    </script>
-</body>
+
+        // Close modal functionality
+        var closeModalButton2 = document.getElementById("closeModalButton2");
+
+        closeModalButton2.addEventListener("click", function() {
+            feedbackModal.style.display = "none";
+            overlay.style.display = "none";
+        });
+        var closeModalButton2 = document.getElementById("closeModalButton2");
+
+        closeModalButton.addEventListener("click", function() {
+            feedbackModal.style.display = "none";
+            overlay.style.display = "none";
+        });
+    });
+</script>
 
 </html>
 @endsection

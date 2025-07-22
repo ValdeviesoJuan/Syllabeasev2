@@ -213,7 +213,6 @@ class BayanihanLeaderSyllabusController extends Controller
             ->select('srf_checklists.*', 'syllabus_review_forms.*')
             ->first();
 
-
         $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->select('syllabi.*')
             ->get();
