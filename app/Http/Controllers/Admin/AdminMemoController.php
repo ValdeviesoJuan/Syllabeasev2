@@ -81,4 +81,54 @@ class AdminMemoController extends Controller
         $filePath = storage_path('app/public/memos/' . $filename);
         return file_exists($filePath) ? response()->download($filePath) : back()->with('error', 'File not found.');
     }
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'date' => 'required|date',
+            'files.*' => 'nullable|mimes:pdf|max:2048',
+        ]);
+
+        $memo = Memo::findOrFail($id);
+        $memo->title = $request->title;
+        $memo->description = $request->description;
+        $memo->date = $request->date;
+
+        $fileNames = $memo->file_name ? json_decode($memo->file_name, true) : [];
+
+        if ($request->hasFile('files')) {
+            // Delete old files
+            foreach ($fileNames as $file) {
+                if (Storage::exists('public/memos/' . $file)) {
+                    Storage::delete('public/memos/' . $file);
+                }
+            }
+
+            $fileNames = [];
+            foreach ($request->file('files') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('public/memos', $filename);
+                $fileNames[] = $filename;
+            }
+
+            $memo->file_name = json_encode($fileNames);
+        }
+
+        $memo->save();
+
+        return redirect()->route('admin.memo')->with('success', 'Memo updated successfully.');
+    }
+    public function destroy($id)
+    {
+        $memo = Memo::findOrFail($id);
+
+        if ($memo->file_name && Storage::exists('public/memos/' . $memo->file_name)) {
+            Storage::delete('public/memos/' . $memo->file_name);
+        }
+
+        $memo->delete();
+
+        return redirect()->route('admin.memo')->with('success', 'Memo deleted successfully.');
+    }
 }
