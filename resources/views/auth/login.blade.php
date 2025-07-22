@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Headings -->
-                <h2 class="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                <h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                         Login
                 </h2>
 
