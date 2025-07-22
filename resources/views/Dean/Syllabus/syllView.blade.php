@@ -583,141 +583,139 @@
                             </table>
                         </td>
                     </tr>
-                    <!-- course Requirements -->
-                    <tr class="crq border-2">
-                        <td colspan="2" class="border-2 border-solid font-medium">
-                            <span class="text-left font-bold">
-                                IV. Course Requirements:
-                            </span><br>
-                            <div class="crq">
-                                {!! $syll->syll_course_requirements !!}
+                        <!-- course Requirements -->
+                        <tr class="crq border-2">
+                            <td colspan="2" :class="{
+                                    'force-full-red-border': 
+                                        {{ isset($srf18) && $srf18['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                        (showPrev && {{ isset($previousChecklistSRF[18]) && $previousChecklistSRF[18]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                }"
+                                class="border-2 border-solid font-medium">
+                                <span class="text-left font-bold">
+                                    IV. Course Requirements:
+                                </span><br>
+                                <div class="crq">
+                                    {!! $syll->syll_course_requirements !!}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="grid grid-cols-3 m-3">
+                        <div class="">
+                            <div class="flex justify-center">
+                                Prepared By:
                             </div>
-                        </td>
-                    </tr>
+                            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
+                            <div>
+                                @if($syll->chair_submitted_at != null && $instructor->signature)
+                                <div class="flex justify-center mt-20">
+                                    <img src="{{ asset('assets/signatures/' . $instructor->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                                </div>
+                                @else
+                                <div class="flex justify-center mt-20">
 
+                                </div>
+                                @endif
+                                <div class="flex justify-center font-semibold underline">
+                                    {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
+                                </div>
+                                <div class="flex justify-center">
+                                    Instructor
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div>
+                            <div class="flex justify-center">
+                                Checked and Recommended for Approval:
+                            </div>
+                            @if($syll->dean_submitted_at != null && $chair->signature)
+                            <div class="flex justify-center mt-5">
+                                <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
+                            </div>
+                            @else
+                            <div class="flex justify-center mt-20">
 
-        </tr>
+                            </div>
+                            @endif
+                            <div class="flex justify-center font-semibold underline">
+                                {{ strtoupper($syll->syll_chair) }}
+                            </div>
+                            <div class="flex justify-center text-center">
+                                Department Chair
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-center">
+                                Approved by:
+                            </div>
+                            @if($syll->dean_approved_at != null && $dean->signature)
+                            <div class="flex justify-center mt-5">
+                                <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
+                            </div>
+                            @else
+                            <div class="flex justify-center mt-20">
 
-    </table>
-
-    <div class="grid grid-cols-3 m-3">
-        <div class="">
-            <div class="flex justify-center">
-                Prepared By:
-            </div>
-            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
-            <div>
-                @if($syll->chair_submitted_at != null)
-                <div class="flex justify-center mt-20">
-                    sgd
-                </div>
-                @else
-                <div class="flex justify-center mt-20">
-
-                </div>
-                @endif
-                <div class="flex justify-center font-semibold underline">
-                    {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
-                </div>
-                <div class="flex justify-center">
-                    Instructor
-                </div>
-            </div>
-            @endforeach
-        </div>
-        <div>
-            <div class="flex justify-center">
-                Checked and Recommended for Approval:
-            </div>
-            @if($syll->dean_submitted_at != null)
-            <div class="flex justify-center mt-20">
-                sgd
-            </div>
-            @else
-            <div class="flex justify-center mt-20">
-
-            </div>
-            @endif
-            <div class="flex justify-center font-semibold underline">
-                {{ strtoupper($syll->syll_chair) }}
-            </div>
-            <div class="flex justify-center">
-                Chairperson, {{$syll->department_name}}
-            </div>
-        </div>
-        <div>
-            <div class="flex justify-center">
-                Approved by:
-            </div>
-            @if($syll->dean_approved_at != null)
-            <div class="flex justify-center mt-20">
-                sgd
-            </div>
-            @else
-            <div class="flex justify-center mt-20">
-
-            </div>
-            @endif
-            <div class="flex justify-center font-semibold underline">
-                {{ strtoupper($syll->syll_dean) }}
-            </div>
-            <div class="flex justify-center">
-                Dean, {{$syll->college_code}}
-            </div>
-        </div>
+                            </div>
+                            @endif
+                            <div class="flex justify-center font-semibold underline">
+                                {{ strtoupper($syll->syll_dean) }}
+                            </div>
+                            <div class="flex justify-center text-center">
+                                Dean
+                            </div>
+                        </div>
+                    </div> 
+                </td>
+            </tr>
+        </table>
     </div>
-    </td>
-
-
-    </table>
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var rejectButton = document.getElementById("rejectButton");
-            var feedbackModal = document.querySelector(".feedback-modal");
-            var overlay = document.getElementById("overlay");
-
-            rejectButton.addEventListener("click", function() {
-                feedbackModal.style.display = "block";
-                overlay.style.display = "block";
-            });
-
-            // Close modal functionality
-            var closeModalButton = document.getElementById("closeModalButton");
-
-            closeModalButton.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-            var rejectButton = document.getElementById("viewFeedback");
-            var feedbackModal = document.querySelector(".view-feedback-modal");
-            var overlay = document.getElementById("overlay");
-
-            rejectButton.addEventListener("click", function() {
-                feedbackModal.style.display = "block";
-                overlay.style.display = "block";
-            });
-
-            // Close modal functionality
-            var closeModalButton2 = document.getElementById("closeModalButton2");
-
-            closeModalButton2.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
-            var closeModalButton2 = document.getElementById("closeModalButton2");
-
-            closeModalButton.addEventListener("click", function() {
-                feedbackModal.style.display = "none";
-                overlay.style.display = "none";
-            });
-        });
-    </script>
-    <div id="overlay"></div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var rejectButton = document.getElementById("rejectButton");
+        var feedbackModal = document.querySelector(".feedback-modal");
+        var overlay = document.getElementById("overlay");
+
+        rejectButton.addEventListener("click", function() {
+            feedbackModal.style.display = "block";
+            overlay.style.display = "block";
+        });
+
+        // Close modal functionality
+        var closeModalButton = document.getElementById("closeModalButton");
+
+        closeModalButton.addEventListener("click", function() {
+            feedbackModal.style.display = "none";
+            overlay.style.display = "none";
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var rejectButton = document.getElementById("viewFeedback");
+        var feedbackModal = document.querySelector(".view-feedback-modal");
+        var overlay = document.getElementById("overlay");
+
+        rejectButton.addEventListener("click", function() {
+            feedbackModal.style.display = "block";
+            overlay.style.display = "block";
+        });
+
+        // Close modal functionality
+        var closeModalButton2 = document.getElementById("closeModalButton2");
+
+        closeModalButton2.addEventListener("click", function() {
+            feedbackModal.style.display = "none";
+            overlay.style.display = "none";
+        });
+        var closeModalButton2 = document.getElementById("closeModalButton2");
+
+        closeModalButton.addEventListener("click", function() {
+            feedbackModal.style.display = "none";
+            overlay.style.display = "none";
+        });
+    });
+</script>
+<div id="overlay"></div>
 
 </html>
 @endsection

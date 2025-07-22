@@ -185,7 +185,7 @@
                                 </g>
                             </g>
                         </svg>
-                        <span class="ms-3">Home</span>
+                        <span class="ms-3">Syllabus</span>
                     </a>
                 </li>
 
