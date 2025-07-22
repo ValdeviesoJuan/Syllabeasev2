@@ -238,6 +238,7 @@ class DeanController extends Controller
                 $q->whereNull('end_validity')
                 ->orWhere('end_validity', '>', $request->start_validity);
             })
+            ->whereNotNull('entity_id')
             ->exists();
 
         if ($userHasChairRole) {
@@ -258,17 +259,31 @@ class DeanController extends Controller
                     })
                     ->update(['end_validity' => $request->start_validity]);
 
-            /* ------------------------------------------------------------
-            | Create new chair assignment (Saves past Chair assignment for historical tracking)
-            |-------------------------------------------------------------*/
-            UserRole::create([
-                'role_id'        => $chairRoleId,
-                'entity_type'    => 'Department',
-                'entity_id'      => $request->department_id,
-                'user_id'        => $request->user_id,
-                'start_validity' => $request->start_validity,
-                'end_validity'   => $request->end_validity,
-            ]);
+            // Check if there's a record with null entity_id (unassigned dean)
+            $existingUnassignedRole = UserRole::where('user_id', $request->user_id)
+                ->where('role_id', $chairRoleId)
+                ->where('entity_type', 'College')
+                ->whereNull('entity_id')
+                ->first();
+
+            if ($existingUnassignedRole) {
+                // Update the existing unassigned record
+                $existingUnassignedRole->update([
+                    'entity_id'      => $request->department_id,
+                    'start_validity' => $request->start_validity,
+                    'end_validity'   => $request->end_validity,
+                ]);
+            } else {
+                // Otherwise, create a new assignment
+                UserRole::create([
+                    'user_id'        => $request->user_id,
+                    'role_id'        => $chairRoleId,
+                    'entity_type'    => 'Department',
+                    'entity_id'      => $request->department_id,
+                    'start_validity' => $request->start_validity,
+                    'end_validity'   => $request->end_validity,
+                ]);
+            }
         });
 
         return redirect()->route('dean.chairs')->with('success', 'Chair created successfully.');
@@ -313,6 +328,7 @@ class DeanController extends Controller
                 $q->whereNull('end_validity')
                 ->orWhere('end_validity', '>', $request->start_validity);
             })
+            ->whereNotNull('entity_id')
             ->exists();
 
         if ($userHasAnotherChair) {

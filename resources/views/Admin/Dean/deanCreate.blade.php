@@ -1,7 +1,7 @@
 <!-- @-extends('layouts.adminNav') -->
 @extends('layouts.adminSidebar')
-
 @section('content')
+@include('layouts.modal')
 <!DOCTYPE html>
 <html lang="en">
 

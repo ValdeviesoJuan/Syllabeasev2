@@ -216,7 +216,14 @@ class ChairSyllabusController extends Controller
     }
     public function approveSyllabus(Request $request, $syll_id)
     {
-        $syllabus = Syllabus::find($syll_id);
+        $syllabus = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
+            ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
+            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') // Corrected
+            ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
+            ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->first();
 
         if (!$syllabus) {
             return redirect()->route('chair.syllabus')->with('error', 'Syllabus not found.');
@@ -267,8 +274,7 @@ class ChairSyllabusController extends Controller
         }
         $srf->save();
 
-        // Create checklist rows here 
-        $srf_remarks = $request->input('srf_remarks');
+        // Create checklist rows here
         $srf_yes_no = $request->input('srf_yes_no');
         $checks = $request->input('srf_no');
 
@@ -277,7 +283,6 @@ class ChairSyllabusController extends Controller
             $srf_checklist->srf_id = $srf->srf_id;
 
             $srf_checklist->srf_no = $srf_nos;
-            $srf_checklist->srf_remarks = isset($srf_remarks[$key]) ? $srf_remarks[$key] : null;
             $srf_checklist->srf_yes_no = isset($srf_yes_no[$key]) && $srf_yes_no[$key] ? 'yes' : 'no';
             $srf_checklist->save();
         }
