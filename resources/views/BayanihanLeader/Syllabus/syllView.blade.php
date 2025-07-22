@@ -603,7 +603,14 @@
             x-init="
                 const toggle = document.getElementById('toggleRevisions');
                 toggle.addEventListener('change', () => showPrev = toggle.checked);"
+
+                :class="{
+                'force-full-red-border': 
+                    {{ isset($srf1) && $srf1['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                    (showPrev && {{ isset($previousChecklistSRF[1]) && $previousChecklistSRF[1]->srf_yes_no === 'no' ? 'true' : 'false' }})
+            }"
         >
+
             <!-- 1st Header -->
             <tr>
                 <th colspan="2" 

@@ -226,61 +226,7 @@ class ChairSyllabusController extends Controller
         $syllabus->status = 'Approved by Chair';
         $syllabus->save();
 
-        // Safely construct reviewed_by name
-        $authUser = Auth::user();
-        $reviewedBy = $authUser
-            ? trim(collect([
-                optional($authUser)->prefix,
-                $authUser->firstname,
-                $authUser->lastname,
-                optional($authUser)->suffix
-            ])->filter()->implode(' '))
-            : 'System';
         
-        // Group instructors by syllabus ID
-        $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
-            ->select('users.*', 'syllabus_instructors.*')
-            ->get()
-            ->groupBy('syll_id');
-            
-        // Create Review Form 
-        $srf = new SyllabusReviewForm();
-        $srf->syll_id = $syllabus->syll_id;
-        $srf->srf_course_code = $syllabus->course_code;
-        $srf->srf_title = $syllabus->course_title;
-        $srf->srf_sem_year = $syllabus->course_year_level  . ' ' . $syllabus->course_semester;
-        $srf->effectivity_date = $syllabus->effectivity_date;
-
-        $srf->user_id = Auth::id();
-        $srf->srf_date = now()->toDateString();
-        $srf->srf_reviewed_by = $reviewedBy;
-        $srf->srf_action = 0;
-
-        $srf->srf_faculty = '';
-
-        if ($instructors->has($srf->syll_id)) {
-            $facultyNames = $instructors[$srf->syll_id]->map(function ($instructor) {
-                return $instructor->firstname . ' ' . $instructor->lastname;
-            })->toArray();
-
-            $srf->srf_faculty = implode(', ', $facultyNames);
-        }
-        $srf->save();
-
-        // Create checklist rows here 
-        $srf_remarks = $request->input('srf_remarks');
-        $srf_yes_no = $request->input('srf_yes_no');
-        $checks = $request->input('srf_no');
-
-        foreach ($checks as $key => $srf_nos) {
-            $srf_checklist = new SrfChecklist();
-            $srf_checklist->srf_id = $srf->srf_id;
-
-            $srf_checklist->srf_no = $srf_nos;
-            $srf_checklist->srf_remarks = isset($srf_remarks[$key]) ? $srf_remarks[$key] : null;
-            $srf_checklist->srf_yes_no = isset($srf_yes_no[$key]) && $srf_yes_no[$key] ? 'yes' : 'no';
-            $srf_checklist->save();
-        }
 
         $submitted_syllabus = Syllabus::where('syll_id', $syll_id)
             ->join('bayanihan_groups', 'bayanihan_groups.bg_id', 'syllabi.bg_id')
