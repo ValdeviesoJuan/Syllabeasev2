@@ -1,4 +1,4 @@
-<div class="">
+<div class="absolute -right-50 z-100">
     <button wire:click="openComments" class="relative m-2">
         <div class="tooltip {{ $unresolvedComments == 0 ? 'opacity-50' : '' }} hover:opacity-100">
             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

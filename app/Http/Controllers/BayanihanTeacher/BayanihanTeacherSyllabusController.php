@@ -164,6 +164,36 @@ class BayanihanTeacherSyllabusController extends Controller
             ->where('role_id', $deanRoleId)
             ->select('users.*')
             ->first();
+        
+        $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
+            ->whereRaw('CAST(version AS UNSIGNED) < ?', [intval($syll->version)])
+            ->orderByRaw('CAST(version AS UNSIGNED) DESC')
+            ->first();
+
+        $previousStatus = null;
+        $previousReviewForm = null;
+        $previousChecklistItems = [];
+        $previousChecklistSRF = collect();
+        $previousDeanFeedback = [];
+
+        if ($previousSyllabus) {
+            $previousStatus = $previousSyllabus->status;
+
+            if ($previousStatus === "Returned by Chair") {
+                $previousReviewForm = SyllabusReviewForm::where('syll_id', $previousSyllabus->syll_id)->first();
+
+                if ($previousReviewForm) {
+                    $previousChecklistItems = SrfChecklist::where('srf_id', $previousReviewForm->srf_id)
+                        ->orderBy('srf_no')
+                        ->get();
+
+                    $previousChecklistSRF = $previousChecklistItems->keyBy('srf_no');
+                }
+                
+            } else if ($previousStatus === "Returned by Dean") {
+                $previousDeanFeedback = SyllabusDeanFeedback::where('syll_id', $previousSyllabus->syll_id)->first();
+            }
+        }
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -241,6 +271,10 @@ class BayanihanTeacherSyllabusController extends Controller
         $syllabusVersions = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->select('syllabi.*')
             ->get();
+        
+        $isLatest = Syllabus::where('bg_id', $syll->bg_id)
+            ->orderByRaw('CAST(version AS UNSIGNED) DESC')
+            ->value('syll_id') == $syll->syll_id;
 
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
         
@@ -283,6 +317,13 @@ class BayanihanTeacherSyllabusController extends Controller
             'srf18',
             'srf17',
             'srf19',
+            'previousSyllabus',
+            'previousStatus',
+            'previousReviewForm',
+            'previousChecklistItems',
+            'previousChecklistSRF',
+            'previousDeanFeedback',
+            'isLatest'
         ));
     }
     public function viewReviewForm($syll_id)

@@ -11,6 +11,7 @@
     <title>SyllabEase</title>
     @vite('resources/css/app.css')
     <x-head.tinymce-config />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <script src="https://cdn.tiny.cloud/1/ux8hih2n6kvrupg3ywetf1kdoav78vf12hcudnuhz6ftkl0x/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
@@ -196,9 +197,89 @@
             </div>
         </div>
     </div>
+    @else 
+    <div class="ml-32 my-5 ">
+        <div class="flex flex-row space-x-4">
+            @if($previousStatus === 'Returned by Chair')
+                <!-- Highlight Revisions Toggle -->
+                <div class="flex items-center ml-6 text-gray bg-[#f3a71a] hover:bg-[#f3a71a]  px-3 rounded shadow-lg space-x-2 cursor-pointer"> 
+                    <input type="checkbox" id="toggleRevisions" class="btn btn-primary"
+                            @change="showPrev = $event.target.checked">
+                    <label for="toggleRevisions" >Highlight Revisions</label>
+                </div>
+            @elseif($previousStatus === 'Returned by Dean')
+                <!-- Feedback by Dean Button -->
+                <button id="viewDeanFeedback" type="button" class="flex items-center ml-6 text-white bg-blue hover:bg-blue-600 px-3 py-2 rounded shadow-lg space-x-2 cursor-pointer border border-blue">
+                    View Dean Feedback
+                </button>
+
+                <!-- Modal Overlay -->
+                <div class="view-dean-feedback-modal hidden fixed inset-0 bg-opacity-30 flex justify-center items-center z-50">
+                    <div class="bg-white rounded-lg shadow-lg p-6 w-10/12 max-w-xl">
+                        <div class="text-lg font-semibold text-center mb-4">
+                            Feedback
+                        </div>
+                        <div class="border border-blue p-4 mb-4">
+                            <div>
+                                {{$previousDeanFeedback->syll_dean_feedback_text}}
+                            </div>
+                        </div>
+                        <div class="flex justify-center">
+                            <button id="closeModalButton3" class="bg-blue px-3 py-2 rounded-lg text-white hover:bg-blue3">Done</button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
     @endif
-    <!-- OUTER CONTAINER -->
-    <div class="mx-auto mt-6 w-11/12 border-[1px] border-black bg-white font-serif text-sm p-4">
+    <!-- OUTER CONTAINER SYLLABUS TABLE-->
+    <div class="mx-auto mt-6 w-11/12 border-[1px] border-black bg-white font-serif text-sm p-4 relative">
+        @php
+            $shouldShowIcon = (isset($srf1) && $srf1['srf_yes_no'] === 'no');
+            $showPrev = isset($previousChecklistSRF[1]) && $previousChecklistSRF[1]->srf_yes_no === 'no';
+            $remarkText = $srf1['srf_remarks'] ?? ($previousChecklistSRF[1]->srf_remarks ?? null);
+        @endphp
+
+        @if($shouldShowIcon || $showPrev)
+            <div 
+                class="absolute -top-2 -right-2 z-100"
+                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+            >
+                <div class="relative group">
+                    <!-- Icon -->
+                    <button 
+                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                        title="View remark"
+                    >
+                        <i class="fa-solid fa-message text-xl"></i>
+                    </button>
+
+                    <!-- Bubble -->
+                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                        <!-- Arrow -->
+                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                        <!-- Feedback label -->
+                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                        <!-- Feedback content -->
+                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                            {{ $remarkText ?? 'No remarks provided.' }}
+                        </p>
+
+                        <!-- Button container -->
+                        <div class="flex justify-end">
+                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                OKAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     <!-- HEADER SECTION -->
     <br>
     <div class="flex justify-center items-start mb-4">
@@ -262,6 +343,12 @@
         x-init="
             const toggle = document.getElementById('toggleRevisions');
             toggle.addEventListener('change', () => showPrev = toggle.checked);"
+
+        :class="{
+            'force-full-red-border': 
+                {{ isset($srf1) && $srf1['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                (showPrev && {{ isset($previousChecklistSRF[1]) && $previousChecklistSRF[1]->srf_yes_no === 'no' ? 'true' : 'false' }})
+        }"
     >
         <!-- 1st Header -->
         <tr>
@@ -271,9 +358,54 @@
                         {{ isset($srf2) && $srf2['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                         (showPrev && {{ isset($previousChecklistSRF[2]) && $previousChecklistSRF[2]->srf_yes_no === 'no' ? 'true' : 'false' }})
                 }"
-                class="font-medium border-2 border-solid px-4">
+                class="font-medium border-2 border-solid px-4 relative">
                 <span class="font-bold">{{$syll->college_description}}</span><br>
                 {{$syll->department_name}}
+                @php
+                    $shouldShowIcon = (isset($srf2) && $srf2['srf_yes_no'] === 'no');
+                    $showPrev = isset($previousChecklistSRF[2]) && $previousChecklistSRF[2]->srf_yes_no === 'no';
+                    $remarkText = $srf2['srf_remarks'] ?? ($previousChecklistSRF[2]->srf_remarks ?? null);
+                @endphp
+
+                @if($shouldShowIcon || $showPrev)
+                    <div 
+                        class="absolute -top-2 -right-2 z-100"
+                        style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                        data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                    >
+                        <div class="relative group">
+                            <!-- Icon -->
+                            <button 
+                                class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                title="View remark"
+                            >
+                                <i class="fa-solid fa-message text-xl"></i>
+                            </button>
+
+                            <!-- Bubble -->
+                            <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                <!-- Arrow -->
+                                <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                            border-l-transparent border-r-transparent border-b-white"></div>
+
+                                <!-- Feedback label -->
+                                <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                <!-- Feedback content -->
+                                <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                    {{ $remarkText ?? 'No remarks provided.' }}
+                                </p>
+
+                                <!-- Button container -->
+                                <div class="flex justify-end">
+                                    <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                        OKAY
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </th>
 
             <th :class="{
@@ -281,12 +413,57 @@
                         {{ isset($srf3) && $srf3['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                         (showPrev && {{ isset($previousChecklistSRF[3]) && $previousChecklistSRF[3]->srf_yes_no === 'no' ? 'true' : 'false' }})
                 }"
-                class="font-medium border-2 border-solid text-left px-4 w-2/6"
+                class="font-medium border-2 border-solid text-left px-4 w-2/6 relative"
             >
                 <span class="font-bold underline underline-offset-4">Syllabus<br></span>
                 Course Title :<span class="font-bold">{{$syll->course_title}}<br></span>
                 Course Code: {{$syll->course_code}}<br>
                 Credits: {{$syll->course_credit_unit}} units ({{$syll->course_unit_lec}} hours lecture, {{$syll->course_unit_lab}} hrs Laboratory)<br>
+                @php
+                    $shouldShowIcon = (isset($srf3) && $srf3['srf_yes_no'] === 'no');
+                    $showPrev = isset($previousChecklistSRF[3]) && $previousChecklistSRF[3]->srf_yes_no === 'no';
+                    $remarkText = $srf3['srf_remarks'] ?? ($previousChecklistSRF[3]->srf_remarks ?? null);
+                @endphp
+
+                @if($shouldShowIcon || $showPrev)
+                    <div 
+                        class="absolute -top-2 -right-2 z-100"
+                        style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                        data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                    >
+                        <div class="relative group">
+                            <!-- Icon -->
+                            <button 
+                                class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                title="View remark"
+                            >
+                                <i class="fa-solid fa-message text-xl"></i>
+                            </button>
+
+                            <!-- Bubble -->
+                            <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                <!-- Arrow -->
+                                <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                            border-l-transparent border-r-transparent border-b-white"></div>
+
+                                <!-- Feedback label -->
+                                <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                <!-- Feedback content -->
+                                <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                    {{ $remarkText ?? 'No remarks provided.' }}
+                                </p>
+
+                                <!-- Button container -->
+                                <div class="flex justify-end">
+                                    <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                        OKAY
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </th>
         </tr>
         <!-- 2nd Header -->
@@ -299,9 +476,54 @@
                 class="border-2 border-solid font-medium text-sm text-left px-2 text-justify align-top"
             >
                 <!-- VISION -->
-                <div class="mt-2 mb-8">
+                <div class="mt-2 mb-8 relative">
                     <span class="font-bold">USTP Vision<br><br></span>
                     <p>The University is a nationally recognized Science and Technology University providing the vital link between education and the economy.</p>
+                    @php
+                        $shouldShowIcon = (isset($srf8) && $srf8['srf_yes_no'] === 'no');
+                        $showPrev = isset($previousChecklistSRF[8]) && $previousChecklistSRF[8]->srf_yes_no === 'no';
+                        $remarkText = $srf8['srf_remarks'] ?? ($previousChecklistSRF[8]->srf_remarks ?? null);
+                    @endphp
+
+                    @if($shouldShowIcon || $showPrev)
+                        <div 
+                            class="absolute -top-2 -right-2 z-100"
+                            style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                            data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                        >
+                            <div class="relative group">
+                                <!-- Icon -->
+                                <button 
+                                    class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                    title="View remark"
+                                >
+                                    <i class="fa-solid fa-message text-xl"></i>
+                                </button>
+
+                                <!-- Bubble -->
+                                <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                    <!-- Arrow -->
+                                    <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                border-l-transparent border-r-transparent border-b-white"></div>
+
+                                    <!-- Feedback label -->
+                                    <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                    <!-- Feedback content -->
+                                    <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                        {{ $remarkText ?? 'No remarks provided.' }}
+                                    </p>
+
+                                    <!-- Button container -->
+                                    <div class="flex justify-end">
+                                        <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                            OKAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif    
                 </div>
                 <!-- MISSION -->
                 <div class="mb-8">
@@ -319,13 +541,59 @@
                     </ul>
                 </div>
                 <!-- POE -->
-                <div class="mb-8">
+                <div class="mb-8 relative">
                     <span class="font-bold">Program Educational Objectives<br><br></span>
                     @foreach($poes as $poe)
                     <div class="mb-2">
                         <p><span class="font-semibold">{{$poe->poe_code}}: </span>{{$poe->poe_description}}</p>
                     </div>
                     @endforeach
+                        
+                    @php
+                        $shouldShowIcon = (isset($srf10) && $srf10['srf_yes_no'] === 'no');
+                        $showPrev = isset($previousChecklistSRF[10]) && $previousChecklistSRF[10]->srf_yes_no === 'no';
+                        $remarkText = $srf10['srf_remarks'] ?? ($previousChecklistSRF[10]->srf_remarks ?? null);
+                    @endphp
+
+                    @if($shouldShowIcon || $showPrev)
+                        <div 
+                            class="absolute -top-2 -right-2 z-100"
+                            style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                            data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                        >
+                            <div class="relative group">
+                                <!-- Icon -->
+                                <button 
+                                    class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                    title="View remark"
+                                >
+                                    <i class="fa-solid fa-message text-xl"></i>
+                                </button>
+
+                                <!-- Bubble -->
+                                <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                    <!-- Arrow -->
+                                    <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                border-l-transparent border-r-transparent border-b-white"></div>
+
+                                    <!-- Feedback label -->
+                                    <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                    <!-- Feedback content -->
+                                    <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                        {{ $remarkText ?? 'No remarks provided.' }}
+                                    </p>
+
+                                    <!-- Button container -->
+                                    <div class="flex justify-end">
+                                        <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                            OKAY
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <div class="mb-8">
                     <span class="font-bold">Program Outcomes<br><br></span>
@@ -384,24 +652,116 @@
                                     {{ isset($srf5) && $srf5['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                     (showPrev && {{ isset($previousChecklistSRF[5]) && $previousChecklistSRF[5]->srf_yes_no === 'no' ? 'true' : 'false' }})
                             }"
-                            class="border-2 border-solid font-medium text-left px-4 w-1/2"
+                            class="border-2 border-solid font-medium text-left px-4 w-1/2 relative"
                         >
                             Semester/Year: {{$syll->course_semester}} SY{{$syll->bg_school_year}}<br>
                             Class Schedule:{!! nl2br(e($syll->syll_class_schedule)) !!}<br>
                             Bldg./Rm. No. {{$syll->syll_bldg_rm}}
+                                
+                            @php
+                                $shouldShowIcon = (isset($srf5) && $srf5['srf_yes_no'] === 'no');
+                                $showPrev = isset($previousChecklistSRF[5]) && $previousChecklistSRF[5]->srf_yes_no === 'no';
+                                $remarkText = $srf5['srf_remarks'] ?? ($previousChecklistSRF[5]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content -->
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                         <td :class="{
                                 'force-full-red-border': 
                                     {{ isset($srf4) && $srf4['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                     (showPrev && {{ isset($previousChecklistSRF[4]) && $previousChecklistSRF[4]->srf_yes_no === 'no' ? 'true' : 'false' }})
                             }"
-                            class="border-2 border-solid font-medium  text-start text-top px-4"
+                            class="border-2 border-solid font-medium  text-start text-top px-4 relative"
                         >
                             <div class="absolute right-[120px]">
                                 <livewire:header-comment-modal :syll_id="$syll->syll_id" />
                             </div>
                             Pre-requisite(s): {{$syll->course_pre_req}} <br>
                             Co-requisite(s): {{$syll->course_co_req}}
+                                
+                            @php
+                                $shouldShowIcon = (isset($srf4) && $srf4['srf_yes_no'] === 'no');
+                                $showPrev = isset($previousChecklistSRF[4]) && $previousChecklistSRF[4]->srf_yes_no === 'no';
+                                $remarkText = $srf4['srf_remarks'] ?? ($previousChecklistSRF[4]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content -->
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                     </tr>
 
@@ -411,12 +771,9 @@
                                         {{ isset($srf6) && $srf6['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                         (showPrev && {{ isset($previousChecklistSRF[6]) && $previousChecklistSRF[6]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                 }"
-                            class="items-start border-2 border-solid font-medium text-left px-4"
+                            class="items-start border-2 border-solid font-medium text-left px-4 relative"
                         >
-                            Instructor:
-                            <!-- @foreach ($instructors[$syll->syll_id] ?? [] as $instructor)
-                            <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
-                            @endforeach <br> -->
+                            Instructor: 
                             @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
                             @if ($loop->first)
                             <span class="font-bold">{{ $instructor->firstname }} {{ $instructor->lastname }}</span>
@@ -435,16 +792,108 @@
                             @foreach ($instructors[$syll->syll_id] ?? [] as $instructor)
                             {{ $instructor->phone }}
                             @endforeach <br>
+                                
+                            @php
+                                $shouldShowIcon = (isset($srf6) && $srf6['srf_yes_no'] === 'no');
+                                $showPrev = isset($previousChecklistSRF[6]) && $previousChecklistSRF[6]->srf_yes_no === 'no';
+                                $remarkText = $srf6['srf_remarks'] ?? ($previousChecklistSRF[6]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content -->
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                         <td :class="{
                                 'force-full-red-border': 
                                     {{ isset($srf7) && $srf7['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                     (showPrev && {{ isset($previousChecklistSRF[7]) && $previousChecklistSRF[7]->srf_yes_no === 'no' ? 'true' : 'false' }})
                             }"
-                            class="border-2 border-solid font-medium text-left px-4"
+                            class="border-2 border-solid font-medium text-left px-4 relative"
                         >
                             Consultation Schedule: {!! nl2br(e($syll->syll_ins_consultation)) !!}<br>
                             Bldg rm no: {{$syll->syll_ins_bldg_rm}}
+                                
+                            @php
+                                $shouldShowIcon = (isset($srf7) && $srf7['srf_yes_no'] === 'no');
+                                $showPrev = isset($previousChecklistSRF[7]) && $previousChecklistSRF[7]->srf_yes_no === 'no';
+                                $remarkText = $srf7['srf_remarks'] ?? ($previousChecklistSRF[7]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content -->
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     <tr>
@@ -453,11 +902,57 @@
                                     {{ isset($srf9) && $srf9['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                     (showPrev && {{ isset($previousChecklistSRF[9]) && $previousChecklistSRF[9]->srf_yes_no === 'no' ? 'true' : 'false' }})
                             }"
-                            class="items-start border-2 border-solid font-medium text-left px-4"
+                            class="items-start border-2 border-solid font-medium text-left px-4 relative"
                         >
                             <span class="text-left font-bold">
                                 I. Course Descripion:</span><br>
                             {{ $syll->syll_course_description }}
+                                
+                            @php
+                                $shouldShowIcon = (isset($srf9) && $srf9['srf_yes_no'] === 'no');
+                                $showPrev = isset($previousChecklistSRF[9]) && $previousChecklistSRF[9]->srf_yes_no === 'no';
+                                $remarkText = $srf9['srf_remarks'] ?? ($previousChecklistSRF[9]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content -->
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     <tr class="">
@@ -467,7 +962,7 @@
                                     {{ isset($srf11) && $srf11['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                     (showPrev && {{ isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no' ? 'true' : 'false' }})
                             }"
-                            class=" border-2 border-solid font-medium px-4 "
+                            class="border-2 border-solid font-medium px-4 relative"
                         >
                             <span class="text-left font-bold">
                                 II. Course Outcome:</span><br>
@@ -517,8 +1012,54 @@
                                                 {{ isset($srf13) && $srf13['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[13]) && $previousChecklistSRF[13]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
-                                        Alloted Time
+                                        class="border-2 border-solid relative">
+                                        Allotted Time
+
+                                        @php
+                                            $shouldShowIcon = (isset($srf13) && $srf13['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[13]) && $previousChecklistSRF[13]->srf_yes_no === 'no';
+                                            $remarkText = $srf13['srf_remarks'] ?? ($previousChecklistSRF[13]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th class="border-2 border-solid">
                                         Course Outcomes (C)
@@ -528,48 +1069,324 @@
                                                 {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
+                                        class="border-2 border-solid relative">
                                         Intended Learning Outcome (ILO)
+                                        
+                                        @php
+                                            $shouldShowIcon = (isset($srf14) && $srf14['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no';
+                                            $remarkText = $srf14['srf_remarks'] ?? ($previousChecklistSRF[14]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th :class="{
                                             'force-full-red-border': 
                                                 {{ isset($srf14) && $srf14['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
+                                        class="border-2 border-solid relative">
                                         Topics
+
+                                        @php
+                                            $shouldShowIcon = (isset($srf14) && $srf14['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[14]) && $previousChecklistSRF[14]->srf_yes_no === 'no';
+                                            $remarkText = $srf14['srf_remarks'] ?? ($previousChecklistSRF[14]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th :class="{
                                             'force-full-red-border': 
                                                 {{ isset($srf15) && $srf15['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[15]) && $previousChecklistSRF[15]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
+                                        class="border-2 border-solid relative">
                                         Suggested Readings
+
+                                        @php
+                                            $shouldShowIcon = (isset($srf15) && $srf15['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[15]) && $previousChecklistSRF[15]->srf_yes_no === 'no';
+                                            $remarkText = $srf15['srf_remarks'] ?? ($previousChecklistSRF[15]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th :class="{
                                             'force-full-red-border': 
                                                 {{ isset($srf16) && $srf16['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[16]) && $previousChecklistSRF[16]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
+                                        class="border-2 border-solid relative">
                                         Teaching Learning Activities
+
+                                        @php
+                                            $shouldShowIcon = (isset($srf16) && $srf16['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[16]) && $previousChecklistSRF[16]->srf_yes_no === 'no';
+                                            $remarkText = $srf16['srf_remarks'] ?? ($previousChecklistSRF[16]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th :class="{
                                             'force-full-red-border': 
                                                 {{ isset($srf17) && $srf17['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[17]) && $previousChecklistSRF[17]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
+                                        class="border-2 border-solid relative">
                                         Assessment Tasks/Tools
+
+                                        @php
+                                            $shouldShowIcon = (isset($srf17) && $srf17['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[17]) && $previousChecklistSRF[17]->srf_yes_no === 'no';
+                                            $remarkText = $srf17['srf_remarks'] ?? ($previousChecklistSRF[17]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th :class="{
                                             'force-full-red-border': 
                                                 {{ isset($srf19) && $srf19['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                                 (showPrev && {{ isset($previousChecklistSRF[19]) && $previousChecklistSRF[19]->srf_yes_no === 'no' ? 'true' : 'false' }})
                                         }"
-                                        class="border-2 border-solid">
+                                        class="border-2 border-solid relative">
                                         Grading Criteria
+
+                                        @php
+                                            $shouldShowIcon = (isset($srf19) && $srf19['srf_yes_no'] === 'no');
+                                            $showPrev = isset($previousChecklistSRF[19]) && $previousChecklistSRF[19]->srf_yes_no === 'no';
+                                            $remarkText = $srf19['srf_remarks'] ?? ($previousChecklistSRF[19]->srf_remarks ?? null);
+                                        @endphp
+
+                                        @if($shouldShowIcon || $showPrev)
+                                            <div 
+                                                class="absolute -top-2 -right-2 z-100"
+                                                style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                                data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                            >
+                                                <div class="relative group">
+                                                    <!-- Icon -->
+                                                    <button 
+                                                        class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                                        title="View remark"
+                                                    >
+                                                        <i class="fa-solid fa-message text-xl"></i>
+                                                    </button>
+
+                                                    <!-- Bubble -->
+                                                    <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                                        <!-- Arrow -->
+                                                        <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                                    border-l-transparent border-r-transparent border-b-white"></div>
+
+                                                        <!-- Feedback label -->
+                                                        <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                                        <!-- Feedback content -->
+                                                        <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                            {{ $remarkText ?? 'No remarks provided.' }}
+                                                        </p>
+
+                                                        <!-- Button container -->
+                                                        <div class="flex justify-end">
+                                                            <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                                OKAY
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </th>
                                     <th class="border-2 border-solid">
                                         Remarks
@@ -679,13 +1496,59 @@
                                     {{ isset($srf18) && $srf18['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
                                     (showPrev && {{ isset($previousChecklistSRF[18]) && $previousChecklistSRF[18]->srf_yes_no === 'no' ? 'true' : 'false' }})
                             }"
-                            class="border-2 border-solid font-medium">
+                            class="border-2 border-solid font-medium relative">
                             <span class="text-left font-bold">
                                 IV. Course Requirements:
                             </span><br>
                             <div class="crq">
                                 {!! $syll->syll_course_requirements !!}
                             </div>
+                                
+                            @php
+                                $shouldShowIcon = (isset($srf18) && $srf18['srf_yes_no'] === 'no');
+                                $showPrev = isset($previousChecklistSRF[18]) && $previousChecklistSRF[18]->srf_yes_no === 'no';
+                                $remarkText = $srf18['srf_remarks'] ?? ($previousChecklistSRF[18]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="remark-btn text-[#d3494e] hover:text-[#b91c1c] rounded-full"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content -->
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 </table>
@@ -783,6 +1646,57 @@
         closeModalButton.addEventListener("click", function() {
             feedbackModal.style.display = "none";
             overlay.style.display = "none";
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var feedbackButton = document.getElementById("viewDeanFeedback");
+        var feedbackModal = document.querySelector(".view-dean-feedback-modal");
+        var closeModalButton3 = document.getElementById("closeModalButton3");
+
+        function toggleModal() {
+            feedbackModal.classList.toggle("hidden");
+        }
+
+        function closeModal() {
+            feedbackModal.classList.add("hidden");
+        }
+
+        feedbackButton.addEventListener("click", toggleModal);
+        closeModalButton3.addEventListener("click", closeModal);
+
+        // Close when clicking outside the modal content
+        window.addEventListener("click", function(event) {
+            if (event.target === feedbackModal) {
+                closeModal();
+            }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.getElementById("toggleRevisions");
+
+        toggle?.addEventListener("change", function () {
+            const show = toggle.checked;
+
+            document.querySelectorAll("[data-prev-check]").forEach(icon => {
+                const srfNo = icon.getAttribute("data-prev-check");
+                const shouldShow = srfNo === "no" && show;
+
+                icon.style.display = shouldShow ? "block" : "none";
+            });
+        });
+
+        // Handle remark bubble toggle
+        document.querySelectorAll(".remark-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const bubble = this.nextElementSibling;
+                bubble?.classList.toggle("hidden");
+            });
+        });
+
+        document.querySelectorAll(".close-remark").forEach(btn => {
+            btn.addEventListener("click", function () {
+                this.closest(".remark-bubble")?.classList.add("hidden");
+            });
         });
     });
 </script>

@@ -466,9 +466,11 @@
                             <span class="font-semibold ">Directions:</span> Check the column <span class="font-semibold">YES</span> if an indicator is observed in the syllabus and check column NO if otherwise. Provide clear and constructive remarks that would help improve the content and alignment of the syllabus.
                         </p>
                     </div>
-                    <form action="{{ route('chairperson.returnSyllabus', $syll_id) }}" method="POST">
+                    <form id="syllabusForm" action="{{ route('chairperson.returnSyllabus', $syll_id) }}" method="POST">
+                        @csrf
+                        <div id="method_override_container"></div>
+                        
                         <table id="review_form_table">
-                            @csrf
                             <thead class="bg-red-500">
                                 <tr class="">
                                     <th class="w-[600px] p-4">INDICATORS</th>
@@ -647,39 +649,31 @@
                                     <td class=""><textarea name="srf_remarks[]" class="remarks" id="" cols="30" rows="3" placeholder="Please input remarks here..."></textarea></td>
                                 </tr>
                             </tbody>
-                    </table>
-                </div>
-                <!-- <form wire:submit.prevent="returnSyllabus" method="POST"> -->
-                <div class="mt-10 flex space-x-4 justify-center items-center">
-                    <input type="hidden" wire:model="syll_id">
-                    <div id="revisionBtn" class="py-2 px-2 mb-8 bg-pink text-red w-[150px] h-14 rounded flex justify-center items-center ">
-                        <button class="revisionBtn" type="submit">
-                            <div class="flex space-x-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="23px" height="23px" viewBox="0 0 64 64" stroke-width="5" stroke="#fb6a5e" fill="none">
-                                    <path d="M54.89,26.73A23.52,23.52,0,0,1,15.6,49" stroke-linecap="round" />
-                                    <path d="M9,37.17a23.75,23.75,0,0,1-.53-5A23.51,23.51,0,0,1,48.3,15.2" stroke-linecap="round" />
-                                    <polyline points="37.73 16.24 48.62 15.44 47.77 5.24" stroke-linecap="round" />
-                                    <polyline points="25.91 47.76 15.03 48.56 15.88 58.76" stroke-linecap="round" />
-                                </svg>
-                                <div>For Revision</div>
-                            </div>
-                        </button>
-                    </div>
-                    </form>
-                    <!-- </form> -->
-                    <form action="{{ route('chairperson.approveSyllabus', $syll_id) }}" method="POST" class="m-0">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" wire:model="syll_id">
-                        <div style="display:none" id="submitBtn" class="py-2 mb-8 px-2 bg-green2 text-green w-[150px] h-14 rounded flex justify-center items-center">
-                            <button class="submitBtn" type="submit">
+                        </table>
+
+                        <input type="hidden" name="submit_action" id="submit_action" value="return">
+
+                        <div class="mt-10 flex space-x-4 justify-center items-center">
+                            <!-- For Revision Button -->
+                            <button type="submit" id="revisionBtn" class="py-2 px-2 mb-8 bg-pink text-red w-[150px] h-14 rounded flex justify-center items-center">
+                                <div class="flex space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="23px" height="23px" viewBox="0 0 64 64" stroke-width="5" stroke="#fb6a5e" fill="none">
+                                        <path d="M54.89,26.73A23.52,23.52,0,0,1,15.6,49" stroke-linecap="round" />
+                                        <path d="M9,37.17a23.75,23.75,0,0,1-.53-5A23.51,23.51,0,0,1,48.3,15.2" stroke-linecap="round" />
+                                        <polyline points="37.73 16.24 48.62 15.44 47.77 5.24" stroke-linecap="round" />
+                                        <polyline points="25.91 47.76 15.03 48.56 15.88 58.76" stroke-linecap="round" />
+                                    </svg>
+                                    <div>For Revision</div>
+                                </div>
+                            </button>
+
+                            <!-- Approve Button -->
+                            <button type="submit" id="submitBtn" class="py-2 px-2 mb-8 bg-green2 text-green w-[150px] h-14 rounded flex justify-center items-center">
                                 <div class="flex space-x-3">
                                     <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4 12.6111L8.92308 17.5L20 6.5" stroke="#31a858" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    <div>
-                                        Approve
-                                    </div>
+                                    <div>Approve</div>
                                 </div>
                             </button>
                         </div>
@@ -689,65 +683,85 @@
         </div>
     </div>
     <script>
-    $(document).ready(function () {
-        function checkCheckbox() {
-            let allYesChecked = $('.yes').length > 0 && $('.yes:checked').length === $('.yes').length;
-            let anyNoChecked = $('.no:checked').length > 0;
+        $(document).ready(function () {
+            function checkCheckbox() {
+                let allYesChecked = $('.yes').length > 0 && $('.yes:checked').length === $('.yes').length;
+                let anyNoChecked = $('.no:checked').length > 0;
 
-            if (allYesChecked && !anyNoChecked) {
-                $('#submitBtn').show();
-                $('#revisionBtn').hide();
-            } else {
-                $('#submitBtn').hide();
-                $('#revisionBtn').show();
-            }
-        }
-
-        $('input[name="srf_yes_no[]"]').on('change', function () {
-            var row = $(this).closest('tr');
-
-            if ($(this).hasClass('yes') && $(this).prop('checked')) {
-                row.find('input.no').prop('checked', false);
-            } else if ($(this).hasClass('no') && $(this).prop('checked')) {
-                row.find('input.yes').prop('checked', false);
-            }
-
-            checkCheckbox(); 
-        });
-
-        $('#checkAllYesButton').on('click', function () {
-            $('.no').prop('checked', false);
-            $('.yes').prop('checked', true);
-            checkCheckbox();
-        });
-
-        checkCheckbox();
-
-        var form = $('form');
-        var rows = $('.review-row');
-
-        form.on('submit', function (e) {
-            var isValid = true;
-
-            rows.each(function () {
-                var no = $(this).find('.no');
-                var remarks = $(this).find('.remarks');
-
-                if (no.prop('checked') && $.trim(remarks.val()) === '') {
-                    isValid = false;
-                    remarks.addClass('border-solid border-2 border-red placeholder-red').attr('placeholder', 'Please input remarks here');
+                if (allYesChecked && !anyNoChecked) {
+                    $('#submitBtn').show();
+                    $('#revisionBtn').hide();
                 } else {
-                    remarks.removeClass('border-solid border-2 border-red placeholder-red').removeAttr('placeholder');
+                    $('#submitBtn').hide();
+                    $('#revisionBtn').show();
+                }
+            }
+
+            $('input[name="srf_yes_no[]"]').on('change', function () {
+                var row = $(this).closest('tr');
+
+                if ($(this).hasClass('yes') && $(this).prop('checked')) {
+                    row.find('input.no').prop('checked', false);
+                } else if ($(this).hasClass('no') && $(this).prop('checked')) {
+                    row.find('input.yes').prop('checked', false);
+                }
+
+                checkCheckbox(); 
+            });
+
+            $('#checkAllYesButton').on('click', function () {
+                $('.no').prop('checked', false);
+                $('.yes').prop('checked', true);
+                checkCheckbox();
+            });
+
+            checkCheckbox();
+
+            var form = $('#syllabusForm');
+            var rows = $('.review-row');
+
+            form.on('submit', function (e) {
+                var isValid = true;
+                var submitAction = $('#submit_action').val();
+
+                rows.each(function () {
+                    var no = $(this).find('.no');
+                    var remarks = $(this).find('.remarks');
+
+                    if (no.prop('checked') && $.trim(remarks.val()) === '') {
+                        isValid = false;
+                        remarks.addClass('border-solid border-2 border-red placeholder-red').attr('placeholder', 'Please input remarks here');
+                    } else {
+                        remarks.removeClass('border-solid border-2 border-red placeholder-red').removeAttr('placeholder');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please provide remarks for all items marked as "No".');
+                    return;
+                }
+
+                // Dynamically change action
+                if (submitAction === 'approve') {
+                    form.attr('action', "{{ route('chairperson.approveSyllabus', $syll_id) }}");
+                    $('#method_override_container').html('<input type="hidden" name="_method" value="PUT">');
+                } else {
+                    form.attr('action', "{{ route('chairperson.returnSyllabus', $syll_id) }}");
+                    $('#method_override_container').html(''); // Remove method override (default is POST)
                 }
             });
 
-            if (!isValid) {
-                e.preventDefault();
-                alert('Please provide remarks for all items marked as "No".');
-            }
+            // Set action type when buttons are clicked
+            $('#submitBtn').on('click', function () {
+                $('#submit_action').val('approve');
+            });
+
+            $('#revisionBtn').on('click', function () {
+                $('#submit_action').val('return');
+            });
         });
-    });
-</script>
+    </script>
 </body>
 
 </html>
