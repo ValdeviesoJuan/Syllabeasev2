@@ -233,6 +233,17 @@ class ChairSyllabusController extends Controller
         $syllabus->status = 'Approved by Chair';
         $syllabus->save();
 
+        // Safely construct reviewed_by name
+        $authUser = Auth::user();
+        $reviewedBy = $authUser
+            ? trim(collect([
+                optional($authUser)->prefix,
+                $authUser->firstname,
+                $authUser->lastname,
+                optional($authUser)->suffix
+            ])->filter()->implode(' '))
+            : 'System';
+
         // Group instructors by syllabus ID
         $instructors = SyllabusInstructor::join('users', 'syllabus_instructors.syll_ins_user_id', '=', 'users.id')
             ->select('users.*', 'syllabus_instructors.*')
