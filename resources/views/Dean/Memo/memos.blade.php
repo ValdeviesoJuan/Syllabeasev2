@@ -140,20 +140,24 @@
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
         <div onclick="window.location.href='{{ route('dean.showMemo', $memo->id) }}'"
-            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
+            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group overflow-hidden">
 
             {{-- Title --}}
-            <h2 class="text-lg font-semibold mb-2 text-gray-800">{{ $memo->title }}</h2>
+            <h2 class="text-lg font-semibold mb-2 text-gray-800 truncate" title="{{ $memo->title }}">
+                {{ $memo->title }}
+            </h2>
 
             {{-- Description --}}
-            <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
+            <p class="text-gray-600 mb-2 break-words line-clamp-3">
+                {{ $memo->description }}
+            </p>
 
             {{-- Date --}}
             <div class="text-sm text-gray-500 mb-3">
                 {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
             </div>
 
-            {{-- File Buttons (Prevent row click) --}}
+            {{-- File Buttons --}}
             @php
                 $files = json_decode($memo->file_name, true);
                 $files = is_array($files) ? $files : [$memo->file_name];
@@ -181,10 +185,10 @@
                     @endphp
 
                     <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
-                    onclick="event.stopPropagation()"
-                    class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
-                    style="border-color: #B3D4FC;"
-                    title="Download {{ $file }}">
+                        onclick="event.stopPropagation()"
+                        class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
+                        style="border-color: #B3D4FC;"
+                        title="Download {{ $file }}">
                         <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
                         <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
                             {{ Str::limit($file, 20) }}
@@ -197,7 +201,6 @@
         <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
         @endforelse
     </div>
-
 
 <!-- Create Memo Modal -->
 <div id="memoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-6">
@@ -270,41 +273,62 @@
 </div>
 
 <!-- Edit Memo Modal -->
-<div id="editMemoModal" class="fixed inset-0 flex items-center justify-center bg-gray bg-opacity-30 z-50 hidden">
-    <div class="bg-white rounded-lg p-6 w-full max-w-2xl relative">
-        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Edit Memo</h2>
+<div id="editMemoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-6">
+    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-10 mb-10">
 
+        <!-- Close Button -->
         <button onclick="document.getElementById('editMemoModal').classList.add('hidden')"
-                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            class="absolute top-3 right-3 text-[#9CA3AF] hover:text-[#4B5563] text-2xl font-bold z-10"
+            aria-label="Close Modal">&times;</button>
 
-        <form id="editMemoForm" method="POST"
-            action="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
-            data-action-template="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
-            enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="mb-4">
-                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                <input type="text" name="title" id="editMemoTitle"
-                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-            </div>
-            <div class="mb-4">
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="editMemoDescription" rows="4"
-                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 font-medium">Upload New Files (optional)</label>
-                <input type="file" name="files[]" accept="application/pdf" multiple
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white">
-            </div>
-            <div class="flex justify-end">
-                <button type="submit"
-                    class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 font-semibold">
-                    Update Memo
-                </button>
-            </div>
-        </form>
+        <!-- Modal Content -->
+        <div class="p-6">
+            <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-[#FFFFFF]">Edit Memo</h2>
+
+            <form id="editMemoForm" method="POST"
+                action="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
+                data-action-template="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
+                enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <!-- Title -->
+                <div class="mb-4">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
+                    <input type="text" name="title" id="editMemoTitle" required
+                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
+                    <textarea name="description" id="editMemoDescription" rows="3" required
+                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white"></textarea>
+                </div>
+
+                <!-- Date -->
+                <div class="mb-4">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
+                    <input type="date" name="date" id="editMemoDate" required
+                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                </div>
+
+                <!-- File Upload -->
+                <div class="mb-4">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
+                    <input type="file" name="files[]" accept="application/pdf" multiple
+                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                </div>
+
+                <!-- Submit -->
+                <div class="text-right">
+                    <button type="submit"
+                        class="px-4 py-2 rounded text-white bg-[#FACC15] hover:bg-[#EAB308] transition duration-200">
+                        Update Memo
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

@@ -23,10 +23,10 @@ class DeanDeadlineController extends Controller
         $college_id = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->value('entity_id'); // ✅ Extracts just the ID now
+            ->value('entity_id'); //
 
         if ($college_id) {
-            $deadlines = Deadline::where('college_id', $college_id)->get(); // ✅ Cleaned up
+            $deadlines = Deadline::where('college_id', $college_id)->get();
         } else {
             $deadlines = collect(); // Return empty collection instead of array (avoids errors in Blade)
         }
@@ -79,7 +79,7 @@ class DeanDeadlineController extends Controller
 
         $deadline = Deadline::create($request->all());
 
-        // 🔔 Notify Bayanihan Leaders (role_id = 4)
+        // Notify Bayanihan Leaders (role_id = 4)
         $bayanihanLeaders = User::whereHas('roles', function($q) {
             $q->where('user_roles.role_id', 4);
         })->get();
