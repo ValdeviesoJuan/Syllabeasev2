@@ -310,7 +310,7 @@
                     </div>
                 </a>
                 <div class="rounded-b-lg ">
-                    <ul class="w-full min-w-max parent:w-full bg-white md:absolute top-full right-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
+                    <ul class="z-50 absolute w-full min-w-max parent:w-full bg-white md:absolute top-full right-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
                         <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
                             <div class="">
                                 <form action="{{ route('bayanihanleader.createCo', $syll_id) }}" method="GET">
@@ -384,7 +384,7 @@
                     </div>
                 </a>
                 <div class="rounded-b-lg ">
-                    <ul class="w-full min-w-max parent:w-full bg-white md:absolute top-full left-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
+                    <ul class="z-50 absolute w-full min-w-max parent:w-full bg-white md:absolute top-full left-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
                         <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
                             <div class="">
                                 <form action="{{ route('bayanihanleader.createCot', $syll_id) }}" method="GET">
@@ -473,7 +473,7 @@
                     </div>
                 </a>
                 <div class="rounded-b-lg ">
-                    <ul class="w-full min-w-max parent:w-full bg-white md:absolute top-full right-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
+                    <ul class="z-50 absolute w-full min-w-max parent:w-full bg-white md:absolute top-full right-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
                         <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
                             <form action="{{ route('bayanihanleader.createCrq', $syll_id) }}" method="GET">
                                 @csrf
