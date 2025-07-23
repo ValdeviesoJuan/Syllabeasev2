@@ -170,6 +170,7 @@ class BayanihanLeaderTOSController extends Controller
         $syllabus = Syllabus::join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->select('syllabi.*', 'courses.*', 'bayanihan_groups.*')
+            ->where('syllabi.syll_id', $syll_id) // ← fix missing WHERE condition
             ->first();
 
         $tos = Tos::where('tos_id', $tos_id)
@@ -184,20 +185,32 @@ class BayanihanLeaderTOSController extends Controller
             ->select('tos.*', 'tos_rows.*')
             ->get();
 
-        // ✅ Extract midterm and final topics
-        $midtermTopics = [];
-        $finalTopics = [];
-        foreach ($tos_rows as $row) {
-            if (stripos($row->tos_r_topic, 'midterm') !== false) {
-                $midtermTopics[] = $row->tos_r_topic;
-            } elseif (stripos($row->tos_r_topic, 'final') !== false) {
-                $finalTopics[] = $row->tos_r_topic;
-            }
-        }
+        // Get Midterm topics from syllabus_course_outlines_midterms
+        $midtermTopics = DB::table('syllabus_course_outlines_midterms')
+            ->where('syll_id', $syll_id)
+            ->pluck('syll_topics')
+            ->filter()
+            ->flatMap(function ($topic) {
+                return array_map('trim', explode(',', $topic));
+            })
+            ->unique()
+            ->values()
+            ->toArray();
 
-        // ✅ Remove duplicates
-        $midtermTopics = array_unique($midtermTopics);
-        $finalTopics = array_unique($finalTopics);
+        // Get Final topics from syllabus_course_outlines_finals
+        $finalTopics = DB::table('syllabus_course_outlines_finals')
+            ->where('syll_id', $syll_id)
+            ->pluck('syll_topics')
+            ->filter()
+            ->flatMap(function ($topic) {
+                return array_map('trim', explode(',', $topic));
+            })
+            ->unique()
+            ->values()
+            ->toArray();
+
+        // Also get selected topics from tos_rows
+        $selectedTopics = $tos_rows->pluck('tos_r_topic')->toArray();
 
         $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
@@ -228,7 +241,8 @@ class BayanihanLeaderTOSController extends Controller
             'syllabus',
             'syll_id',
             'midtermTopics',
-            'finalTopics'
+            'finalTopics',
+            'selectedTopics'
         ));
     }
 
@@ -506,6 +520,7 @@ class BayanihanLeaderTOSController extends Controller
     public function updateTos(Request $request, $syll_id, $tos_id)
     {
         $syllabus = Syllabus::where('syll_id', $syll_id)->first();
+
         $request->validate([
             'tos_term' => 'required',
             'tos_no_items' => 'required|integer',
@@ -514,7 +529,9 @@ class BayanihanLeaderTOSController extends Controller
             'col_3_per' => 'required|numeric',
             'col_4_per' => 'required|numeric',
             'tos_cpys' => 'required',
+            'selected_topics' => 'required|array|min:1', // ✅ Validate selected topics
         ]);
+
         $tos = Tos::findOrFail($tos_id);
         $tos->user_id = Auth::user()->id;
         $tos->tos_term = $request->tos_term;
@@ -524,193 +541,122 @@ class BayanihanLeaderTOSController extends Controller
         $tos->col_3_per = $request->col_3_per;
         $tos->col_4_per = $request->col_4_per;
         $tos->tos_cpys = $request->tos_cpys;
-
         $tos->course_id = $syllabus->course_id;
         $tos->bg_id = $syllabus->bg_id;
         $tos->save();
+
+        // ✅ Determine correct table and fetch selected entries
         $tableName = $request->tos_term === 'Final' ? 'syllabus_course_outlines_finals' : 'syllabus_course_outlines_midterms';
+        $selectedTopics = $request->input('selected_topics');
 
-        $syllabus = Syllabus::join($tableName, $tableName . '.syll_id', '=', 'syllabi.syll_id')
-            ->where('syllabi.syll_id', $syll_id)
-            ->select('syllabi.*', $tableName . '.*')
+        $selectedEntries = DB::table($tableName)
+            ->where('syll_id', $syll_id)
+            ->whereIn('syll_topics', $selectedTopics)
             ->get();
+
+        // ✅ Clear previous TOS rows
         TosRows::where('tos_id', $tos_id)->delete();
-        if ($tos) {
-            // Calculate the values based on the percentages
-            $col1Exp = $tos->tos_no_items * ($tos->col_1_per / 100);
-            $col2Exp = $tos->tos_no_items * ($tos->col_2_per / 100);
-            $col3Exp = $tos->tos_no_items * ($tos->col_3_per / 100);
-            $col4Exp = $tos->tos_no_items * ($tos->col_4_per / 100);
 
-            // Calculate the sum of the floored values
-            $sumOfFlooredValues = floor($col1Exp) + floor($col2Exp) + floor($col3Exp) + floor($col4Exp);
+        // ✅ Handle expected column distribution
+        $col1Exp = $tos->tos_no_items * ($tos->col_1_per / 100);
+        $col2Exp = $tos->tos_no_items * ($tos->col_2_per / 100);
+        $col3Exp = $tos->tos_no_items * ($tos->col_3_per / 100);
+        $col4Exp = $tos->tos_no_items * ($tos->col_4_per / 100);
 
-            // Calculate the remaining items
-            $remainingItems = $tos->tos_no_items - $sumOfFlooredValues;
+        $sumOfFloored = floor($col1Exp) + floor($col2Exp) + floor($col3Exp) + floor($col4Exp);
+        $remaining = $tos->tos_no_items - $sumOfFloored;
+        $decimals = [
+            'col_1' => $col1Exp - floor($col1Exp),
+            'col_2' => $col2Exp - floor($col2Exp),
+            'col_3' => $col3Exp - floor($col3Exp),
+            'col_4' => $col4Exp - floor($col4Exp),
+        ];
+        arsort($decimals);
 
-            // Distribute the remaining items to the columns with decimal values
-            $decimals = [$col1Exp - floor($col1Exp), $col2Exp - floor($col2Exp), $col3Exp - floor($col3Exp), $col4Exp - floor($col4Exp)];
-            arsort($decimals);
-            foreach ($decimals as $index => $decimal) {
-                if ($remainingItems > 0) {
-                    ${"col" . ($index + 1) . "Exp"} = floor(${"col" . ($index + 1) . "Exp"}) + 1;
-                    $remainingItems--;
-                } else {
-                    ${"col" . ($index + 1) . "Exp"} = floor(${"col" . ($index + 1) . "Exp"});
-                }
+        $col1Exp = floor($col1Exp);
+        $col2Exp = floor($col2Exp);
+        $col3Exp = floor($col3Exp);
+        $col4Exp = floor($col4Exp);
+
+        $columnMap = [
+            'col_1' => &$col1Exp,
+            'col_2' => &$col2Exp,
+            'col_3' => &$col3Exp,
+            'col_4' => &$col4Exp,
+        ];
+
+        foreach (array_keys($decimals) as $col) {
+            if ($remaining > 0) {
+                $columnMap[$col]++;
+                $remaining--;
             }
-
-            // Update the Tos record with the adjusted values
-            $tosColExpUpdate = Tos::find($tos->tos_id);
-            $tosColExpUpdate->col_1_exp = $col1Exp;
-            $tosColExpUpdate->col_2_exp = $col2Exp;
-            $tosColExpUpdate->col_3_exp = $col3Exp;
-            $tosColExpUpdate->col_4_exp = $col4Exp;
-            $tosColExpUpdate->save();
-        } else {
         }
 
-        $totalNoHours = 0;
+        // ✅ Update Tos with adjusted expected values
+        $tos->col_1_exp = $col1Exp;
+        $tos->col_2_exp = $col2Exp;
+        $tos->col_3_exp = $col3Exp;
+        $tos->col_4_exp = $col4Exp;
+        $tos->save();
 
-        if ($syllabus) {
-            // Calculate the total syll_allotted_time
-            $totalNoHours = $selectedEntries->sum('syll_allotted_hour');
+        // ✅ Total hours for percent calculation
+        $totalNoHours = $selectedEntries->sum('syll_allotted_hour');
 
-            foreach ($selectedEntries as $co) {
-                $tos_row = new TosRows();
-                $tos_row->tos_id = $tos->tos_id;
-                $tos_row->tos_r_topic = $co->syll_topics;
-                $tos_row->tos_r_no_hours = $co->syll_allotted_hour ?? 0;
-                $tos_row->save();
-            }
+        foreach ($selectedEntries as $co) {
+            $tos_row = new TosRows();
+            $tos_row->tos_id = $tos->tos_id;
+            $tos_row->tos_r_topic = $co->syll_topics;
+            $tos_row->tos_r_no_hours = $co->syll_allotted_hour ?? 0;
+            $tos_row->save();
+        }
 
-            $tosRows = TosRows::where('tos_id', $tos->tos_id)->get();
-            $totalRoundedPercent = 0;
-            $decimalRows = [];
+        $tosRows = TosRows::where('tos_id', $tos->tos_id)->get();
 
-            // Iterate through the rows
-            foreach ($tosRows as $row) {
-                $percent = ($row->tos_r_no_hours / $totalNoHours) * 100;
+        // ✅ Percent rounding and balancing
+        $totalRoundedPercent = 0;
+        $decimalRows = [];
+        foreach ($tosRows as $row) {
+            $percent = ($row->tos_r_no_hours / $totalNoHours) * 100;
+            $roundedPercent = round($percent);
+            if ($percent != floor($percent)) $decimalRows[] = $row;
+            $row->tos_r_percent = $roundedPercent;
+            $row->save();
+            $totalRoundedPercent += $roundedPercent;
+        }
 
-                // Check if decimal
-                if ($percent != floor($percent)) {
-                    $decimalRows[] = $row;
-                }
+        if (!empty($decimalRows)) {
+            $adjustment = 100 - $totalRoundedPercent;
+            $lastDecimalRow = end($decimalRows);
+            $lastDecimalRow->tos_r_percent += $adjustment;
+            $lastDecimalRow->save();
+        }
 
-                // round ang percent
-                $roundedPercent = round($percent);
+        // ✅ Item distribution
+        $totalRoundedItems = 0;
+        $decimalRowsItem = [];
+        foreach ($tosRows as $row) {
+            $roundedItem = ($tos->tos_no_items * ($row->tos_r_percent / 100));
+            if ($roundedItem != floor($roundedItem)) $decimalRowsItem[] = $row;
+            $row->tos_r_no_items = floor($roundedItem);
+            $row->save();
+            $totalRoundedItems += floor($roundedItem);
+        }
 
-                // Update the total rounded percentage
-                $totalRoundedPercent += $roundedPercent;
-
-                // Update the row with the rounded percentage
-                $row->tos_r_percent = $roundedPercent;
+        $remainder = $tos->tos_no_items - $totalRoundedItems;
+        foreach ($decimalRowsItem as $row) {
+            if ($remainder-- > 0) {
+                $row->tos_r_no_items += 1;
                 $row->save();
             }
+        }
 
-            // Adjust the last row with decimals to make the total exactly 100
-            if (!empty($decimalRows)) {
-                $lastDecimalRow = end($decimalRows);
-                $adjustment = 100 - $totalRoundedPercent;
-                $lastDecimalRow->tos_r_percent += $adjustment;
-                $lastDecimalRow->save();
-            }
-
-            // foreach ($tosRows as $row) {
-            //     $percent = ($row->tos_r_no_hours / $totalNoHours) * 100;
-
-            //     // Check if the number is a whole number
-            //     if (floor($percent) == $percent) {
-            //         $roundedPercent = $percent;
-            //     } else {
-            //         $roundedPercent = round($percent);
-            //     }
-
-            //     $totalRoundedPercent += $roundedPercent;
-
-            //     $row->tos_r_percent = $roundedPercent;
-            //     $row->save();
-            // }
-            // if ($totalRoundedPercent != 100) {
-            //     $lastRow = $tosRows->last();
-            //     $lastRow->tos_r_percent += 100 - $totalRoundedPercent;
-            //     $lastRow->save();
-            // }
-
-            // ADJUST THE NO OF ITEMS PARA EQUAL SA TOTAL ITEMS HEHE 
-            $totalRoundedItems = 0;
-            $counter = 0;
-            $totalRows = count($tosRows);
-
-            $decimalRowsItem = [];
-
-            // Iterate through the rows
-            foreach ($tosRows as $row) {
-                $counter++;
-                $rowPercent = $row->tos_r_percent;
-
-                // Computation to get the number of items rounded off
-                $roundedItem = ($tos->tos_no_items * ($rowPercent / 100));
-
-                // Check if the number has decimals
-                if ($roundedItem != floor($roundedItem)) {
-                    $decimalRowsItem[] = $row;
-                }
-
-                // Update the row with the rounded number of items and save
-                $row->tos_r_no_items = floor($roundedItem);
-                $row->save();
-
-                $totalRoundedItems += floor($roundedItem);
-            }
-
-            // Distribute the remainder
-            $remainder = $tos->tos_no_items - $totalRoundedItems;
-            foreach ($decimalRowsItem as $row) {
-                if ($remainder > 0) {
-                    $row->tos_r_no_items += 1;
-                    $row->save();
-                    $remainder--;
-                } else {
-                    break;
-                }
-            }
-
-            $expectedCol1 = round($tos->tos_no_items * ($tos->col_1_per / 100));
-            $totalCol1 = 0;
-
-            $expectedCol2 = round($tos->tos_no_items * ($tos->col_2_per / 100));
-            $totalCol2 = 0;
-
-            $expectedCol3 = round($tos->tos_no_items * ($tos->col_3_per / 100));
-            $totalCol3 = 0;
-
-            // $expectedCol4 = round($tos->tos_no_items * ($tos->col_4_per / 100));
-            $expectedCol4 = $tos->tos_no_items - ($expectedCol1 + $expectedCol2 + $expectedCol3);
-
-            $totalCol4 = 0;
-
-            $expectedCol4 = max(0, $expectedCol4);
-
-            foreach ($tosRows as $index => $row) {
-                // Calculate the rounded value for $row->tos_r_col_1
-                $Data1 = $row->tos_r_no_items * ($tos->col_1_per / 100);
-                $Data2 = $row->tos_r_no_items * ($tos->col_2_per / 100);
-                $Data3 = $row->tos_r_no_items * ($tos->col_3_per / 100);
-                $Data4 = $row->tos_r_no_items * ($tos->col_4_per / 100);
-
-                $row->tos_r_col_1 = $Data1;
-                $row->tos_r_col_2 = $Data2;
-                $row->tos_r_col_3 = $Data3;
-                $row->tos_r_col_4 = $Data4;
-
-                $row->save();
-
-                $totalCol1 += $Data1;
-                $totalCol2 += $Data2;
-                $totalCol3 += $Data3;
-                $totalCol4 += $Data4;
-            }
+        // ✅ Update column distributions
+        foreach ($tosRows as $row) {
+            $row->tos_r_col_1 = $row->tos_r_no_items * ($tos->col_1_per / 100);
+            $row->tos_r_col_2 = $row->tos_r_no_items * ($tos->col_2_per / 100);
+            $row->tos_r_col_3 = $row->tos_r_no_items * ($tos->col_3_per / 100);
+            $row->tos_r_col_4 = $row->tos_r_no_items * ($tos->col_4_per / 100);
+            $row->save();
         }
 
         return redirect()->route('bayanihanleader.viewTos', $tos_id)->with('success', 'Updated Tos Successfully');

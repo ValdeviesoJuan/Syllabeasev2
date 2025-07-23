@@ -138,20 +138,24 @@
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
         <div onclick="window.location.href='{{ route('admin.showMemo', $memo->id) }}'"
-            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
+            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group overflow-hidden">
 
             {{-- Title --}}
-            <h2 class="text-lg font-semibold mb-2 text-gray-800">{{ $memo->title }}</h2>
+            <h2 class="text-lg font-semibold mb-2 text-gray-800 truncate" title="{{ $memo->title }}">
+                {{ $memo->title }}
+            </h2>
 
             {{-- Description --}}
-            <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
+            <p class="text-gray-600 mb-2 break-words line-clamp-3">
+                {{ $memo->description }}
+            </p>
 
             {{-- Date --}}
             <div class="text-sm text-gray-500 mb-3">
                 {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
             </div>
 
-            {{-- File Buttons (Prevent row click) --}}
+            {{-- File Buttons --}}
             @php
                 $files = json_decode($memo->file_name, true);
                 $files = is_array($files) ? $files : [$memo->file_name];
@@ -178,11 +182,11 @@
                         };
                     @endphp
 
-                    <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
-                    onclick="event.stopPropagation()"
-                    class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
-                    style="border-color: #B3D4FC;"
-                    title="Download {{ $file }}">
+                    <a href="{{ route('admin.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+                        onclick="event.stopPropagation()"
+                        class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
+                        style="border-color: #B3D4FC;"
+                        title="Download {{ $file }}">
                         <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
                         <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
                             {{ Str::limit($file, 20) }}
@@ -195,6 +199,7 @@
         <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
         @endforelse
     </div>
+
 
 
 <!-- Create Memo Modal -->

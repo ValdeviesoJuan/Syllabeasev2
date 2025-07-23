@@ -148,6 +148,24 @@
     });
 </script>
 
+<script>
+    document.getElementById('tos_term').addEventListener('change', function () {
+        const term = this.value;
+        const midtermBox = document.getElementById('midtermTopicsBox');
+        const finalBox = document.getElementById('finalTopicsBox');
+
+        if (term === 'Midterm') {
+            midtermBox.classList.remove('hidden');
+            finalBox.classList.add('hidden');
+        } else if (term === 'Final') {
+            finalBox.classList.remove('hidden');
+            midtermBox.classList.add('hidden');
+        }
+    });
+
+    // Ensure correct box shows on initial page load
+    document.getElementById('tos_term').dispatchEvent(new Event('change'));
+</script>
 
 <script>
     window.addEventListener('DOMContentLoaded', () => {

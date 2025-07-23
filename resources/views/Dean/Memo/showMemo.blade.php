@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="mt-16 max-w-4xl mx-auto bg-white p-6 shadow rounded-lg dark:bg-gray-800">
-<style>
+    <style>
         .bg svg {
             transform: scaleY(-1);
-            min-width: '1880'
+            min-width: 1880px;
         }
 
         body {
@@ -16,9 +16,12 @@
             background-size: contain;
         }
     </style>
+
     {{-- Header --}}
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ $memo->title }}</h1>
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white break-words">
+            {{ $memo->title }}
+        </h1>
         <p class="text-sm text-gray-500 dark:text-gray-300">
             {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
         </p>
@@ -28,14 +31,14 @@
 
     {{-- Description --}}
     <div class="mb-6">
-        <p class="text-gray-700 dark:text-gray-200 whitespace-pre-line">
+        <p class="text-gray-700 dark:text-gray-200 whitespace-pre-line break-words">
             {{ $memo->description }}
         </p>
     </div>
 
     {{-- File Download(s) --}}
     @php
-    $files = json_decode($memo->file_name, true);
+        $files = json_decode($memo->file_name, true);
     @endphp
 
     @if (is_array($files))
@@ -55,7 +58,6 @@
             </div>
         </div>
     @endif
-
 
     {{-- Back Button --}}
     <div class="flex justify-end">
