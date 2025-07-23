@@ -801,7 +801,7 @@ class PDFController extends Controller
 
             $signaturePath = public_path('assets/signatures/' . $signatureFilename);
 
-            // Check if file exists and set image
+            // Check if signature exists and set image
             if (!empty($signatureFilename) && file_exists($signaturePath)) {
                 $document->setImageValue('ins_signature#' . ($index + 1), [
                     'path' => $signaturePath,

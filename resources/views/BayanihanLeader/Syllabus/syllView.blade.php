@@ -473,11 +473,8 @@
                     </div>
                 </a>
                 <div class="rounded-b-lg ">
-<<<<<<< Updated upstream
                     <ul class="z-50 absolute w-full min-w-max parent:w-full bg-white md:absolute top-full right-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
-=======
-                    <ul class="z-50 absolute z-50 absolute w-full min-w-max parent:w-full bg-white md:absolute top-full right-0 rounded-b-lg shadow-2xl pl-4 pt-1 child transition duration-300">
->>>>>>> Stashed changes
+
                         <li class="text-blue pb-4 pt-4 hover:text-sePrimary">
                             <form action="{{ route('bayanihanleader.createCrq', $syll_id) }}" method="GET">
                                 @csrf
@@ -1358,7 +1355,6 @@
                         <tr>
                             <td colspan=2 class=" border-2 border-solid font-medium px-4">
                                 <span class="text-left font-bold">III. Course Outline:</span> 
-                                {{-- <<! Na add ni gelski --}}
                                 @php
                                     $midtermTotalHours = 0;
                                     $finalTotalHours = 0;
@@ -1370,7 +1366,7 @@
                                     }
                                 @endphp
 
-                                @if(empty($syll->status) && $midtermTotalHours > 35 && $midtermTotalHours < 40)
+                                @if(($syll->status == "Draft" || $syll->status == "Requires Revision (Chair)" || $syll->status == "Requires Revision (Dean)") && $midtermTotalHours > 35 && $midtermTotalHours < 40)
                                     <div data-id="midtermHoursAlert" class="stacked-alert alert-warning fixed top-6 right-6 z-50 px-6 py-6 shadow-md min-w-[320px] flex items-start" role="alert">
                                         <div class="py-1">
                                             <svg class="h-6 w-6 text-amber-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
@@ -1384,7 +1380,7 @@
                                         <button class="close-alert text-amber-600 hover:text-amber-700 ml-4">&times;</button>
                                     </div>
 
-                                @elseif(empty($syll->status) && $midtermTotalHours == 40)
+                                @elseif(($syll->status == "Draft" || $syll->status == "Requires Revision (Chair)" || $syll->status == "Requires Revision (Dean)") && $midtermTotalHours == 40)
                                     <div data-id="midtermHoursAlert" class="stacked-alert alert-success fixed top-6 right-6 z-50 px-6 py-6 shadow-md min-w-[320px] flex items-start" role="alert">
                                         <div class="py-1">
                                             <svg class="h-6 w-6 text-green-600 mr-4" fill="currentColor" viewBox="0 0 20 20">
@@ -1398,7 +1394,7 @@
                                         <button class="close-alert text-green-600 hover:text-green-700 ml-4">&times;</button>
                                     </div>
 
-                                @elseif(empty($syll->status) && $midtermTotalHours > 40)
+                                @elseif(($syll->status == "Draft" || $syll->status == "Requires Revision (Chair)" || $syll->status == "Requires Revision (Dean)") && $midtermTotalHours > 40)
                                     <div data-id="midtermHoursAlert" class="stacked-alert alert-error fixed top-6 right-6 z-50 px-6 py-6 shadow-md min-w-[320px] flex items-start" role="alert">
                                         <div class="py-1">
                                             <svg class="h-6 w-6 text-red-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
@@ -1412,7 +1408,7 @@
                                         <button class="close-alert text-red-600 hover:text-red-700 ml-4">&times;</button>
                                     </div>
                                 @endif          
-                                @if(empty($syll->status) && $finalTotalHours > 35 && $finalTotalHours < 40)
+                                @if(($syll->status == "Draft" || $syll->status == "Requires Revision (Chair)" || $syll->status == "Requires Revision (Dean)") && $finalTotalHours > 35 && $finalTotalHours < 40)
                                     <div data-id="finalHoursAlert" class="stacked-alert alert-warning fixed top-6 right-6 z-50 px-6 py-6 shadow-md min-w-[320px] flex items-start" role="alert">
                                         <div class="py-1">
                                             <svg class="h-6 w-6 text-amber-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
@@ -1426,7 +1422,7 @@
                                         <button class="close-alert text-amber-600 hover:text-amber-700 ml-4">&times;</button>
                                     </div>
 
-                                @elseif(empty($syll->status) && $finalTotalHours == 40)
+                                @elseif(($syll->status == "Draft" || $syll->status == "Requires Revision (Chair)" || $syll->status == "Requires Revision (Dean)") && $finalTotalHours == 40)
                                     <div data-id="finalHoursAlert" class="stacked-alert alert-success fixed top-6 right-6 z-50 px-6 py-6 shadow-md min-w-[320px] flex items-start" role="alert">
                                         <div class="py-1">
                                             <svg class="h-6 w-6 text-green-600 mr-4" fill="currentColor" viewBox="0 0 20 20">
@@ -1440,7 +1436,7 @@
                                         <button class="close-alert text-green-600 hover:text-green-700 ml-4">&times;</button>
                                     </div>
 
-                                @elseif(empty($syll->status) && $finalTotalHours > 40)
+                                @elseif(($syll->status == "Draft" || $syll->status == "Requires Revision (Chair)" || $syll->status == "Requires Revision (Dean)") && $finalTotalHours > 40)
                                     <div data-id="finalHoursAlert" class="stacked-alert alert-error fixed top-6 right-6 z-50 px-6 py-6 shadow-md min-w-[320px] flex items-start" role="alert">
                                         <div class="py-1">
                                             <svg class="h-6 w-6 text-red-500 mr-4" fill="currentColor" viewBox="0 0 20 20">
