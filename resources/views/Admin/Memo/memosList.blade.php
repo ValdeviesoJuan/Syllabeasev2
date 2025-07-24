@@ -109,7 +109,7 @@
                             </button>
 
                             {{-- Delete --}}
-                            <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
+                            <form action="{{ route('admin.memo.destroy', $memo->id) }}" method="POST"
                                 onsubmit="return confirm('Are you sure?')" class="inline stop-row-click">
                                 @csrf
                                 @method('DELETE')
@@ -215,7 +215,7 @@
         <div class="p-6">
             <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-white">Create New Memo</h2>
 
-            <form id="createMemoForm" action="{{ route('dean.memo.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="createMemoForm" action="{{ route('admin.memo.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Title -->
@@ -286,8 +286,8 @@
             <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-[#FFFFFF]">Edit Memo</h2>
 
             <form id="editMemoForm" method="POST"
-                action="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
-                data-action-template="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
+                action="{{ route('admin.memo.update', ['id' => '__ID__']) }}"
+                data-action-template="{{ route('admin.memo.update', ['id' => '__ID__']) }}"
                 enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
