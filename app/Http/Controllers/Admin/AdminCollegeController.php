@@ -214,10 +214,10 @@ class AdminCollegeController extends Controller
                 ->where('entity_type', 'College')
                 ->firstOrFail();
 
-            /* ─── Close any overlapping chair assignment for this department ─── */
+            /* ─── Close any overlapping dean assignment for this college_id ─── */
             UserRole::where('role_id',     $deanRoleId)
-                ->where('entity_type', 'Department')
-                ->where('entity_id',   $request->department_id)
+                ->where('entity_type', 'College')
+                ->where('entity_id',   $request->college_id)
                 ->where('ur_id', '!=', $ur_id) // don’t overwrite the record we’re updating
                 ->where(function ($q) use ($request) {
                     $q->whereNull('end_validity')
@@ -227,7 +227,7 @@ class AdminCollegeController extends Controller
 
             $dean->update([
                 'user_id'        => $request->user_id,
-                'entity_id'      => $request->department_id,
+                'entity_id'      => $request->college_id,
                 'start_validity' => $request->start_validity,
                 'end_validity'   => $request->end_validity,
             ]);

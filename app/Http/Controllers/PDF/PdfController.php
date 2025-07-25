@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\PDF;
 
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\UserRole;
 use App\Models\Roles;
@@ -840,87 +841,275 @@ class PDFController extends Controller
             ]);
         }
 
-        //For Syllabus Course Requirement Section
+        function flushTextRun($document, &$currentContent, &$placeholderIndex) {
+            if (!empty(trim($currentContent))) {
+                $textRun = new TextRun();
+                foreach (explode("\n", trim($currentContent)) as $line) {
+                    $textRun->addText($line, ['name' => 'Times New Roman', 'size' => 10]);
+                    $textRun->addTextBreak();
+                }
+                $document->setComplexBlock("syll_course_requirements_{$placeholderIndex}", $textRun);
+                $placeholderIndex++;
+                $currentContent = '';
+            }
+        }
+
+        /**
+         * Recursively processes nested lists (<ul> / <ol>) into a TextRun block.
+         *
+         * @param DOMElement $listElement <ul> or <ol>
+         * @param int $level nesting level (used for indentation)
+         * @return TextRun
+         */
+        function processListToTextRun($listElement, $level = 1)
+        {
+            $textRun = new TextRun();
+            $isOrdered = $listElement->nodeName === 'ol';
+            $listIndex = 1;
+
+            foreach ($listElement->childNodes as $li) {
+                if ($li->nodeName !== 'li') continue;
+
+                // Check for nested <ul>/<ol> inside this <li>
+                $hasDirectText = false;
+                $mainText = '';
+                foreach ($li->childNodes as $node) {
+                    if ($node->nodeType === XML_TEXT_NODE && trim($node->textContent)) {
+                        $hasDirectText = true;
+                        $mainText .= trim($node->textContent);
+                    } elseif ($node->nodeType === XML_ELEMENT_NODE && !in_array($node->nodeName, ['ul', 'ol']) && trim($node->textContent)) {
+                        $hasDirectText = true;
+                        $mainText .= trim($node->textContent);
+                    }
+                }
+
+                // If <li> has visible content, add a bullet or number
+                if ($hasDirectText) {
+                    $indent = str_repeat("\u{2003}\u{2003}\u{2003}", $level);
+                    $prefix = $isOrdered ? ($listIndex . '. ') : '• ';
+                    $textRun->addText($indent . $prefix . $mainText, ['name' => 'Times New Roman', 'size' => 10]);
+                    $textRun->addTextBreak();
+                    $listIndex++;
+                }
+
+                // If nested <ul>/<ol> exists, process it recursively
+                foreach ($li->childNodes as $childNode) {
+                    if ($childNode->nodeName === 'ul' || $childNode->nodeName === 'ol') {
+                        $nestedRun = processListToTextRun($childNode, $level + 1);
+                        foreach ($nestedRun->getElements() as $nestedTextElement) {
+                            $textRun->addElement($nestedTextElement);
+                        }
+                    }
+                }
+            }
+            
+            return $textRun;
+        }
+
+        //Process Course Requirements Section
         $syll_course_requirements = htmlspecialchars_decode(($data['syll']->syll_course_requirements));
         $syll_course_requirements = str_replace('andbull;', '&bull;', $syll_course_requirements);
         $syll_course_requirements = str_replace('&nbsp;', '', $syll_course_requirements);
-        $syll_course_requirements = str_replace('%;', '', $syll_course_requirements);
         $syll_course_requirements = str_replace('&', 'and', $syll_course_requirements);
         $syll_course_requirements = str_replace('/n', '</w:t><w:br/><w:t>', $syll_course_requirements);
-        $syll_course_requirements = str_replace('andbull;', '&bull;', $syll_course_requirements);
         $syll_course_requirements = str_replace("andrsquo;", '&apos;', $syll_course_requirements);
         $syll_course_requirements = str_replace("andndash;", '', $syll_course_requirements);
 
+        // $syll_course_requirements = str_replace('%;', '', $syll_course_requirements);
         // $syll_course_requirements = str_replace(':', '', $syll_course_requirements); 
+        Log::info("Course Requirements (html decoded (cleansed): " . $syll_course_requirements);
 
         $dom = new \DOMDocument();
-        @$dom->loadHTML($syll_course_requirements);
+        @$dom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $syll_course_requirements);
 
         $body = $dom->getElementsByTagName('body')->item(0);
         $children = $body->childNodes;
 
         $placeholderIndex = 0;
-
-        $currentContent = '';
-        $lastElementType = null;
+        $currentContent = ''; 
 
         foreach ($children as $child) {
-            if ($child->nodeName == 'table') {
-                if (!empty($currentContent) && $lastElementType !== 'table') {
-                    $document->setValue("syll_course_requirements_{$placeholderIndex}", nl2br($currentContent));
-                    $placeholderIndex++;
-                    $currentContent = '';
-                }
+            Log::info("Child Nodename: " . $child->nodeName . " Index: " . $placeholderIndex);
 
-                $phpWordTable = new Table(array('borderSize' => 6, 'borderColor' => '000000', 'width' => 100 * 50, 'unit' => TblWidth::PERCENT));
+            // Skip blank text nodes (just whitespace or newlines)
+            if ($child->nodeType === XML_TEXT_NODE) {
+                Log::info("Text Node Content: [" . trim($child->textContent) . "]");
+            }
+            
+            if ($child->nodeName === 'table') { 
 
-                foreach ($child->getElementsByTagName('tr') as $domRow) {
+                // Step 1: Extract table width percentage from style
+                $styleAttr = strtolower($child->getAttribute('style'));
+                $styleAttr = preg_replace('/\s+/', '', $styleAttr); // Remove all whitespace
+                preg_match('/width:([\d.]+)%/', $styleAttr, $matches);
+                $tableWidth = isset($matches[1]) ? floatval($matches[1]) : 50;
+                $tableWidth = min(max($tableWidth, 10), 100); // Clamp between 10%–100%
+                
+                $phpWordTable = new Table(array(
+                    'borderSize' => 6,
+                    'borderColor' => '000000',
+                    'width' => intval($tableWidth * 50),
+                    'unit' => TblWidth::PERCENT
+                ));
+
+                $rowSpanTracker = []; // rowIndex => colIndex => remainingRows
+                $rows = $child->getElementsByTagName('tr');
+
+                foreach ($rows as $rowIndex => $domRow) {
                     $phpWordTable->addRow();
 
-                    foreach ($domRow->getElementsByTagName('td') as $domCell) {
-                        $colspan = $domCell->getAttribute('colspan');
-                        $colspan = $colspan ? intval($colspan) : 1;
+                    $cells = $domRow->getElementsByTagName('td');
+                    $colPosition = 0;
 
-                        $cellStyle = array(
-                            'gridSpan' => $colspan,
-                            'alignment' => Jc::CENTER,
-                            'valign' => 'center'
-                        );
+                    foreach ($cells as $cellIndex => $domCell) {
+                        // Skip positions with ongoing rowspan
+                        while (isset($rowSpanTracker[$rowIndex][$colPosition])) {
+                            $phpWordTable->addCell(null, ['vMerge' => 'continue']);
+                            $rowSpanTracker[$rowIndex + 1][$colPosition] = $rowSpanTracker[$rowIndex][$colPosition] - 1;
+                            unset($rowSpanTracker[$rowIndex][$colPosition]);
+                            $colPosition++;
+                        }
 
-                        $phpWordTable->addCell(2000 * $colspan, $cellStyle)->addText($domCell->textContent, array(), array('alignment' => Jc::CENTER));
+                        $colspan = (int) ($domCell->getAttribute('colspan') ?: 1);
+                        $rowspan = (int) ($domCell->getAttribute('rowspan') ?: 1);
+
+                        // Extract cell width % from style
+                        $cellStyleAttr = strtolower($domCell->getAttribute('style'));
+                        $cellStyleAttr = preg_replace('/\s+/', '', $cellStyleAttr);
+                        preg_match('/width:([\d.]+)%/', $cellStyleAttr, $cellWidthMatch);
+                        $cellWidth = isset($cellWidthMatch[1]) ? floatval($cellWidthMatch[1]) : 100;
+                        $cellWidth = min(max($cellWidth, 10), 100);
+
+                        $cellStyle = [];
+                        if ($colspan > 1) {
+                            $cellStyle['gridSpan'] = $colspan;
+                        }
+                        if ($rowspan > 1) {
+                            $cellStyle['vMerge'] = 'restart';
+                            for ($r = 1; $r < $rowspan; $r++) {
+                                $rowSpanTracker[$rowIndex + $r][$colPosition] = $rowspan - $r;
+                            }
+                        }
+                        if ($cellWidth !== null) {
+                            $cellStyle['width'] = intval($cellWidth * 100); // Convert % to PhpWord unit
+                            $cellStyle['unit'] = TblWidth::PERCENT;
+                        }
+                        
+                        // Determine alignment from style
+                        $alignment = 'left';
+                        $styleAttr = $domCell->getAttribute('style');
+                        if (strpos($styleAttr, 'text-align: center') !== false) {
+                            $alignment = Jc::CENTER;
+                        } elseif (strpos($styleAttr, 'text-align: right') !== false) {
+                            $alignment = 'right';
+                        }
+
+                        $cell = $phpWordTable->addCell(1000 * $colspan, $cellStyle);
+                        $textRun = $cell->addTextRun(['alignment' => $alignment]);
+
+                        foreach ($domCell->childNodes as $tdChild) {
+                            if ($tdChild->nodeType === XML_TEXT_NODE) {
+                                $text = trim($tdChild->textContent);
+                                if (!empty($text)) {
+                                    $textRun->addText($text, ['name' => 'Times New Roman', 'size' => 10]);
+                                }
+                            } elseif ($tdChild->nodeType === XML_ELEMENT_NODE) {
+                                $text = trim($tdChild->textContent);
+                                $style = ['name' => 'Times New Roman', 'size' => 10];
+
+                                if (in_array($tdChild->nodeName, ['strong', 'b'])) {
+                                    $style['bold'] = true;
+                                }
+                                if (in_array($tdChild->nodeName, ['em', 'i'])) {
+                                    $style['italic'] = true;
+                                }
+                                if ($tdChild->nodeName === 'u') {
+                                    $style['underline'] = 'single';
+                                }
+
+                                if (!empty($text)) {
+                                    $textRun->addText($text, $style);
+                                }
+                            }
+                        }
+
+                        $colPosition += $colspan;
+                    }
+
+                    // Fill remaining cells with vMerge continuation if needed
+                    while (isset($rowSpanTracker[$rowIndex][$colPosition])) {
+                        $phpWordTable->addCell(null, ['vMerge' => 'continue']);
+                        $rowSpanTracker[$rowIndex + 1][$colPosition] = $rowSpanTracker[$rowIndex][$colPosition] - 1;
+                        unset($rowSpanTracker[$rowIndex][$colPosition]);
+                        $colPosition++;
                     }
                 }
 
                 $document->setComplexBlock("syll_course_requirements_{$placeholderIndex}", $phpWordTable);
-                $placeholderIndex++;
-                $lastElementType = 'table';
-            } elseif ($child->nodeName == 'p' || $child->nodeType == XML_TEXT_NODE) {
-                $text = trim($child->textContent);
+                $placeholderIndex++; 
 
-                if (!empty($text)) {
-                    if ($lastElementType !== 'text') {
-                        $currentContent = '';
+                // Add a blank line after the table to prevent merging of tables
+                // $postSpacer = new TextRun();
+                // $postSpacer->addTextBreak();
+
+                // $document->setComplexBlock("syll_course_requirements_{$placeholderIndex}", $postSpacer);
+                // $placeholderIndex++;
+
+            } elseif ($child->nodeName === 'p') {
+                Log::info('Paragraph Text: ' . trim($child->textContent));
+
+                $textRun = new TextRun();
+
+                // Get indent from padding-left (if present)
+                $style = $child->getAttribute('style');
+                $indentation = 0;
+                if (preg_match('/padding-left:\s*(\d+)px/', $style, $matches)) {
+                    $indentation = intval($matches[1] / 40); // every ~40px = 1 indent level
+                }
+
+                // Add indentation first (before the actual paragraph content)
+                if ($indentation > 0) {
+                    $textRun->addText(str_repeat("\u{2003}\u{2003}\u{2003}", $indentation));
+                }
+
+                foreach ($child->childNodes as $inline) {
+                    if ($inline->nodeType === XML_TEXT_NODE) {
+                        $content = trim($inline->textContent);
+                        if (!empty($content)) {
+                            $textRun->addText($content, ['name' => 'Times New Roman', 'size' => 10]);
+                        }
+
+                    } elseif ($inline->nodeType === XML_ELEMENT_NODE) {
+                        $format = ['name' => 'Times New Roman', 'size' => 10];
+                        $text = trim($inline->textContent);
+
+                        if (in_array($inline->nodeName, ['strong', 'b'])) {
+                            $format['bold'] = true;
+                        }
+                        if (in_array($inline->nodeName, ['em', 'i'])) {
+                            $format['italic'] = true;
+                        }
+                        if ($inline->nodeName === 'u') {
+                            $format['underline'] = 'single';
+                        }
+
+                        if (!empty($text)) {
+                            $textRun->addText($text, $format);
+                        }
                     }
-
-                    $currentContent .= $text . "\n";
-                    $lastElementType = 'text';
-                }
-            } elseif ($child->nodeName == 'ul' || $child->nodeName == 'ol') {
-                if ($lastElementType !== 'text') {
-                    $currentContent = '';
                 }
 
-                foreach ($child->getElementsByTagName('li') as $li) {
-                    $currentContent .= '- ' . $li->textContent . "\n";
-                }
-                $lastElementType = 'text';
+                $document->setComplexBlock("syll_course_requirements_{$placeholderIndex}", $textRun);
+                $placeholderIndex++;
+
+            } elseif ($child->nodeName === 'ul' || $child->nodeName === 'ol') { 
+                $textRun = processListToTextRun($child);
+                $document->setComplexBlock("syll_course_requirements_{$placeholderIndex}", $textRun);
+                $placeholderIndex++;
             }
-        }
-
-        if (!empty($currentContent)) {
-            $document->setValue("syll_course_requirements_{$placeholderIndex}", nl2br($currentContent));
-        }
-        for ($i = $placeholderIndex; $i < 51; $i++) {
+        } 
+        
+        for ($i = $placeholderIndex; $i < 52; $i++) {
             $document->setValue("syll_course_requirements_{$i}", '');
         }
 

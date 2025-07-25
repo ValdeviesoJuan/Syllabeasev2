@@ -27,6 +27,6 @@ class BayanihanLeaderCRQController extends Controller
         $syllabus->syll_course_requirements = $request->input('syll_course_requirements');
         $syllabus->save();
     
-        return redirect()->route('bayanihanleader.viewSyllabus', $syll_id)->with('success', 'CourseOutcome updated successfully.');
+        return redirect()->route('bayanihanleader.viewSyllabus', $syll_id)->with('success', 'Course Requirements updated successfully.');
     }
 }

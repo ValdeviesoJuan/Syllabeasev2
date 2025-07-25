@@ -45,25 +45,6 @@ class AdminDepartmentController extends Controller
     public function createDepartment()
     {
         $colleges = College::all();
-
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
-
-        $college = UserRole::where('user_id', Auth::id())
-            ->where('role_id', $deanRoleId)
-            ->where('entity_type', 'College')
-            ->first();
-
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-
-        $departments = Department::leftJoin('user_roles', function ($join) use ($chairRoleId) {
-            $join->on('user_roles.entity_id', '=', 'departments.department_id')
-                 ->where('user_roles.entity_type', 'Department')
-                 ->where('user_roles.role_id', $chairRoleId);
-        })
-        ->leftJoin('users', 'users.id', '=', 'user_roles.user_id')
-        ->select('departments.*', 'users.name as chair_name')
-        ->get();
-
         $users = User::all();
 
         return view('Admin.Department.departmentCreate', compact('colleges', 'users'));
@@ -97,6 +78,7 @@ class AdminDepartmentController extends Controller
         $department = Department::findorFail($department_id);
 
         $request->validate([
+            'college_id' => 'required|exists:colleges,college_id',
             'department_code' => 'required|string',
             'department_status' => 'required|string',
             'program_code' => 'required|string',
@@ -105,6 +87,7 @@ class AdminDepartmentController extends Controller
         ]);
 
         $department->update([
+            'college_id' => $request->input('college_id'),
             'department_code' =>  $request->input('department_code'),
             'department_status' =>  $request->input('department_status'),
             'department_name' =>  $request->input('department_name'),
@@ -154,10 +137,7 @@ class AdminDepartmentController extends Controller
         }
         
         DB::transaction(function () use ($request, $chairRoleId) {
-
-            /* ------------------------------------------------------------
-            | Close any CURRENT chair assignment on this department
-            |-------------------------------------------------------------*/
+            // End any currently active Chairperson assignment on this department
             UserRole::where('role_id',  $chairRoleId)
                     ->where('entity_type', 'Department')
                     ->where('entity_id',   $request->department_id)
@@ -167,10 +147,10 @@ class AdminDepartmentController extends Controller
                     })
                     ->update(['end_validity' => $request->start_validity]);
 
-            // Check if there's a record with null entity_id (unassigned dean)
+            // Check if there's a record with null entity_id (unassigned chairperson)
             $existingUnassignedRole = UserRole::where('user_id', $request->user_id)
                 ->where('role_id', $chairRoleId)
-                ->where('entity_type', 'College')
+                ->where('entity_type', 'Department')
                 ->whereNull('entity_id')
                 ->first();
 
