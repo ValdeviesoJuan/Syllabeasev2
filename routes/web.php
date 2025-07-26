@@ -66,6 +66,7 @@ use App\Http\Controllers\Admin\AdminMemoController;
 use App\Http\Controllers\Admin\AdminPOController;
 use App\Http\Controllers\Admin\AdminPOEController;
 use App\Http\Controllers\Admin\AdminAuditController;
+use App\Http\Controllers\Admin\AdminBayanihanController;
 use App\Http\Controllers\Auth\EditProfileController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderAuditController;
 
@@ -392,6 +393,19 @@ Route::prefix('/')->middleware('auth')->group(function () {
 
 //Admin Controls
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function () {
+    //Admin: College Controller
+    Route::get('admin/college', [AdminCollegeController::class, 'index'])->name('admin.college');
+    Route::get('/createCollege', [AdminCollegeController::class, 'createCollege'])->name('admin.createCollege');
+    Route::post('/storeCollege', [AdminCollegeController::class, 'storeCollege'])->name('admin.storeCollege');
+    Route::get('/editCollege/{college_id}', [AdminCollegeController::class, 'editCollege'])->name('admin.editCollege');
+    Route::put('updateCollege/{college_id}', [AdminCollegeController::class, 'updateCollege'])->name('admin.updateCollege');
+    Route::delete('/destroyCollege/{college_id}', [AdminCollegeController::class, 'destroyCollege'])->name('admin.destroyCollege');
+    Route::get('/createDean', [AdminCollegeController::class, 'createDean'])->name('admin.createDean');
+    Route::post('/storeDean', [AdminCollegeController::class, 'storeDean'])->name('admin.storeDean');
+    Route::get('/editDean/{dean_id}', [AdminCollegeController::class, 'editDean'])->name('admin.editDean');
+    Route::put('updateDean/{dean_id}', [AdminCollegeController::class, 'updateDean'])->name('admin.updateDean');
+    Route::delete('/destroyDean/{dean_id}', [AdminCollegeController::class, 'destroyDean'])->name('admin.destroyDean');
+
     //Admin: Department Controller
     Route::get('admin/department', [AdminDepartmentController::class, 'index'])->name('admin.department');
     Route::get('/createDepartment', [AdminDepartmentController::class, 'createDepartment'])->name('admin.createDepartment');
@@ -406,18 +420,13 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::put('/updateChair/{chairman_id}', [AdminDepartmentController::class, 'updateChair'])->name('admin.updateChair');
     Route::delete('/destroyChair/{chairman_id}', [AdminDepartmentController::class, 'destroyChair'])->name('admin.destroyChair');
 
-    //Admin: College Controller
-    Route::get('admin/college', [AdminCollegeController::class, 'index'])->name('admin.college');
-    Route::get('/createCollege', [AdminCollegeController::class, 'createCollege'])->name('admin.createCollege');
-    Route::post('/storeCollege', [AdminCollegeController::class, 'storeCollege'])->name('admin.storeCollege');
-    Route::get('/editCollege/{college_id}', [AdminCollegeController::class, 'editCollege'])->name('admin.editCollege');
-    Route::put('updateCollege/{college_id}', [AdminCollegeController::class, 'updateCollege'])->name('admin.updateCollege');
-    Route::delete('/destroyCollege/{college_id}', [AdminCollegeController::class, 'destroyCollege'])->name('admin.destroyCollege');
-    Route::get('/createDean', [AdminCollegeController::class, 'createDean'])->name('admin.createDean');
-    Route::post('/storeDean', [AdminCollegeController::class, 'storeDean'])->name('admin.storeDean');
-    Route::get('/editDean/{dean_id}', [AdminCollegeController::class, 'editDean'])->name('admin.editDean');
-    Route::put('updateDean/{dean_id}', [AdminCollegeController::class, 'updateDean'])->name('admin.updateDean');
-    Route::delete('/destroyDean/{dean_id}', [AdminCollegeController::class, 'destroyDean'])->name('admin.destroyDean');
+    // Bayanihan Team 
+    Route::get('/bayanihan', [AdminBayanihanController::class, 'index'])->name('admin.bayanihan');
+    Route::get('/createBTeam', [AdminBayanihanController::class, 'createBTeam'])->name('admin.createBTeam');
+    Route::post('/storeBTeam', [AdminBayanihanController::class, 'storeBTeam'])->name('admin.storeBTeam');
+    Route::get('/editBTeam/{bg_id}', [AdminBayanihanController::class, 'editBTeam'])->name('admin.editBTeam');
+    Route::put('/updateBTeam/{bg_id}', [AdminBayanihanController::class, 'updateBTeam'])->name('admin.updateBTeam');
+    Route::delete('/destroyBTeam/{bg_id}', [AdminBayanihanController::class, 'destroyBTeam'])->name('admin.destroyBTeam');
 
     //Admin: Course Controller
     Route::get('admin/course', [AdminCourseController::class, 'index'])->name('admin.course');
@@ -441,7 +450,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::get('/admin/commentSyllabus/{syll_id}', [AdminSyllabusController::class, 'commentSyllabus'])->name('admin.commentSyllabus');
     Route::get('admin/destroySyllabus/{syll_id}', [AdminSyllabusController::class, 'destroySyllabus'])->name('admin.destroySyllabus');
     Route::get('/admin/viewReviewForm/{syll_id}', [AdminSyllabusController::class, 'viewReviewForm'])->name('admin.viewReviewForm');
-
     //Admin Syllabus Audit Trail
     Route::get('/syllabus/auditTrail/{syll_id}', [AdminAuditController::class, 'viewSyllabusAudit'])->name('admin.viewSyllabusAudit');
 
@@ -450,7 +458,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::get('/admin/viewTos/{tos_id}', [AdminTOSController::class, 'viewTos'])->name('admin.viewTos');
     Route::get('/admin/commentTos/{tos_id}', [AdminTOSController::class, 'commentTos'])->name('admin.commentTos');
     Route::get('/admin/destroyTos/{tos_id}', [AdminTOSController::class, 'destroyTos'])->name('admin.destroyTos');
-
     //Admin TOS Audit Trail
     Route::get('/tos/auditTrail/{tos_id}', [AdminAuditController::class, 'viewTosAudit'])->name('admin.viewTosAudit');
 

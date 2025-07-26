@@ -15,7 +15,8 @@ class BayanihanGroup extends Model implements Auditable
     protected $fillable = [
         'bg_id',
         'course_id',
-        'bg_school_year'
+        'bg_school_year',
+        'bg_semester'
     ];
 
     public function members()
