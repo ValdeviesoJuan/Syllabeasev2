@@ -18,8 +18,9 @@ To run
 -php artisan serve (2nd Terminal)
 
 System Flow (Assigning Roles)
-1st - open the admin assign a curriculum  
-2nd - go to admin department then assign chairperson
-3rd - go to admin college then assign dean.
-4th - go to chairperson create Create course Then bayanihan team.
+1st - Open Admin Role Page, in Curriculum Tab, create Curriculum.
+2nd - In Course Tab, Create a Course.
+3rd - In College Tab, Assign a Dean to College.
+4th - In Department Tab, Assign a Chairperson to Department.
+5th - The Chairperson can now Create a Bayanihan Team (composed of Bayanihan Leaders and Bayanihan Members )
 
