@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Memo;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AdminMemoController extends Controller
 {
@@ -123,8 +124,12 @@ class AdminMemoController extends Controller
     {
         $memo = Memo::findOrFail($id);
 
-        if ($memo->file_name && Storage::exists('public/memos/' . $memo->file_name)) {
-            Storage::delete('public/memos/' . $memo->file_name);
+        if (!empty($memo->file_name)) {
+            $filePath = 'public/memos/' . $memo->file_name;
+
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath);
+            }
         }
 
         $memo->delete();

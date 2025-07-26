@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('memos', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('file_name'); // store filename for download
+            $table->text('title');
+            $table->text('description')->nullable(); // already correct
+            $table->text('file_name'); // ✅ changed from string to text
             $table->date('date')->nullable(); // optional: for display
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
