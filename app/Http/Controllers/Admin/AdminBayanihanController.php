@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Chairperson;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -20,23 +21,16 @@ use App\Mail\BTeam;
 use App\Mail\BLeaderCreatedMail;
 use App\Mail\BMemberCreatedMail;
 
-class ChairController extends Controller
+class AdminBayanihanController extends Controller
 {
     public function index()
     {
         $users = User::all();
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $department_id = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', $chairRoleId)
-            ->select('user_roles.entity_id')
-            ->first();
 
         $bgroups = BayanihanGroup::with('members', 'leaders')
             ->join('courses', 'bayanihan_groups.course_id', '=', 'courses.course_id')
-            ->select('courses.*', 'bayanihan_groups.*')
             ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('curricula.department_id', '=', $department_id)
+            ->select('courses.*', 'bayanihan_groups.*', 'curricula.*')
             ->get();
 
         $bmembers = BayanihanGroupUsers::join('users', 'bayanihan_group_users.user_id', '=', 'users.id')
@@ -50,67 +44,19 @@ class ChairController extends Controller
             ->get()
             ->groupBy('bg_id');
 
-        $user = Auth::user(); 
-        $notifications = $user->notifications;
-
-        return view('Chairperson.Home.home', compact('users', 'bgroups', 'bmembers', 'bleaders', 'notifications'));
-    }
-    public function bayanihan()
-    {
-        $users = User::all();
-        
-        $chair = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
-
-        $department_id = $chair->entity_id;
-
-        $bgroups = BayanihanGroup::with('leaders', 'members')
-            ->join('courses', 'bayanihan_groups.course_id', '=', 'courses.course_id')
-            ->select('courses.*', 'bayanihan_groups.*')
-            ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('curricula.department_id', '=', $department_id)
-            ->get();
-
-        $bmembers = BayanihanGroupUsers::join('users', 'bayanihan_group_users.user_id', '=', 'users.id')
-            ->select('users.*', 'bayanihan_group_users.*')
-            ->where('bayanihan_group_users.bg_role', '=', 'member')
-            ->get()
-            ->groupBy('bg_id');
-        $bleaders = BayanihanGroupUsers::join('users', 'bayanihan_group_users.user_id', '=', 'users.id')
-            ->select('users.*', 'bayanihan_group_users.*')
-            ->where('bayanihan_group_users.bg_role', '=', 'leader')
-            ->get()
-            ->groupBy('bg_id');
-
-        $user = Auth::user(); 
-        $notifications = $user->notifications;
-
-        return view('Chairperson.Bayanihan.btList', compact('notifications','users', 'bgroups', 'bmembers', 'bleaders'));
+        return view('admin.bayanihan.btList', compact('users', 'bgroups', 'bmembers', 'bleaders'));
     }
     public function createBTeam()
     {
         try {
-            // Retrieve the department ID for the logged-in chairperson user
-            $chair = UserRole::where('user_id', Auth::id())
-                ->where('entity_type', '=', 'Department')
-                ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-                ->firstOrFail();
-
-            $department_id = $chair->entity_id;
-
             // Retrieve users and courses based on the department ID
             $courses = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-                ->where('curricula.department_id', $department_id)
                 ->get();
             
             $users = User::all();
-            $user = Auth::user(); 
-            $notifications = $user->notifications;
 
-            // Return the view with the necessary data
-            return view('Chairperson.Bayanihan.btCreate', compact('notifications','users', 'courses'));
+            return view('admin.Bayanihan.btCreate', compact('users', 'courses'));
+            
         } catch (\Exception $e) {
             // Handle exceptions (e.g., user not found, department not found)
             return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
@@ -118,33 +64,18 @@ class ChairController extends Controller
     }
     public function storeBTeam(Request $request)
     {
+        $admin = Auth::user();
+
         $request->validate([
-            'bg_school_year' => 'required',
-            'course_id' => 'required',
-        ]);
+            'bg_school_year' => 'required|string',
+            'course_id' => 'required|exists:courses,course_id',
+            'bg_semester' => 'nullable|string',
+        ]); 
 
-        $chairperson = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
-        $department_id = $chairperson->entity_id;
-
-        // Check if course belongs to department
-        $course = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('courses.course_id', $request->input('course_id'))
-            ->where('curricula.department_id', $department_id)
-            ->first();
-
-        if (!$course) {
-            return redirect()->back()->with('error', 'This course does not belong to your department.');
-        }
-
-        // Check for duplicates
-        $exists = BayanihanGroup::join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-            ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('bayanihan_groups.course_id', $request->input('course_id'))
-            ->where('bayanihan_groups.bg_school_year', $request->input('bg_school_year'))
-            ->where('curricula.department_id', $department_id)
+        // Check for duplicate Bayanihan Group
+        $exists = BayanihanGroup::where('course_id', $request->input('course_id'))
+            ->where('bg_school_year', $request->input('bg_school_year'))
+            // ->where('bg_semester', $request->input('bg_semester')) // Optional
             ->exists();
 
         if ($exists) {
@@ -152,18 +83,18 @@ class ChairController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $chairperson, $department_id) {
+            DB::transaction(function () use ($request, $admin) {
                 // Create the group
                 $bGroup = BayanihanGroup::create([
-                    'bg_school_year' => $request->input('bg_school_year'),
                     'course_id' => $request->input('course_id'),
+                    'bg_school_year' => $request->input('bg_school_year'),
+                    // 'bg_semester' => $request->input('bg_semester'),
                 ]);
 
                 // Get department info
-                $department = Department::join('user_roles', 'user_roles.entity_id', '=', 'departments.department_id')
-                    ->where('user_roles.entity_type', '=', 'Department')
-                    ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-                    ->where('user_roles.user_id', '=', Auth::id())
+                $department = Department::join('curricula', 'curricula.department_id', '=', 'departments.department_id')
+                    ->join('courses', 'courses.curr_id', '=', 'curricula.curr_id')
+                    ->where('courses.course_id', $request->input('course_id'))
                     ->select('departments.*')
                     ->first();
 
@@ -178,7 +109,7 @@ class ChairController extends Controller
 
                     $user = User::find($leader);
                     if ($user) {
-                        Mail::to($user->email)->send(new BLeaderCreatedMail($user, $chairperson, $department, $bGroup));
+                        Mail::to($user->email)->send(new BLeaderCreatedMail($user, $admin, $department, $bGroup));
                     }
 
                     UserRole::firstOrCreate([
@@ -198,7 +129,7 @@ class ChairController extends Controller
 
                     $user = User::find($member);
                     if ($user) {
-                        Mail::to($user->email)->send(new BMemberCreatedMail($user, $chairperson, $department, $bGroup));
+                        Mail::to($user->email)->send(new BMemberCreatedMail($user, $admin, $department, $bGroup));
                     }
 
                     UserRole::firstOrCreate([
@@ -208,7 +139,7 @@ class ChairController extends Controller
                 }
             });
 
-            return redirect()->route('chairperson.bayanihan')->with('success', 'Bayanihan Team created successfully.');
+            return redirect()->route('admin.bayanihan')->with('success', 'Bayanihan Team created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create Bayanihan Team: ' . $e->getMessage());
         }
@@ -218,39 +149,21 @@ class ChairController extends Controller
         $bGroup = BayanihanGroup::find($bg_id);
         $users = User::all();
         $courses = Course::all();
-        
-        $user = Auth::user(); 
-        $notifications = $user->notifications;
 
-        return view('Chairperson.Bayanihan.btEdit', compact('notifications','bGroup', 'users', 'courses'));
+        return view('admin.Bayanihan.btEdit', compact('bGroup', 'users', 'courses'));
     }
     public function updateBTeam(Request $request, string $bg_id)
     {
         $request->validate([
-            'bg_school_year' => 'required',
-            'course_id' => 'required',
+            'bg_school_year' => 'required|string',
+            'course_id' => 'required|exists:courses,course_id',
+            'bg_semester' => 'nullable|string',
         ]);
 
-        $chair = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'Department')
-            ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->firstOrFail();
-        $department_id = $chair->entity_id;
-
-        $course = Course::join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('courses.course_id', $request->input('course_id'))
-            ->where('curricula.department_id', $department_id)
-            ->first();
-
-        if (!$course) {
-            return redirect()->back()->with('error', 'This course does not belong to your department.');
-        }
-
-        $exists = BayanihanGroup::join('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
-            ->join('curricula', 'curricula.curr_id', '=', 'courses.curr_id')
-            ->where('bayanihan_groups.course_id', $request->input('course_id'))
+        //Check for Duplicate Bayanihan Teams, except the one currently editing
+        $exists = BayanihanGroup::where('bayanihan_groups.course_id', $request->input('course_id'))
             ->where('bayanihan_groups.bg_school_year', $request->input('bg_school_year'))
-            ->where('curricula.department_id', $department_id)
+            // ->where('bayanihan_groups.bg_semester', $request->input('bg_semester'))
             ->where('bayanihan_groups.bg_id', '!=', $bg_id)
             ->exists();
         
@@ -299,7 +212,8 @@ class ChairController extends Controller
                 }
             });
 
-            return redirect()->route('chairperson.bayanihan')->with('success', 'Bayanihan Team updated successfully.');
+            return redirect()->route('admin.bayanihan')->with('success', 'Bayanihan Team updated successfully.');
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update team: ' . $e->getMessage());
         }
@@ -312,7 +226,7 @@ class ChairController extends Controller
             ->exists();
 
         if ($hasApprovedSyllabusDocument) {
-            return redirect()->route('chairperson.bayanihan')
+            return redirect()->route('admin.bayanihan')
                 ->with('error', 'Cannot delete this Bayanihan Team because it already has an approved syllabus.');
         }
 
@@ -321,10 +235,6 @@ class ChairController extends Controller
 
         BayanihanGroupUsers::where('bg_id', $bg_id)->delete();
 
-        return redirect()->route('chairperson.bayanihan')
-            ->with('success', 'Bayanihan Team deleted successfully.');
-    }
-    public function mail(){
-        return view('mails.BtMail');
+        return redirect()->route('admin.bayanihan')->with('success', 'Bayanihan Team deleted successfully.');
     }
 }

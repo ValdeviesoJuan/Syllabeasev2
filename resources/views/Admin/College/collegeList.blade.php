@@ -27,35 +27,33 @@
 </head>
 
 <body>
-    <div class="min-h-screen bg-swhite py-5 ml-16 mr-16 mx-auto">
+        <!-- Colleges -->
         <div class="p-4 shadow-lg bg-white border-dashed rounded-lg dark:border-gray-700 mt-16">
             <div class="" id="whole">
                 <div class="flex justify-center align-items-center">
                     <div class="min-w-full inline-block align-middle">
                         <div class="overflow-hidden">
                             <h2 class="text-3xl text-black -mb-[30px] font-semibold">Colleges</h2>
-                              <!-- Na change ni gels -->
-                               <a href="{{ route('admin.createCollege') }}"
+                            <!-- Na change ni gels -->
+                            <a href="{{ route('admin.createCollege') }}"
                                 class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full float-right"
                                 style="background: #d7ecf9;"
                                 onmouseover="this.style.background='#c3dff3';"
                                 onmouseout="this.style.background='#d7ecf9';">
-    
-    
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
-                                            stroke-linecap="round" stroke-linejoin="round"/>
-                                        <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-                                    </svg>
 
-                                    Create College
-                                </a>
 
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                                </svg>
+
+                                Create College
+                            </a>
                         </div>
                     </div>
                 </div>
-
                 <div class='overflow-x-auto w-full rounded-xl overflow-hidden'>
                     <table class='w-full bg-gray-400 border-none shadow-lg table-auto overflow-scroll px-3 text-left whitespace-nowrap rounded-xl'>
                         <thead class="">
@@ -83,52 +81,52 @@
                                 </td>
 
                                 <td class="px-4 py-2 text-center">
-    <div class="flex items-center justify-center gap-1">
-        <!-- Edit Button -->
-        <form action="{{ route('admin.editCollege', $college->college_id) }}" method="GET">
-            @csrf
-            <button type="submit"
-                style="border: none; border-radius: 15px; background: transparent; color: #16a34a; font-weight: 600;"
-                class="hover:underline p-2">
-                Edit
-            </button>
-        </form>
+                                    <div class="flex items-center justify-center gap-1">
+                                        <!-- Edit Button -->
+                                        <form action="{{ route('admin.editCollege', $college->college_id) }}" method="GET">
+                                            @csrf
+                                            <button type="submit"
+                                                style="border: none; border-radius: 15px; background: transparent; color: #16a34a; font-weight: 600;"
+                                                class="hover:underline p-2">
+                                                Edit
+                                            </button>
+                                        </form>
 
-        <!-- Delete Button -->
-        <form action="{{ route('admin.destroyCollege', $college->college_id) }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit"
-                style="border: none; border-radius: 15px; background: transparent; color: #dc2626; font-weight: 600;"
-                class="hover:underline p-2">
-                Delete
-            </button>
-        </form>
-    </div>
-</td>
+                                        <!-- Delete Button -->
+                                        <form action="{{ route('admin.destroyCollege', $college->college_id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                style="border: none; border-radius: 15px; background: transparent; color: #dc2626; font-weight: 600;"
+                                                class="hover:underline p-2">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
 
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
 
-                <div class="mt-9">
-                    <div class="flex justify-center">
-                        <span class="text-gray-600 text-sm">Page {{ $colleges->currentPage() }} of {{ $colleges->lastPage() }}</span>
+                    <div class="mt-9">
+                        <div class="flex justify-center">
+                            <span class="text-gray-600 text-sm">Page {{ $colleges->currentPage() }} of {{ $colleges->lastPage() }}</span>
+                        </div>
+                            {{ $colleges->links() }} <!-- Pagination links -->
                     </div>
-                        {{ $colleges->links() }} <!-- Pagination links -->
                 </div>
             </div>
-        </div>
-    </div>    
+        </div>    
 
-    <div class="">
+        <!-- Assigned Deans -->
         <div class="p-4 shadow-lg bg-white border-dashed rounded-lg dark:border-gray-700 mt-24">
             <div class="flex justify-center align-items-center">
                 <div class="min-w-full inline-block align-middle">
                     <div class="overflow-hidden">
                         <h2 class="text-3xl text-black font-semibold -mb-[35px]">Dean</h2>
-                          
+                        
                         <a href="{{ route('admin.createDean') }}"
                             class="whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full float-right"
                             style="background: #d7ecf9;"
@@ -184,31 +182,31 @@
                             </td>
 
                             <td class="px-2 py-2 text-center" colspan="2">
-    <div class="flex items-center justify-center gap-1">
-        <!-- Edit Dean Button -->
-        <form action="{{ route('admin.editDean', $dean->ur_id) }}" method="GET">
-            @csrf
-            <button type="submit"
-                style="border: none; border-radius: 15px; background: transparent; color: #16a34a; font-weight: 600;"
-                class="hover:underline p-2">
-                Edit
-            </button>
-        </form>
+                                <div class="flex items-center justify-center gap-1">
+                                    <!-- Edit Dean Button -->
+                                    <form action="{{ route('admin.editDean', $dean->ur_id) }}" method="GET">
+                                        @csrf
+                                        <button type="submit"
+                                            style="border: none; border-radius: 15px; background: transparent; color: #16a34a; font-weight: 600;"
+                                            class="hover:underline p-2">
+                                            Edit
+                                        </button>
+                                    </form>
 
-        <!-- Delete Dean Button -->
-        <form action="{{ route('admin.destroyDean', $dean->ur_id) }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit"
-                style="border: none; border-radius: 15px; background: transparent; color: #dc2626; font-weight: 600;"
-                class="hover:underline p-2">
-                Delete
-            </button>
-        </form>
-    </div>
-</td>
+                                    <!-- Delete Dean Button -->
+                                    <form action="{{ route('admin.destroyDean', $dean->ur_id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            style="border: none; border-radius: 15px; background: transparent; color: #dc2626; font-weight: 600;"
+                                            class="hover:underline p-2">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
-                        @endforeach
+                    @endforeach
                     </tbody>
                 </table>
 
@@ -221,7 +219,6 @@
             </div>
         </div>
     </div>
-    
 </body>
 </html>
 
