@@ -1273,9 +1273,10 @@
                                 class=" border-2 border-solid font-medium px-4 relative"
                             >
                                 @php
-                                    $shouldShowIcon = (isset($srf11) && $srf11['srf_yes_no'] === 'no');
-                                    $showPrev = isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no';
-                                    $remarkText = $srf11['srf_remarks'] ?? ($previousChecklistSRF[11]->srf_remarks ?? null);
+                                    $shouldShowIcon = (isset($srf11) && $srf11['srf_yes_no'] === 'no' || isset($srf12) && $srf12['srf_yes_no'] === 'no');
+                                    $showPrev = (isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no' || isset($previousChecklistSRF[12]) && $previousChecklistSRF[12]->srf_yes_no === 'no');
+                                    $remarkText1 = $srf11['srf_remarks'] ?? ($previousChecklistSRF[11]->srf_remarks ?? null);
+                                    $remarkText2 = $srf12['srf_remarks'] ?? ($previousChecklistSRF[12]->srf_remarks ?? null);
                                 @endphp
 
                                 @if($shouldShowIcon || $showPrev)
@@ -1302,10 +1303,31 @@
                                                 <!-- Feedback label -->
                                                 <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
 
-                                                <!-- Feedback content -->
+                                                <!-- Feedback content
                                                 <p class="text-center text-gray leading-snug text-[14px] mb-4">
                                                     {{ $remarkText ?? 'No remarks provided.' }}
-                                                </p>
+                                                </p> -->
+
+                                                <!-- Feedback content -->
+                                                <div class="space-y-3 text-[14px] text-gray">
+                                                    @if($remarkText1)
+                                                        <div class="bg-gray1 p-2 rounded">
+                                                            <span class="font-semibold">Section 4:</span><br>
+                                                            {{ $remarkText1 }}
+                                                        </div>
+                                                    @endif
+
+                                                    @if($remarkText2)
+                                                        <div class="bg-gray1 p-2 rounded">
+                                                            <span class="font-semibold">Section 5:</span><br>
+                                                            {{ $remarkText2 }}
+                                                        </div>
+                                                    @endif
+
+                                                    @if(!$remarkText1 && !$remarkText2)
+                                                        <p class="text-center">No remarks provided.</p>
+                                                    @endif
+                                                </div>
 
                                                 <!-- Button container -->
                                                 <div class="flex justify-end">
@@ -1319,7 +1341,13 @@
                                 @endif
                                 <span class="text-left font-bold">
                                     II. Course Outcome:</span><br>
-                                <table class="m-10 mx-auto border-2 border-solid w-11/12">
+                                <table class="m-10 mx-auto border-2 border-solid w-11/12 relative "
+                                    :class="{
+                                        'force-full-red-border': 
+                                            {{ isset($srf12) && $srf12['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                            (showPrev && {{ isset($previousChecklistSRF[12]) && $previousChecklistSRF[12]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                    }"
+                                >
                                     <tr class="border-2 border-solid">
                                         <th>
                                             Course Outcomes (CO)

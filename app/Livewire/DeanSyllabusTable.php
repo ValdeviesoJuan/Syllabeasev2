@@ -29,10 +29,9 @@ class DeanSyllabusTable extends Component
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
             ->first();
-        $college_id = $dean->entity_id;
 
-        if ($college_id) {
-            
+        if ($dean) {
+            $college_id = $dean->entity_id;
             $departments = Department::where('departments.college_id', $college_id)
                 ->select('departments.*')
                 ->get();

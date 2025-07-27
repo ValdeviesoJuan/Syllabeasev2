@@ -7,7 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>SyllabEase</title>
     @vite('resources/css/app.css')
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
@@ -109,7 +108,7 @@
                             </svg>
                         </a>
                         <!-- Version button -->
-                        <a onclick="dropdownVersion()" class="hover:bg-blue3 rounded-full cursor-pointer w-8 h-8 flex justify-center md:inline-flex items-center justify-center">
+                        <a onclick="dropdownVersion()" class="hover:bg-blue3 rounded-full cursor-pointer w-8 h-8 flex justify-center items-center justify-center transition duration-200">
                             <svg width="25px" height="25px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                 <title>version_fill</title>
                                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -123,42 +122,38 @@
                                     </g>
                                 </g>
                             </svg>
-                        </a>
+                        </a> 
                         <!-- Version Dropdown -->
-                        <div id="dropdownVersion" class="hidden pt-2 px-3 pb-7 transition duration-300 md:absolute top-full right-0 md:w-[350px] bg-white bg-opacity-90 md:shadow-lg md:rounded">
-                            <div class="text-gray">
-                                Syllabus Versions
+                        <div id="dropdownVersion" class="hidden pt-2 px-3 pb-4 transition duration-300 md:absolute top-full right-0 w-full md:w-[400px] bg-white bg-opacity-95 shadow-xl rounded-lg z-50">
+                            <div class="text-gray-600 text-sm font-semibold mb-2 border-b pb-1">Syllabus Versions</div>
+
+                            <div class="space-y-1">
+                                @foreach($syllabusVersions as $syllabusVersion)
+                                    @php
+                                        $currentRouteMatches = request()->route()->getName() === 'auditor.viewSyllabus' &&
+                                            request()->route('syll_id') == $syllabusVersion->syll_id;
+                                        $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'hover:bg-blue2';
+                                    @endphp
+
+                                    <a href="{{ route('auditor.viewSyllabus', $syllabusVersion->syll_id) }}" class="block">
+                                        <div class="p-3 flex flex-col sm:flex-row sm:justify-between items-start sm:items-center {{ $bgColorClass }} transition-all">
+                                            <p class="text-sm font-medium text-blue-900">
+                                                Version {{ $syllabusVersion->version }}
+                                            </p>
+                                            <div class="flex flex-col sm:flex-row sm:gap-4 text-[14px] text-gray mt-1 sm:mt-0">
+                                                <span class="italic">{{ $syllabusVersion->status }}</span>
+                                            </div>
+                                            <div class="flex flex-col sm:flex-row sm:gap-4 text-[14px] text-gray mt-1 sm:mt-0">
+                                                <span class="italic">{{ \Carbon\Carbon::parse($syllabusVersion->chair_submitted_at)->format('F j, Y') }}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
                             </div>
-
-                            @foreach($syllabusVersions as $syllabusVersion)
-                                @php
-                                $currentRouteMatches = request()->route()->getName() === 'auditor.commentSyllabus' &&
-                                request()->route('syll_id') == $syllabusVersion->syll_id;
-                                $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'bg-white';
-                                @endphp
-
-                                <a href="{{ route('auditor.commentSyllabus', $syllabusVersion->syll_id) }}" class="">
-                                    <div class="p-2 flex justify-between hover:bg-blue2 rounded {{ $bgColorClass }}">
-                                        <div class="flex flex-row">
-                                            Version {{ $syllabusVersion->version }}
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="text-gray text-sm italic pr-5">
-                                                {{ $syllabusVersion->status }}
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="text-gray text-sm italic pr-5">
-                                                {{ $syllabusVersion->chair_submitted_at }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            @endforeach
                         </div>
                         
                         <a onclick="dropDownComment()" id="modeButton" class="hover:bg-blue2 bg-blue3 rounded-full cursor-pointer w-[180px] px-2 h- flex justify-center md:inline-flex items-center justify-center">
-                            @if(request()->route()->getName() == 'auditor.commentSyllabus')
+                            @if(request()->route()->getName() == 'auditor.viewSyllabus')
                             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
@@ -169,10 +164,10 @@
                             @endif
 
                             <div id="modeText" class="mx-2 text-white text-sm">
-                                @if(request()->route()->getName() == 'auditor.commentSyllabus')
-                                Comment Mode
+                                @if(request()->route()->getName() == 'auditor.viewSyllabus')
+                                View Mode
                                 @else
-                                Editing Mode
+                                
                                 @endif
                             </div>
                             <div>
@@ -184,14 +179,14 @@
 
                         <!-- Comment Dropdown -->
                         <div id="dropDownComment" class="hidden mt-1 transition duration-300 md:absolute top-full right-[90px] md:w-[200px] bg-white bg-opacity-90 md:shadow-lg md:rounded">
-                            <a href="{{ route('auditor.commentSyllabus', $syll_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">
+                            <a href="{{ route('auditor.viewSyllabus', $syll_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">
                                 <div class="mx-2 my-2">
                                     <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M7 9H17M7 13H17M21 20L17.6757 18.3378C17.4237 18.2118 17.2977 18.1488 17.1656 18.1044C17.0484 18.065 16.9277 18.0365 16.8052 18.0193C16.6672 18 16.5263 18 16.2446 18H6.2C5.07989 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V7.2C3 6.07989 3 5.51984 3.21799 5.09202C3.40973 4.71569 3.71569 4.40973 4.09202 4.21799C4.51984 4 5.0799 4 6.2 4H17.8C18.9201 4 19.4802 4 19.908 4.21799C20.2843 4.40973 20.5903 4.71569 20.782 5.09202C21 5.51984 21 6.0799 21 7.2V20Z" stroke="#454545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                 </div>
                                 <div class="text-gray2">
-                                    Comment Mode
+                                    View Mode
                                 </div>
                             </a>
                             <a href="{{ route('generateSyllabusPDF', $syll_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow  hover:border hover:border-gray3">

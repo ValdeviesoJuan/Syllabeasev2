@@ -28,10 +28,10 @@ class AuditorSyllabusController extends Controller
 {
     public function index()
     {
-        return view('auditor.syllList');
+        return view('auditor.syllabus.syllList');
     }
 
-    public function commentSyllabus($syll_id)
+    public function viewSyllabus($syll_id)
     {
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
@@ -39,14 +39,8 @@ class AuditorSyllabusController extends Controller
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
-            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.*')
             ->first();
-
-        $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
-            ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
-            ->where('syllabi.syll_id', '=', $syll_id)
-            ->select('program_outcomes.*')
-            ->get();
 
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
         $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
@@ -63,6 +57,43 @@ class AuditorSyllabusController extends Controller
             ->where('role_id', $deanRoleId)
             ->select('users.*')
             ->first();
+
+        $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
+            ->whereRaw('CAST(version AS UNSIGNED) < ?', [intval($syll->version)])
+            ->orderByRaw('CAST(version AS UNSIGNED) DESC')
+            ->first();
+
+        $previousStatus = null;
+        $previousReviewForm = null;
+        $previousChecklistItems = [];
+        $previousChecklistSRF = collect();
+        $previousDeanFeedback = [];
+
+        if ($previousSyllabus) {
+            $previousStatus = $previousSyllabus->status;
+
+            if ($previousStatus === "Returned by Chair") {
+                $previousReviewForm = SyllabusReviewForm::where('syll_id', $previousSyllabus->syll_id)->first();
+
+                if ($previousReviewForm) {
+                    $previousChecklistItems = SrfChecklist::where('srf_id', $previousReviewForm->srf_id)
+                        ->orderBy('srf_no')
+                        ->get();
+
+                    $previousChecklistSRF = $previousChecklistItems->keyBy('srf_no');
+                }
+                
+            } else if ($previousStatus === "Returned by Dean") {
+                $previousDeanFeedback = SyllabusDeanFeedback::where('syll_id', $previousSyllabus->syll_id)->first();
+            }
+        }
+
+        $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
+            ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
+            ->where('syllabi.syll_id', '=', $syll_id)
+            ->select('program_outcomes.*')
+            ->get();
+
 
         $poes = POE::join('departments', 'departments.department_id', '=', 'poes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -134,6 +165,10 @@ class AuditorSyllabusController extends Controller
             ->select('syllabi.*')
             ->orderBy('syllabi.version', 'DESC')
             ->get();
+        
+        $isLatest = Syllabus::where('bg_id', $syll->bg_id)
+            ->orderByRaw('CAST(version AS UNSIGNED) DESC')
+            ->value('syll_id') == $syll->syll_id;
             
         $feedback = SyllabusDeanFeedback::where('syll_id', $syll_id)->first();
 
@@ -176,6 +211,13 @@ class AuditorSyllabusController extends Controller
             'srf18',
             'srf17',
             'srf19',
+            'previousSyllabus',
+            'previousStatus',
+            'previousReviewForm',
+            'previousChecklistItems',
+            'previousChecklistSRF',
+            'previousDeanFeedback',
+            'isLatest'
         ));
     }
     public function viewReviewForm($syll_id)

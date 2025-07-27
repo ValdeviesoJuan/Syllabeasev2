@@ -520,7 +520,7 @@ Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], fun
 
     //Auditor: Syllabus Controller
     Route::get('/syllabus', [AuditorSyllabusController::class, 'index'])->name('auditor.syllabus');
-    Route::get('/syllabus/commentSyllabus/{syll_id}', [AuditorSyllabusController::class, 'commentSyllabus'])->name('auditor.commentSyllabus');
+    Route::get('/syllabus/viewSyllabus/{syll_id}', [AuditorSyllabusController::class, 'viewSyllabus'])->name('auditor.viewSyllabus');
     Route::get('/syllabus/viewReviewForm/{syll_id}', [AuditorSyllabusController::class, 'viewReviewForm'])->name('auditor.viewReviewForm');
 
     //Auditor: TOS Controller

@@ -966,7 +966,12 @@
                         >
                             <span class="text-left font-bold">
                                 II. Course Outcome:</span><br>
-                            <table class="m-10 mx-auto border-2 border-solid w-11/12">
+                            <table class="m-10 mx-auto border-2 border-solid w-11/12 relative" :class="{
+                                'force-full-red-border': 
+                                    {{ isset($srf12) && $srf12['srf_yes_no'] === 'no' ? 'true' : 'false' }} || 
+                                    (showPrev && {{ isset($previousChecklistSRF[12]) && $previousChecklistSRF[12]->srf_yes_no === 'no' ? 'true' : 'false' }})
+                                }"
+                            >
                                 <tr class="border-2 border-solid ">
                                     <th>
                                         Course Outcomes (CO)
@@ -998,6 +1003,74 @@
                                 </tr>
                                 @endforeach
                             </table>
+                              
+                            @php
+                                $shouldShowIcon = (isset($srf11) && $srf11['srf_yes_no'] === 'no' || isset($srf12) && $srf12['srf_yes_no'] === 'no');
+                                $showPrev = (isset($previousChecklistSRF[11]) && $previousChecklistSRF[11]->srf_yes_no === 'no' || isset($previousChecklistSRF[12]) && $previousChecklistSRF[12]->srf_yes_no === 'no');
+                                $remarkText1 = $srf11['srf_remarks'] ?? ($previousChecklistSRF[11]->srf_remarks ?? null);
+                                $remarkText2 = $srf12['srf_remarks'] ?? ($previousChecklistSRF[12]->srf_remarks ?? null);
+                            @endphp
+
+                            @if($shouldShowIcon || $showPrev)
+                                <div 
+                                    class="absolute -top-2 -right-2 z-100"
+                                    style="{{ !$shouldShowIcon ? 'display: none;' : '' }}"
+                                    data-prev-check="{{ $showPrev ? 'no' : 'yes' }}"
+                                >
+                                    <div class="relative group">
+                                        <!-- Icon -->
+                                        <button 
+                                            class="text-[#d3494e] hover:text-[#b91c1c] rounded-full remark-btn"
+                                            title="View remark"
+                                        >
+                                            <i class="fa-solid fa-message text-xl"></i>
+                                        </button>
+
+                                        <!-- Bubble -->
+                                        <div class="remark-bubble absolute top-full right-0 mt-2 w-72 max-w-xs bg-white font-[Verdana] text-gray-800 p-4 rounded-lg shadow-xl z-50 hidden">
+                                            <!-- Arrow -->
+                                            <div class="absolute -top-2 right-4 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] 
+                                                        border-l-transparent border-r-transparent border-b-white"></div>
+
+                                            <!-- Feedback label -->
+                                            <p class="text-left font-semibold text-red-600 mb-3 text-[18px]">Remarks:</p>
+
+                                            <!-- Feedback content
+                                            <p class="text-center text-gray leading-snug text-[14px] mb-4">
+                                                {{ $remarkText ?? 'No remarks provided.' }}
+                                            </p> -->
+
+                                            <!-- Feedback content -->
+                                            <div class="space-y-3 text-[14px] text-gray">
+                                                @if($remarkText1)
+                                                    <div class="bg-gray1 p-2 rounded">
+                                                        <span class="font-semibold">Section 4:</span><br>
+                                                        {{ $remarkText1 }}
+                                                    </div>
+                                                @endif
+
+                                                @if($remarkText2)
+                                                    <div class="bg-gray1 p-2 rounded">
+                                                        <span class="font-semibold">Section 5:</span><br>
+                                                        {{ $remarkText2 }}
+                                                    </div>
+                                                @endif
+
+                                                @if(!$remarkText1 && !$remarkText2)
+                                                    <p class="text-center">No remarks provided.</p>
+                                                @endif
+                                            </div>
+
+                                            <!-- Button container -->
+                                            <div class="flex justify-end">
+                                                <button class="rounded-md bg-black text-white hover:bg-gray px-4 py-1 text-[14px] transition close-remark">
+                                                    OKAY
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     <!-- course outline tr -->
