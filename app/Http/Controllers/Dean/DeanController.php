@@ -18,22 +18,31 @@ class DeanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $dean = UserRole::where('user_id', Auth::id())
-            ->where('entity_type', '=', 'College')
-            ->where('role_id', '=', $deanRoleId)
-            ->first();
-        $college_id = $dean->entity_id;
-            
-        if ($college_id) {
-            $college = College::where('college_id', $college_id)
-                ->first();
 
-            $departments = Department::where('college_id', $college_id)
-                ->paginate(10);
-            
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
+        $hasDeanRole = UserRole::where('user_id', $user->id)
+            ->where('role_id', $deanRoleId)
+            ->exists();
+
+        $missingSignature = false;
+
+        if ($hasDeanRole && !$user->signature) {
+            $missingSignature = true;
+        }
+
+        $dean = UserRole::where('user_id', $user->id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->first();
+
+        $college_id = $dean->entity_id ?? null;
+
+        if ($college_id) {
+            $college = College::where('college_id', $college_id)->first();
+            $departments = Department::where('college_id', $college_id)->paginate(10);
+
             $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-            $chairs = Department::join('user_roles', function ($join) use ($chairRoleId) {  
+            $chairs = Department::join('user_roles', function ($join) use ($chairRoleId) {
                     $join->on('user_roles.entity_id', '=', 'departments.department_id')
                         ->where('user_roles.entity_type', 'Department')
                         ->where('user_roles.role_id', $chairRoleId);
@@ -51,7 +60,7 @@ class DeanController extends Controller
 
         $notifications = $user->notifications;
 
-        return view('Dean.home',compact('notifications', 'college', 'departments', 'chairs'));
+        return view('Dean.home', compact('notifications', 'college', 'departments', 'chairs', 'missingSignature'));
     }
     public function departments()
     {

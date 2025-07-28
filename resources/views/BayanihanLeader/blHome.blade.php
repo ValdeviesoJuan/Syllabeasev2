@@ -30,6 +30,17 @@
 </head>
 
 <body class="">
+    @if($missingSignature)
+        <div class="absolute z-50 top-10 left-1/2 transform -translate-x-1/2 w-[500px] p-4 rounded-lg shadow-lg border border-[#facc15] bg-[#fefce8] text-[#16a34a] flex justify-between items-center">
+            <div class="text-sm font-semibold">
+                <strong>Missing Signature:</strong> You haven't uploaded your signature yet.
+            </div>
+            <a href="{{ route('profile.edit') }}" 
+            class="ml-4 bg-[#facc15] hover:bg-[#eab308] text-white font-semibold py-1 px-4 rounded-lg transition-all">
+                Go to Profile
+            </a>
+        </div>
+    @endif
     <div class="p-4 pb-4 mt-14">
         <div class="flex w-" id="whole">
             <!-- <div class="fixed inset-0 z-0 bg w-full">

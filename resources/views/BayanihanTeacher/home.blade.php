@@ -29,6 +29,17 @@
     </style>
 </head>
 <body>
+    @if($missingSignature)
+        <div class="z-50 absolute left-1/2 transform -translate-x-1/2 mt-6 w-[90%] max-w-xl p-4 rounded-lg shadow bg-[#fefcbf] border border-[#facc15] text-[#15803d] flex justify-between items-center">
+            <div>
+                <strong>Missing Signature:</strong> You haven't uploaded your signature yet. Please update your profile.
+            </div>
+            <a href="{{ route('profile.edit') }}" 
+            class="ml-4 bg-[#facc15] hover:bg-[#fde047] text-white font-semibold py-1 px-4 rounded-lg transition-all">
+                Go to Profile
+            </a>
+        </div>
+    @endif
     <div class="p-4 pb-4 mt-14">
         <div class="flex" id="whole">
             <!-- <div class="fixed inset-0 z-0 bg w-full">
@@ -258,28 +269,28 @@
     </div>
     </div>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var syll = <?php echo json_encode($syll ?? null); ?>;
-        var dueDate = syll && syll.dl_syll ? new Date(syll.dl_syll) : null;
+        document.addEventListener('DOMContentLoaded', function() {
+            var syll = <?php echo json_encode($syll ?? null); ?>;
+            var dueDate = syll && syll.dl_syll ? new Date(syll.dl_syll) : null;
 
-        if (dueDate) {
-            function updateRemainingTime() {
-                var now = new Date();
-                var timeDifference = dueDate - now;
-                var days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+            if (dueDate) {
+                function updateRemainingTime() {
+                    var now = new Date();
+                    var timeDifference = dueDate - now;
+                    var days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
 
-                var remainingTimeElement = document.getElementById('remaining-time');
-                remainingTimeElement.innerText = 'Remaining: ' + days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+                    var remainingTimeElement = document.getElementById('remaining-time');
+                    remainingTimeElement.innerText = 'Remaining: ' + days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+                }
+
+                updateRemainingTime();
+                setInterval(updateRemainingTime, 1000);
             }
-
-            updateRemainingTime();
-            setInterval(updateRemainingTime, 1000);
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 
 </html>

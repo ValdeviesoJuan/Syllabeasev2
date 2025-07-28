@@ -26,7 +26,18 @@ class ChairController extends Controller
     {
         $users = User::all();
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $department_id = UserRole::where('user_id', Auth::id())
+
+        // ✅ Get current user
+        $user = Auth::user(); 
+
+        // ✅ Check if the chairperson is missing a signature
+        $hasChairRole = UserRole::where('user_id', $user->id)
+            ->where('role_id', $chairRoleId)
+            ->exists();
+
+        $missingSignature = $hasChairRole && !$user->signature;
+
+        $department_id = UserRole::where('user_id', $user->id)
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', $chairRoleId)
             ->select('user_roles.entity_id')
@@ -44,16 +55,18 @@ class ChairController extends Controller
             ->where('bayanihan_group_users.bg_role', '=', 'member')
             ->get()
             ->groupBy('bg_id');
+
         $bleaders = BayanihanGroupUsers::join('users', 'bayanihan_group_users.user_id', '=', 'users.id')
             ->select('users.*', 'bayanihan_group_users.*')
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get()
             ->groupBy('bg_id');
 
-        $user = Auth::user(); 
         $notifications = $user->notifications;
 
-        return view('Chairperson.Home.home', compact('users', 'bgroups', 'bmembers', 'bleaders', 'notifications'));
+        return view('Chairperson.Home.home', compact(
+            'users', 'bgroups', 'bmembers', 'bleaders', 'notifications', 'missingSignature'
+        ));
     }
     public function bayanihan()
     {
