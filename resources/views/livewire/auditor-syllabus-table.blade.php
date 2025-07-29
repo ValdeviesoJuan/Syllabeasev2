@@ -119,7 +119,7 @@
                     </div>
                 </td>
                 <td class="px-6 py-4 flex">
-                    <form action="{{ route('auditor.commentSyllabus', $syllabus->syll_id) }}" method="GET">
+                    <form action="{{ route('auditor.viewSyllabus', $syllabus->syll_id) }}" method="GET">
                         @csrf
                         <div class="p-4">
                             <button class="hover:text-yellow hover:underline" type="submit">View</button>

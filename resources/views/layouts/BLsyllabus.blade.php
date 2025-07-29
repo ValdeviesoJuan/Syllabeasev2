@@ -135,12 +135,15 @@
                             @foreach($syllabusVersions as $syllabusVersion)
 
                             @php
-                            $currentRouteMatches = request()->route()->getName() === 'bayanihanleader.viewSyllabus' &&
-                            request()->route('syll_id') == $syllabusVersion->syll_id;
-                            $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'bg-white';
+                                $currentRouteMatches = in_array(request()->route()->getName(), ['bayanihanleader.viewSyllabus', 'bayanihanleader.commentSyllabus']) &&
+                                    request()->route('syll_id') == $syllabusVersion->syll_id;
+                                $bgColorClass = $currentRouteMatches ? 'bg-blue2' : 'bg-white';
                             @endphp
 
-                            <a href="{{ route('bayanihanleader.viewSyllabus', $syllabusVersion->syll_id) }}" class="">
+                            <a href="{{ request()->route()->getName() === 'bayanihanleader.commentSyllabus' 
+                                ? route('bayanihanleader.commentSyllabus', $syllabusVersion->syll_id) 
+                                : route('bayanihanleader.viewSyllabus', $syllabusVersion->syll_id) }}" class=""
+                            >
                                 <div class="p-2 flex justify-between hover:bg-blue2 rounded {{ $bgColorClass }}">
                                     <div class="flex flex-row">
                                         Version {{ $syllabusVersion->version }}
@@ -193,8 +196,7 @@
                             </div>
                         </a>
 
-
-                        <!-- Comment Dropdown -->
+                        <!-- Comment Mode Dropdown -->
                         <div id="dropDownComment" class="hidden mt-1 transition duration-300 md:absolute top-full right-[90px] md:w-[200px] bg-white bg-opacity-90 md:shadow-lg md:rounded">
                             <a href="{{ route('bayanihanleader.viewSyllabus', $syll_id) }}" method="post" class="flex flex-row items-center my-2 mx-1 rounded shadow hover:border hover:border-gray3">
                                 <div class="mx-2 my-2">
