@@ -180,7 +180,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.syllabus') }}" class="{{request()->route()->getName() == 'bayanihanleader.syllabus' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
+                    <a href="{{ route('admin.syllabus') }}" class="{{request()->route()->getName() == 'admin.syllabus' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 31.867 31.867" xml:space="preserve">
                             <g>
                                 <g>
@@ -207,7 +207,7 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('admin.tos') }}" class="{{request()->route()->getName() == 'auditor.tos' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">
+                    <a href="{{ route('admin.tos') }}" class="{{request()->route()->getName() == 'admin.tos' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white  hover:bg-blue4 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" width="179.53818mm" height="179.53818mm" viewBox="0 0 179.53818 179.53818" version="1.1" id="svg1" inkscape:export-filename="courses.svg" inkscape:export-xdpi="79.62088" inkscape:export-ydpi="79.62088" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
                             <sodipodi:namedview id="namedview1" pagecolor="#505050" bordercolor="#eeeeee" borderopacity="1" inkscape:showpageshadow="0" inkscape:pageopacity="0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#505050" inkscape:document-units="mm" />
                             <defs id="defs1" />
@@ -225,14 +225,15 @@
                             
                 <li>
                     <a href="{{ route('admin.bayanihan') }}" class="{{request()->route()->getName() == 'admin.bayanihan' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="w-6 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 45.973 45.972" xml:space="preserve">
-                            <g>
-                                <g>
-                                    <path d="M44.752,20.914L25.935,2.094c-0.781-0.781-1.842-1.22-2.946-1.22c-1.105,0-2.166,0.439-2.947,1.22L1.221,20.914
-			c-1.191,1.191-1.548,2.968-0.903,4.525c0.646,1.557,2.165,2.557,3.85,2.557h2.404v13.461c0,2.013,1.607,3.642,3.621,3.642h3.203
-			V32.93c0-0.927,0.766-1.651,1.692-1.651h6.223c0.926,0,1.673,0.725,1.673,1.651v12.168h12.799c2.013,0,3.612-1.629,3.612-3.642
-			V27.996h2.411c1.685,0,3.204-1,3.85-2.557C46.3,23.882,45.944,22.106,44.752,20.914z" />
-                                </g>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="currentColor">
+                                <circle cx="8" cy="6" r="2"/>
+                                <path d="M6 10c-1.1 0-2 .9-2 2v6h8v-6c0-1.1-.9-2-2-2H6z"/>
+                                <circle cx="16" cy="6" r="2"/>
+                                <path d="M14 10c-1.1 0-2 .9-2 2v6h8v-6c0-1.1-.9-2-2-2h-4z"/>
+                                <path d="M10 14h4v2h-4z" opacity="0.7"/>
+                                <path d="M12 2l-6 4v2h12V6l-6-4z" opacity="0.8"/>
+                                <rect x="9" y="6" width="6" height="1" opacity="0.6"/>
                             </g>
                         </svg>
                         <span class="ms-3">Bayanihan Team</span>
@@ -248,8 +249,6 @@
                         <span class="ms-3">College</span>
                     </a>
                 </li>
-
-
 
                 <li>
                     <a href="{{ route('admin.department') }}" class="{{request()->route()->getName() == 'admin.department' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">

@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="bg-blue py-1 mx-1 px-2 text-white hover:scale-105">
-                    <a href="{{route('admin.replicateTos', $tos_id)}}">
+                    <a href="{{-- route('admin.replicateTos', $tos_id) --}}">
                         Replicate TOS
                     </a>
                 </div>
@@ -111,7 +111,7 @@
                         <path d="M235,240h-80c-8.284,0-15,6.716-15,15c0,8.284,6.716,15,15,15h80c8.284,0,15-6.716,15-15C250,246.716,243.284,240,235,240z   " />
                     </g>
                 </svg>
-                <a href="{{route('admin.replicateTos', $tos_id)}}">
+                <a href="{{-- route('admin.replicateTos', $tos_id) --}}">
                     <div class="-mt-[13%] ml-6">
                         Replicate TOS
                     </div>

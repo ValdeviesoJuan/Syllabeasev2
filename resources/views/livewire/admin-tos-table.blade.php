@@ -98,9 +98,9 @@
                 </th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-[#e5e7eb]">
         @foreach ($toss as $tos)
-            <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white border- dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
+            <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
                 <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 {{ $tos->course_title }}
                 </td>
@@ -123,40 +123,43 @@
                 Version {{$tos->tos_version}}
                 </td>
                 <td class="px-6 py-4">
-                    <div class="
+                    <div class=" text-center
                     {{ $tos->tos_status === 'Pending' ? 'w-[100%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
                     {{ $tos->tos_status === 'Approved by Chair' ? 'w-[100%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
                     {{ $tos->tos_status === 'Returned by Chair' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
                         {{$tos->tos_status}}
                     </div>
                 </td>
-                <td class="px-6 py-4 relative">
-                    <div x-data="{ open: false }" class="relative inline-block text-left w-full">
-                    <button @click="open = !open"
-                        class="bg-[#d7ecf9] hover:scale-105 transition ease-in-out font-semibold text-black px-4 py-2 rounded-xl flex items-center justify-center gap-2 w-full">
-                        Actions
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+                <td class="px-6 py-4 text-center">
+                    <div x-data="{ open: false }" class="relative inline-block text-left">
+                        <button @click="open = !open"
+                            class="flex items-center justify-center rounded-md p-2 bg-white text-sm text-gray-700 hover:bg-gray-50 focus:outline-none">
+                            <svg class="h-5 w-5 text-blue" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
 
-                    <div x-show="open" @click.away="open = false"
-                        class="absolute z-10 mt-2 w-52 origin-top-right bg-white border border-gray-200 rounded-xl shadow-lg">
-                        <div class="py-2 px-4 text-sm text-gray-700">
-                            <a href="{{ route('admin.viewTos', $tos->tos_id) }}"
-                                class="block px-4 py-2 hover:bg-gray-100 rounded">View</a>
-                            <a href="{{ route('admin.privilegeDateTOS') }}"
-                                class="block w-full text-left px-4 py-2 hover:bg-gray-100">Override Date</a>
+                        <div x-show="open" @click.outside="open = false" x-transition
+                            class="origin-top-right absolute right-0 mt-2 w-52 rounded-md shadow-lg bg-white ring-1 ring-blue ring-opacity-5 z-10">
+                            <div class="py-1 space-y-1">
+                                <a href="{{ route('admin.viewTos', $tos->tos_id) }}"
+                                class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray5 rounded">
+                                    View TOS
+                                </a>
+                                <a href="{{ route('admin.viewTOSDates', ['bg_id' => $tos->bg_id, 'tos_term' => $tos->tos_term]) }}"
+                                class="block w-full text-left px-4 py-2 text-sm text-[#edc001] hover:bg-gray5 rounded">
+                                    Override Date
+                                </a>
+                                <!-- Optional: add more actions here -->
                             </div>
                         </div>
                     </div>
-                </div>
-            </td>
-
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
-        {{ $toss->links() }}
+    {{ $toss->links() }}
 </div>
