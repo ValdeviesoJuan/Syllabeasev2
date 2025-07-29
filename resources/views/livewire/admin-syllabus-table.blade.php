@@ -24,7 +24,7 @@
             </button>
         </div>
 
-        <!-- Year Level -->
+        <!-- Filters -->
         <select wire:model="filters.course_year_level"
             class="border cursor-pointer focus:outline-none focus:border-blue rounded p-1 w-[14%]">
             <option value="">Year level (All)</option>
@@ -35,7 +35,6 @@
             <option value="5th Year">5th Year</option>
         </select>
 
-        <!-- Semester -->
         <select wire:model="filters.course_semester"
             class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[14%]">
             <option value="">Semester(All)</option>
@@ -44,7 +43,6 @@
             <option value="Mid Year">Mid Year</option>
         </select>
 
-        <!-- School Year -->
         <select wire:model="filters.bg_school_year"
             class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[15%]">
             <option value="">School Year(All)</option>
@@ -54,7 +52,6 @@
             <option value="2023-2024">2023-2024</option>
         </select>
 
-        <!-- Department -->
         <select wire:model="filters.department_code"
             class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[16%]">
             <option value="">Departments(All)</option>
@@ -63,7 +60,6 @@
             @endforeach
         </select>
 
-        <!-- Status -->
         <select wire:model="filters.status"
             class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[9%]">
             <option value="">Status</option>
@@ -74,7 +70,6 @@
             <option value="Returned by Dean">Returned by Dean</option>
         </select>
 
-        <!-- Apply Filters Button -->
         <button wire:click="applyFilters"
             class="bg-blue5 hover:bg-blue focus:outline-none focus:border-blue cursor-pointer rounded text-white p-[4px] px-4">
             Apply Filters
@@ -86,13 +81,13 @@
         <thead class="rounded text-xs text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr class="bg-blue5 text-white text-sm pb-2">
                 <th class="pl-2 mb-4 rounded-tl-lg">Course Title</th>
-                <th class="">Course Code</th>
-                <th class="">School Year</th>
-                <th class="">Semester</th>
-                <th class="">Submitted At</th>
-                <th class="">Approved At</th>
-                <th class="">Version</th>
-                <th class="">Status</th>
+                <th>Course Code</th>
+                <th>School Year</th>
+                <th>Semester</th>
+                <th>Submitted At</th>
+                <th>Approved At</th>
+                <th>Version</th>
+                <th>Status</th>
                 <th class="px-6 py-3 rounded-tr-lg">Action</th>
             </tr>
         </thead>
@@ -110,16 +105,16 @@
                     @php
                         $status = $syllabus->status;
                         $statusStyles = [
-                            'Draft' => 'background-color: #D1D5DB; color: #4B5563; border-color: #9CA3AF;', // gray
-                            'Pending Chair Review' => 'background-color: #FEF3C7; color: #D97706; border-color: #FCD34D;', // amber
-                            'Returned by Chair' => 'background-color: #FECACA; color: #E11D48; border-color: #F87171;', // rose
-                            'Requires Revision (Chair)' => 'background-color: #FEE2E2; color: #EF4444; border-color: #FCA5A5;', // red
-                            'Revised for Chair' => 'background-color: #DBEAFE; color: #3B82F6; border-color: #93C5FD;', // blue
-                            'Approved by Chair' => 'background-color: #D1FAE5; color: #059669; border-color: #6EE7B7;', // green
-                            'Returned by Dean' => 'background-color: #FDA4AF; color: #BE123C; border-color: #FB7185;', // darker rose
-                            'Requires Revision (Dean)' => 'background-color: #FCE7F3; color: #EC4899; border-color: #F9A8D4;', // pink
-                            'Revised for Dean' => 'background-color: #BFDBFE; color: #2563EB; border-color: #93C5FD;', // blue
-                            'Approved by Dean' => 'background-color: #A7F3D0; color: #047857; border-color: #6EE7B7;', // emerald
+                            'Draft' => 'background-color: #D1D5DB; color: #4B5563; border-color: #9CA3AF;',
+                            'Pending Chair Review' => 'background-color: #FEF3C7; color: #D97706; border-color: #FCD34D;',
+                            'Returned by Chair' => 'background-color: #FECACA; color: #E11D48; border-color: #F87171;',
+                            'Requires Revision (Chair)' => 'background-color: #FEE2E2; color: #EF4444; border-color: #FCA5A5;',
+                            'Revised for Chair' => 'background-color: #DBEAFE; color: #3B82F6; border-color: #93C5FD;',
+                            'Approved by Chair' => 'background-color: #D1FAE5; color: #059669; border-color: #6EE7B7;',
+                            'Returned by Dean' => 'background-color: #FDA4AF; color: #BE123C; border-color: #FB7185;',
+                            'Requires Revision (Dean)' => 'background-color: #FCE7F3; color: #EC4899; border-color: #F9A8D4;',
+                            'Revised for Dean' => 'background-color: #BFDBFE; color: #2563EB; border-color: #93C5FD;',
+                            'Approved by Dean' => 'background-color: #A7F3D0; color: #047857; border-color: #6EE7B7;',
                         ];
                         $style = $statusStyles[$status] ?? 'background-color: #F3F4F6; color: #6B7280; border-color: #D1D5DB;';
                     @endphp
@@ -128,14 +123,29 @@
                         {{ $syllabus->status }}
                     </div>
                 </td>
-                <td>
-                    <div>
-                        <form class="" action="{{ route('admin.viewSyllabus', $syllabus->syll_id) }}" method="GET">
-                            @csrf
-                            <div class="p-4">
-                                <button class="bg-blue5 w-[80%] hover:bg-blue3 py-1 rounded-lg text-lg text-white cursor-pointer font-semibold shadow-lg" type="submit">View</button>
+                <!-- dropdown action-->
+                <td class="relative">
+                    <div x-data="{ open: false }" class="relative inline-block text-left w-full">
+                            <button @click="open = !open"
+                                class="bg-[#d7ecf9] hover:scale-105 transition ease-in-out font-semibold text-black px-4 py-2  rounded-xl flex items-center justify-center gap-2 w-full">
+                                Actions
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="open" @click.away="open = false"
+                                class="absolute z-5 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div class="py-1 text-sm text-gray-700">
+                                    <a href="{{ route('admin.viewSyllabus', $syllabus->syll_id) }}"
+                                        class="block px-4 py-2 hover:bg-gray-100">View</a>
+                                    <a href="{{ route('admin.privilegeDateSyllabus') }}"
+                                        class="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                                        Override Date
+                                    </a>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </td>
             </tr>

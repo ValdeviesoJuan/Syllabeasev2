@@ -54,6 +54,17 @@ Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
     Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
 });
 
+
+//Privilege Date Routes
+Route::get('/admin/privilege-date-syllabus', function () {
+    return view('Admin.privilege_date_SYLLABUS');
+})->name('admin.privilegeDateSyllabus');
+Route::get('/admin/privilege-date-tos', function () {
+    return view('Admin.privilege_date_TOS');
+})->name('admin.privilegeDateTOS');
+
+
+
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;
 use App\Http\Controllers\Admin\AdminCurrController;

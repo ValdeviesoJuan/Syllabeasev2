@@ -36,62 +36,7 @@
                     </a>
                 </div>
 
-                <div class="flex items-center">
-                <!--Gels funtion for  Override Privilege for Date hehe -->          
-                <button type="button"
-                    onclick="document.getElementById('overrideModal').classList.remove('hidden')"
-                    class="flex items-center gap-2 text-black font-semibold px-4 py-2 rounded-md text-sm justify-center focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition ease-in-out hover:scale-105 shadow"
-                    style="background-color: #d7ecf9;"
-                    onmouseover="this.style.backgroundColor='#c3dff3';"
-                    onmouseout="this.style.backgroundColor='#d7ecf9';">
-
-                    <!-- Calendar with override icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7V3M16 7V3M4 11h16M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2zm12-4l-3 3m0 0l-3-3m3 3V12" />
-                    </svg>
-                    Override Privilege for Date
-                </button>
-
-                <!-- Modal -->
-                <div id="overrideModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
-                        <h2 class="text-xl font-semibold mb-4">Override Privilege</h2>
-                        <p class="mb-4 text-sm text-gray-700">Select the new date to override the default restriction.</p>
-
-                        <!-- Date input -->
-                        <label for="newDate" class="block mb-2 text-sm font-medium text-gray-600">Select new date:</label>
-                        <input type="date" id="newDate" name="newDate"
-                            class="w-full mb-4 p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" />
-
-                        <div class="flex justify-end gap-3">
-                            <button onclick="document.getElementById('overrideModal').classList.add('hidden')"
-                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">Cancel</button>
-
-                            <button onclick="handleOverride()"
-                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Confirm</button>
-                        </div>
-                    </div>
-                </div>
-
-                <script>
-                    function handleOverride() {
-                        const selectedDate = document.getElementById('newDate').value;
-                        if (!selectedDate) {
-                            alert('Please select a date.');
-                            return;
-                        }
-                        // Custom override logic (AJAX or form submission)
-                        alert(`Override date set to: ${selectedDate}`);
-                        document.getElementById('overrideModal').classList.add('hidden');
-                    }
-                </script>
-
-
-
-                        
-
-                                
+                <div class="flex items-center">   
                     <div class="flex items-center ms-3">
                         <div>
                             <button type="button" class="flex text-sm bg-white justify-center items-center rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-notif">
