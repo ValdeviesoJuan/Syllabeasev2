@@ -39,47 +39,52 @@
             <div class="m-8">
                 <form action="{{ route('bayanihanleader.storeTos', $syll_id) }}" method="POST">
                     @csrf
-                    <div class="">
-                        <div class="mb-3">
-                            <label for="tos_term" class="flex">Term</label>
-                            <select name="tos_term" id="tos_term" class="border border-[#a8a29e] rounded w-[200px] p-2" onchange="toggleTopics()">
-                                <option value="Midterm">Midterm</option>
-                                <option value="Final">Final</option>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label for="tos_term" class="flex mb-1 font-semibold">Term</label>
+                        <select name="tos_term" id="tos_term" class="border border-[#a8a29e] rounded w-[250px] p-2" onchange="toggleTopics()">
+                            <option value="Midterm">Midterm</option>
+                            <option value="Final">Final</option>
+                        </select>
                     </div>
+
                     <div class="grid gap-6 mb-6 md:grid-cols-2 mr-6"> 
                         <div class="mb-3">
-                            <label for="tos_no_items" class="flex">Total No. of Test Items</label>
-                                <input type="number" name="tos_no_items" id="tos_no_items" class="border w-max border-[#a8a29e] rounded w-[400px] p-2" required>
+                            <label for="tos_no_items" class="flex mb-1 font-semibold">Total No. of Test Items</label>
+                            <input type="number" name="tos_no_items" id="tos_no_items" class="border border-[#a8a29e] rounded w-[400px] p-2" required>
                         </div>
                         <div class="mb-3">
-                            <label for="tos_no_items" class="flex" >Curricular Program/Year/Section:</label>
-                                <input type="text" name="tos_cpys" id="tos_cpys" class="border w-max border-[#a8a29e] rounded w-[400px] p-2" required>
+                            <label for="tos_cpys" class="flex mb-1 font-semibold">Curricular Program/Year/Section</label>
+                            <input type="text" name="tos_cpys" id="tos_cpys" class="border border-[#a8a29e] rounded w-[400px] p-2" required>
                         </div>
                     </div>
 
-                    <div id="midtermTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Midterm Topics</h4>
-                        <div class="grid grid-cols-2 gap-3">
-                            @foreach($midtermTopics as $topic)
-                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
-                                    <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
-                                    <span class="text-sm text-gray-700">{{ $topic }}</span>
-                                </label>
-                            @endforeach
+                    <!-- Midterm Topics -->
+                    <div class="mb-6" id="midtermTopicsContainer">
+                        <label class="font-semibold block mb-2">Select Midterm Topics</label>
+                        <div id="midtermTopicsBox" class="border border-[#a8a29e] bg-white rounded p-4 w-[830px]">
+                            <div class="grid grid-cols-2 gap-3">
+                                @foreach($midtermTopics as $topic)
+                                    <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded px-3 py-2 border border-[#a8a29e]">
+                                        <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
+                                        <span class="text-sm text-gray-700">{{ $topic }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
 
-                    <div id="finalTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6 hidden">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Final Topics</h4>
-                        <div class="grid grid-cols-2 gap-3">
-                            @foreach($finalTopics as $topic)
-                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
-                                    <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
-                                    <span class="text-sm text-gray-700">{{ $topic }}</span>
-                                </label>
-                            @endforeach
+                    <!-- Final Topics -->
+                    <div class="mb-6 hidden" id="finalTopicsContainer">
+                        <label class="font-semibold block mb-2">Select Final Topics</label>
+                        <div id="finalTopicsBox" class="border border-[#a8a29e] bg-white rounded p-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                @foreach($finalTopics as $topic)
+                                    <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded px-3 py-2 border border-gray-200">
+                                        <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
+                                        <span class="text-sm text-gray-700">{{ $topic }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
 
@@ -105,20 +110,20 @@
 
                     <div id="feedback" class="text-red font-bold mt-8"></div>
                     <div id="currentTotal" class="font-bold mt-2"></div>
-                    <div class="text-center">
-                       <div class="flex justify-center mb-4">
-                        <!-- na add ni gelski -->
-                            <button type="submit"
-                                class="whitespace-nowrap w-50 rounded-xl hover:scale-105 transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"style="background: #d7ecf9;"onmouseover="this.style.background='#c3dff3';"onmouseout="this.style.background='#d7ecf9';">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
-                                        stroke-linecap="round" stroke-linejoin="round"/>
-                                    <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-                                </svg>
-                                Create TOS
-                            </button>
-                        </div>
+
+                    <div class="flex justify-center mb-4 mt-4">
+                        <button type="submit"
+                            class="whitespace-nowrap w-50 rounded-xl hover:scale-105 transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                            style="background: #d7ecf9;" onmouseover="this.style.background='#c3dff3';"
+                            onmouseout="this.style.background='#d7ecf9';">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
+                            </svg>
+                            Create TOS
+                        </button>
                     </div>
                 </form>
             </div>
@@ -129,19 +134,18 @@
 <script>
     function toggleTopics() {
         const term = document.getElementById('tos_term').value;
-        const midtermBox = document.getElementById('midtermTopicsBox');
-        const finalBox = document.getElementById('finalTopicsBox');
+        const midtermBox = document.getElementById('midtermTopicsContainer');
+        const finalBox = document.getElementById('finalTopicsContainer');
 
         if (term === 'Midterm') {
             midtermBox.classList.remove('hidden');
             finalBox.classList.add('hidden');
-        } else if (term === 'Final') {
+        } else {
             midtermBox.classList.add('hidden');
             finalBox.classList.remove('hidden');
         }
     }
 
-    // Call on page load to reflect initial state
     document.addEventListener('DOMContentLoaded', toggleTopics);
 </script>
 
@@ -158,7 +162,6 @@
 
     Object.values(inputs).forEach(input => {
         input.addEventListener('input', () => {
-            // Cap knowledge at 50%
             if (input.id === 'col_1_per') {
                 const val = parseFloat(input.value) || 0;
                 if (val > 50) {
@@ -167,16 +170,13 @@
                 }
             }
 
-            // Calculate total of all filled fields
             let total = 0;
             Object.values(inputs).forEach(inp => {
                 total += parseFloat(inp.value) || 0;
             });
 
-            // Show total
             currentTotalDiv.textContent = `Current Total: ${total.toFixed(2)}%`;
 
-            // Show warning if not 100%
             if (total !== 100) {
                 feedbackDiv.textContent = 'Total should be 100%';
                 feedbackDiv.classList.add('text-red');
@@ -186,9 +186,8 @@
             }
         });
     });
-    
-    const form = document.querySelector('form');
 
+    const form = document.querySelector('form');
     form.addEventListener('submit', function(e) {
         let total = 0;
         Object.values(inputs).forEach(inp => {
@@ -204,5 +203,4 @@
 </script>
 
 </html>
-
 @endsection

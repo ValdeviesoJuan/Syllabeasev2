@@ -39,13 +39,16 @@
                         </div>
                     </h2>
 
-                    <a class="assign_role -mt-12 flex mr-2 font-semibold float-right bg-blue text-white rounded-lg px-4 py-2 hover:scale-105 w-max transition ease-in-out" href="{{ route('admin.createRole', $user->id) }}">
-                        <svg class="" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
-                            <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
+                    <a class=" text-black assign_role -mt-12 flex  font-semibold  px-4 py-2  ease-in-out whitespace-nowrap mb-6 w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition p-2   items-center gap-2 max-w-full float-right"
+                    style="background: #d7ecf9;" onmouseover="this.style.background='#c3dff3';" onmouseout="this.style.background='#d7ecf9';" href="{{ route('admin.createRole', $user->id) }}">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8v8M8 12h8" stroke="black" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
                         </svg>
-                        Assign New Role</a>
-                </div>
+                            Assign New Role</a>
+                    </div>
+                  
 
                 <div class="grid gap-6 md:grid-cols-3">
                 @foreach ($user_roles as $user_role)
