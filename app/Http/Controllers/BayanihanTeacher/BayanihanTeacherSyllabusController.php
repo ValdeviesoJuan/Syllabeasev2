@@ -103,7 +103,7 @@ class BayanihanTeacherSyllabusController extends Controller
                 ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
                 ->where('bayanihan_group_users.bg_role', '=', 'member')
                 ->where('syllabi.department_id', '=', $myDepartment->department_id)
-                ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
+                ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')
                 ->leftJoin('deadlines', function ($join) {
                     $join->on('deadlines.dl_semester', '=', 'courses.course_semester')
                         ->on('deadlines.dl_school_year', '=', 'bayanihan_groups.bg_school_year')
@@ -113,13 +113,8 @@ class BayanihanTeacherSyllabusController extends Controller
                 ->get();
 
             $syllabiCount = $syllabus->count();
-            $completedCount = $syllabus->filter(function ($item) {
-                return $item->status === 'Approved by Dean';
-            })->count();
-            $pendingCount = $syllabus->filter(function ($item) {
-                return $item->status === 'Pending Chair Review';
-            })->count();
-
+            $completedCount = $syllabus->filter(fn($item) => $item->status === 'Approved by Dean')->count();
+            $pendingCount = $syllabus->filter(fn($item) => $item->status === 'Pending Chair Review')->count();
         } else {
             $syllabus = [];
             $syllabiCount = 0;
@@ -135,7 +130,13 @@ class BayanihanTeacherSyllabusController extends Controller
         $user = Auth::user();
         $notifications = $user->notifications;
 
-        return view('BayanihanTeacher.home', compact('notifications', 'syllabi', 'instructors', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
+        // ✅ Add this to pass to the view
+        $missingSignature = is_null($user->signature);
+
+        return view('BayanihanTeacher.home', compact(
+            'notifications', 'syllabi', 'instructors', 'syllabus', 
+            'syllabiCount', 'completedCount', 'pendingCount', 'missingSignature'
+        ));
     }
 
     public function commentSyllabus($syll_id)

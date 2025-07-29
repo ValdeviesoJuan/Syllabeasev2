@@ -24,7 +24,7 @@ class BayanihanLeaderHomeController extends Controller
             ->select('departments.department_id')
             ->first();
 
-        // $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
+                // $syllabi = Syllabus::join('syllabus_instructors', 'syllabi.syll_id', '=', 'syllabus_instructors.syll_id')
         //     ->select('syllabus_instructors.*', 'syllabi.*')
         //     ->get();
 
@@ -63,7 +63,6 @@ class BayanihanLeaderHomeController extends Controller
             $pendingCount = $syllabus->filter(function ($item) {
                 return $item->status === 'Pending Chair Review';
             })->count();
-
         } else {
             $syllabus = [];
             $syllabiCount = 0;
@@ -73,7 +72,15 @@ class BayanihanLeaderHomeController extends Controller
 
         $user = Auth::user(); 
         $notifications = $user->notifications;
+        $missingSignature = is_null($user->signature); // ✅ Add this
 
-        return view('BayanihanLeader.blHome', compact('notifications', 'syllabus', 'syllabiCount', 'completedCount', 'pendingCount'));
+        return view('BayanihanLeader.blHome', compact(
+            'notifications',
+            'syllabus',
+            'syllabiCount',
+            'completedCount',
+            'pendingCount',
+            'missingSignature' // ✅ Pass to view
+        ));
     }
 }
