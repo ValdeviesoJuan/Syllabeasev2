@@ -1,5 +1,3 @@
-Latest base v2
-
 
 @extends('layouts.blNav')
 
@@ -12,9 +10,6 @@ Latest base v2
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SyllabEase</title>
     @vite('resources/css/app.css')
-        <!-- GridStack 9.x (HTML5 drag+resize build) -->
-    <link href="https://cdn.jsdelivr.net/npm/gridstack@9.4.0/dist/gridstack.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/gridstack@9.4.0/dist/gridstack-h5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
@@ -30,6 +25,7 @@ Latest base v2
             font-family: serif;
             font-size: 0.875rem;
             overflow: hidden;
+            border: 2px solid gray;
         }
 
         .section {
@@ -517,100 +513,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     interact('.section').resizable({
-        edges: { left: true, right: true, top: true, bottom: true },
-        listeners: {
-            start(ev) {
-                // Capture layout for undo before resize starts
-                captureLayout();
-            },
-            move(ev) {
-                const tgt = ev.target;
-                let w = ev.rect.width, h = ev.rect.height;
-                if (w < 150) w = 150;
-                if (h < 60) h = 60;
+    edges: { top: true, left: true, bottom: true, right: true },
+    listeners: {
+      start(event) {
+        captureLayout();
+      },
+      move(event) {
+        let target = event.target;
+        let { x, y } = target.dataset;
 
-                let gridChanged = false;
+        x = (parseFloat(x) || 0) + event.deltaRect.left;
+        y = (parseFloat(y) || 0) + event.deltaRect.top;
 
-                // Always clear pixel size at start of top/left resize
-                if (ev.edges.top || ev.edges.left) {
-                    tgt.style.width = '';
-                    tgt.style.height = '';
-                }
+        Object.assign(target.style, {
+          width: `${event.rect.width}px`,
+          height: `${event.rect.height}px`,
+          transform: `translate(${x}px, ${y}px)`
+        });
 
-                // Top-edge resizing (expand/shrink both ways)
-                if (ev.edges.top) {
-                    const dy = ev.deltaRect.top;
-                    const currentRow = parseInt(tgt.dataset.row);
-                    const currentSpan = parseInt(tgt.dataset.rowSpan);
-                    const gridRowHeight = grid.getBoundingClientRect().height / getRowLines().length;
-                    let moveRows = Math.round(dy / gridRowHeight);
-                    let newRow = currentRow + moveRows;
-                    let newSpan = currentSpan - moveRows;
-                    if (newRow > 0 && newSpan > 0 && newRow + newSpan - 1 <= getRowLines().length) {
-                        let occ = buildOcc(tgt);
-                        let canMove = true;
-                        for (let r = newRow; r < newRow + newSpan; r++) {
-                            for (let c = parseInt(tgt.dataset.col); c < parseInt(tgt.dataset.col) + parseInt(tgt.dataset.colSpan); c++) {
-                                if (occ[r]?.[c]) { canMove = false; break; }
-                            }
-                            if (!canMove) break;
-                        }
-                        if (canMove) {
-                            tgt.dataset.row = newRow;
-                            tgt.dataset.rowSpan = newSpan;
-                            tgt.style.gridRow = `${newRow} / span ${newSpan}`;
-                            gridChanged = true;
-                        }
-                    }
-                }
-                // Left-edge resizing (expand/shrink both ways)
-                if (ev.edges.left) {
-                    const dx = ev.deltaRect.left;
-                    const currentCol = parseInt(tgt.dataset.col);
-                    const currentColSpan = parseInt(tgt.dataset.colSpan);
-                    const gridColWidth = grid.getBoundingClientRect().width / getColLines().length;
-                    let moveCols = Math.round(dx / gridColWidth);
-                    let newCol = currentCol + moveCols;
-                    let newColSpan = currentColSpan - moveCols;
-                    if (newCol > 0 && newColSpan > 0 && newCol + newColSpan - 1 <= getColLines().length) {
-                        let occ = buildOcc(tgt);
-                        let canMove = true;
-                        for (let r = parseInt(tgt.dataset.row); r < parseInt(tgt.dataset.row) + parseInt(tgt.dataset.rowSpan); r++) {
-                            for (let c = newCol; c < newCol + newColSpan; c++) {
-                                if (occ[r]?.[c]) { canMove = false; break; }
-                            }
-                            if (!canMove) break;
-                        }
-                        if (canMove) {
-                            tgt.dataset.col = newCol;
-                            tgt.dataset.colSpan = newColSpan;
-                            tgt.style.gridColumn = `${newCol} / span ${newColSpan}`;
-                            gridChanged = true;
-                        }
-                    }
-                }
-                // If grid changed, clear pixel size so grid is visible (redundant, but safe)
-                if (gridChanged) {
-                    tgt.style.width = '';
-                    tgt.style.height = '';
-                } else if (!ev.edges.top && !ev.edges.left) {
-                    // Right/bottom edge: set pixel size
-                    tgt.style.width = w + 'px';
-                    tgt.style.height = h + 'px';
-                }
-            },
-            end(ev) {
-                const tgt = ev.target;
-                tgt.style.transform = '';
-                delete tgt.dataset.dx;
-                delete tgt.dataset.dy;
-                // Only keep pixel width/height, do not update grid span
-                // User can freely resize the section
-            }
-        },
-        modifiers: [interact.modifiers.restrictEdges({ outer: 'parent', endOnly: true })],
-        inertia: true
-    });
+        Object.assign(target.dataset, { x, y });
+      },
+      end(event) {
+        const target = event.target;
+        target.style.transform = '';
+        delete target.dataset.x;
+        delete target.dataset.y;
+      }
+    },
+    modifiers: [
+      interact.modifiers.restrictEdges({
+        outer: 'parent',
+        endOnly: true
+      }),
+      interact.modifiers.restrictSize({
+        min: { width: 100, height: 50 },
+        max: { width: 1000, height: 800 }
+      })
+    ],
+    inertia: true
+  });
 
     const doneBtn = document.getElementById('doneBtn');
     const saveModal = document.getElementById('saveModal');
