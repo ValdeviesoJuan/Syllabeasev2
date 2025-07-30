@@ -33,4 +33,9 @@ class Tos extends Model implements Auditable
         'tos_version',
         'bg_id'
     ];
+    protected $casts = [
+        'chair_submitted_at' => 'datetime',
+        'chair_returned_at' => 'datetime',
+        'chair_approved_at' => 'datetime',
+    ];
 }

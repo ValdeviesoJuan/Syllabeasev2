@@ -793,9 +793,9 @@ class PDFController extends Controller
         }
 
         //For all Instructors in Syllabus
-        $insCount = count($instructors);
+        $insCount = count($bLeaders);
         $document->cloneRow('ins_firstname', $insCount);
-        foreach ($instructors as $index => $instructor) {
+        foreach ($bLeaders as $index => $instructor) {
             $ins_firstname = $instructor['firstname'];
             $ins_lastname = $instructor['lastname'];
             $signatureFilename = $instructor['signature'];

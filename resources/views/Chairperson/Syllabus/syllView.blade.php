@@ -1451,18 +1451,18 @@
                             <div class="flex justify-center">
                                 Prepared By:
                             </div>
-                            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
+                            @foreach ($bLeaders ?? [] as $key => $instructor)
                             <div>
                                 @if($syll->chair_submitted_at != null && $instructor->signature)
-                                <div class="flex justify-center mt-20">
+                                <div class="flex justify-center mt-5">
                                     <img src="{{ asset('assets/signatures/' . $instructor->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
                                 </div>
                                 @else
-                                <div class="flex justify-center mt-20">
+                                <div class="flex justify-center mt-5">
 
                                 </div>
                                 @endif
-                                <div class="flex justify-center font-semibold underline">
+                                <div class="flex justify-center font-semibold underline text-center">
                                     {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
                                 </div>
                                 <div class="flex justify-center">
@@ -1480,11 +1480,11 @@
                                 <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
                             </div>
                             @else
-                            <div class="flex justify-center mt-20">
+                            <div class="flex justify-center mt-5">
 
                             </div>
                             @endif
-                            <div class="flex justify-center font-semibold underline">
+                            <div class="flex justify-center font-semibold underline text-center">
                                 {{ strtoupper($syll->syll_chair) }}
                             </div>
                             <div class="flex justify-center">
@@ -1500,11 +1500,11 @@
                                 <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
                             </div>
                             @else
-                            <div class="flex justify-center mt-20">
+                            <div class="flex justify-center mt-5">
 
                             </div>
                             @endif
-                            <div class="flex justify-center font-semibold underline">
+                            <div class="flex justify-center font-semibold underline text-center">
                                 {{ strtoupper($syll->syll_dean) }}
                             </div>
                             <div class="flex justify-center">

@@ -130,7 +130,21 @@ class BayanihanLeaderTOSController extends Controller
     }
     public function destroyTos(Tos $tos_id)
     {
+        
+        $tos = Syllabus::where('syll_id', $tos_id)->firstorfail();
+
+        $hasApprovedTOSDocument = Tos::where('bg_id', operator: $tos->bg_id)
+            ->where('status', 'Approved by Chair')
+            ->whereNotNull('chair_approved_at')
+            ->exists();
+
+        if ($hasApprovedTOSDocument) {
+            return redirect()->route('bayanihanleader.tos')
+                ->with('error', 'Cannot delete this TOS because it already has been approved.');
+        }
+        
         $tos_id->delete();
+    
         return redirect()->route('bayanihanleader.tos')->with('success', 'Tos deleted successfully.');
     }
     public function submitTos($tos_id)

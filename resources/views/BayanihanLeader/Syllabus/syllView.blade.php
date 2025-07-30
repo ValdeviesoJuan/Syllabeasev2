@@ -2067,24 +2067,25 @@
                             <div class="flex justify-center">
                                 Prepared By:
                             </div>
-                            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
-                            <div>
-                                @if($syll->chair_submitted_at != null && $instructor->signature)
-                                <div class="flex justify-center mt-20">
-                                    <img src="{{ asset('assets/signatures/' . $instructor->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                            @foreach ($bLeaders as $bleader)
+                                <div class="mt-5">
+                                    <div class="flex justify-center">
+                                        @if($syll->chair_submitted_at && $bleader->signature)
+                                            <img src="{{ asset('assets/signatures/' . $bleader->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                                        @endif
+                                    </div>
+                                    <div class="flex justify-center font-semibold underline mt-2 text-center">
+                                        {{ strtoupper(collect([
+                                            $bleader->prefix,
+                                            $bleader->firstname,
+                                            $bleader->lastname,
+                                            $bleader->suffix
+                                        ])->filter()->implode(' ')) }}
+                                    </div>
+                                    <div class="flex justify-center text-center">
+                                        Instructor
+                                    </div>
                                 </div>
-                                @else
-                                <div class="flex justify-center mt-20">
-
-                                </div>
-                                @endif
-                                <div class="flex justify-center font-semibold underline">
-                                    {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
-                                </div>
-                                <div class="flex justify-center">
-                                    Instructor
-                                </div>
-                            </div>
                             @endforeach
                         </div>
                         <div>
@@ -2092,15 +2093,15 @@
                                 Checked and Recommended for Approval:
                             </div>
                             @if($syll->dean_submitted_at != null && $chair->signature)
-                            <div class="flex justify-center mt-5">
-                                <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
-                            </div>
+                                <div class="flex justify-center mt-5">
+                                    <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
+                                </div>
                             @else
-                            <div class="flex justify-center mt-20">
+                                <div class="flex justify-center mt-20">
 
-                            </div>
+                                </div>
                             @endif
-                            <div class="flex justify-center font-semibold underline">
+                            <div class="flex justify-center font-semibold underline text-center">
                                 {{ strtoupper($syll->syll_chair) }}
                             </div>
                             <div class="flex justify-center text-center">
@@ -2120,7 +2121,7 @@
 
                             </div>
                             @endif
-                            <div class="flex justify-center font-semibold underline">
+                            <div class="flex justify-center font-semibold underline text-center">
                                 {{ strtoupper($syll->syll_dean) }}
                             </div>
                             <div class="flex justify-center text-center">

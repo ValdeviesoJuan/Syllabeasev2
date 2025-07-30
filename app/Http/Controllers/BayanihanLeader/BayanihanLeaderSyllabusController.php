@@ -635,7 +635,20 @@ class BayanihanLeaderSyllabusController extends Controller
     // }
     public function destroySyllabus(Syllabus $syll_id)
     {
+        $syll = Syllabus::where('syll_id', $syll_id)->firstorfail();
+
+        $hasApprovedSyllabusDocument = Syllabus::where('bg_id', $syll->bg_id)
+            ->where('status', 'Approved by Dean')
+            ->whereNotNull('dean_approved_at')
+            ->exists();
+
+        if ($hasApprovedSyllabusDocument) {
+            return redirect()->route('bayanihanleader.home')
+                ->with('error', 'Cannot delete this syllabus because it already has been approved.');
+        }
+        
         $syll_id->delete();
+
         return redirect()->route('bayanihanleader.home')->with('success', 'Syllabus deleted successfully.');
     }
     public function viewReviewForm($syll_id)

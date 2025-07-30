@@ -7,6 +7,8 @@ use App\Models\BayanihanGroupUsers;
 use Illuminate\Http\Request;
 
 use App\Models\SyllabusDeanFeedback;
+use App\Models\UserRole;
+use App\Models\Roles;
 use App\Models\Syllabus;
 use App\Models\SrfChecklist;
 use App\Models\SyllabusReviewForm;
@@ -37,6 +39,24 @@ class AdminSyllabusController extends Controller
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
+            ->first();
+
+        // Get chairperson of the department
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->department_id)
+            ->where('entity_type', 'Department')
+            ->where('role_id', $chairRoleId)
+            ->select('users.*')
+            ->first();
+
+        // Get dean of the college
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('entity_id', $syll->college_id)
+            ->where('entity_type', 'College')
+            ->where('role_id', $deanRoleId)
+            ->select('users.*')
             ->first();
         
         $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
