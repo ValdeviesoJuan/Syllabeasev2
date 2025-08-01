@@ -129,18 +129,31 @@ Latest base v2
             background-color: #e5e7eb; /* slightly darker gray on hover (Tailwind gray-200) */
         }
 
-        .flex-1.flex {
-            position: relative;
-            z-index: 0;
-        }
-
-        body {
-            overflow: visible;
-        }
+        .flex-1.flex { position: relative; z-index: 0; }
+        body { overflow: visible; }
         .dragging-clone {
             opacity: 0.9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
+
+        #drop-zone {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            width: 1024px;
+            height: 768px;
+            position: relative;
+        }
+        #hover-highlight {
+            position: absolute;
+            background-color: rgba(100, 149, 237, 0.3); /* light blue */
+            border: 2px solid cornflowerblue;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+
 
 
     
@@ -249,29 +262,42 @@ Latest base v2
 
             <!-- Main Container -->
             <div class="flex-1 flex justify-center">
-                <div id="drop-zone" class="grid grid-cols-3 grid-rows-4 gap-0 p-0 border-2 border-gray h-[898px] w-full max-w-[900px] bg-white shadow-md overflow-y-auto">
-                    <!-- Empty for now, drag-and-drop will populate this -->
+                <div id="drop-zone" class="grid grid-cols-3 grid-rows-4 gap-0 p-0 border-2 border-gray h-[898px] w-full max-w-[1024px] bg-white shadow-md overflow-y-auto" >
+                    <div id="hover-highlight"></div>
+    
+                <!-- Empty for now, drag-and-drop will populate this -->
                 </div>
             </div>
     </div>
 
 
 
-    <script>
+   <script>
 document.addEventListener("DOMContentLoaded", () => {
   const dropZone = document.getElementById('drop-zone');
+  const highlight = document.getElementById('hover-highlight');
   let dragClone = null;
+  let isFromDropZone = false;
 
-  interact('.draggable').draggable({
+  function getGridPosition(x, y, container) {
+    const rect = container.getBoundingClientRect();
+    const colWidth = rect.width / 3;
+    const rowHeight = rect.height / 4;
+    const col = Math.floor((x - rect.left) / colWidth) + 1;
+    const row = Math.floor((y - rect.top) / rowHeight) + 1;
+    return { col, row, colWidth, rowHeight };
+  }
+
+  interact('.draggable, #drop-zone .section').draggable({
     listeners: {
       start(event) {
         const original = event.target;
+        isFromDropZone = original.closest('#drop-zone') !== null;
 
-        // if already inside container, move directly
-        if (original.closest('#drop-zone')) {
+        if (isFromDropZone) {
           dragClone = original;
+          dragClone.style.zIndex = 1000;
         } else {
-          // clone if coming from selection
           dragClone = original.cloneNode(true);
           dragClone.classList.add('dragging-clone');
           dragClone.style.position = 'fixed';
@@ -282,73 +308,126 @@ document.addEventListener("DOMContentLoaded", () => {
           document.body.appendChild(dragClone);
         }
       },
+
       move(event) {
         if (!dragClone) return;
-
         const x = event.client.x - dragClone.offsetWidth / 2;
         const y = event.client.y - dragClone.offsetHeight / 2;
 
-        dragClone.style.left = `${x}px`;
-        dragClone.style.top = `${y}px`;
+        if (!isFromDropZone) {
+          dragClone.style.left = `${x}px`;
+          dragClone.style.top = `${y}px`;
+        }
+
+        const { col, row, colWidth, rowHeight } = getGridPosition(event.client.x, event.client.y, dropZone);
+
+        if (col > 0 && row > 0 && col <= 3 && row <= 4) {
+          highlight.style.left = `${(col - 1) * colWidth}px`;
+          highlight.style.top = `${(row - 1) * rowHeight}px`;
+          highlight.style.width = `${colWidth}px`;
+          highlight.style.height = `${rowHeight}px`;
+          highlight.style.display = 'block';
+        } else {
+          highlight.style.display = 'none';
+        }
       },
+
       end(event) {
         if (!dragClone) return;
 
+        const { col, row } = getGridPosition(event.client.x, event.client.y, dropZone);
         const dropRect = dropZone.getBoundingClientRect();
-        const cloneRect = dragClone.getBoundingClientRect();
-
+        const centerX = event.client.x;
+        const centerY = event.client.y;
         const isInside =
-          cloneRect.left >= dropRect.left &&
-          cloneRect.right <= dropRect.right &&
-          cloneRect.top >= dropRect.top &&
-          cloneRect.bottom <= dropRect.bottom;
+          centerX >= dropRect.left &&
+          centerX <= dropRect.right &&
+          centerY >= dropRect.top &&
+          centerY <= dropRect.bottom;
 
-        if (isInside && !dragClone.closest('#drop-zone')) {
-          dragClone.style.position = 'static';
-          dragClone.style.pointerEvents = 'auto';
-          dragClone.classList.remove('dragging-clone');
-          dropZone.appendChild(dragClone);
-        } else if (!dragClone.closest('#drop-zone')) {
-          dragClone.remove();
+        highlight.style.display = 'none';
+
+        if (isInside) {
+          if (!isFromDropZone) {
+            dragClone.classList.remove('dragging-clone');
+            dragClone.style.position = '';
+            dragClone.style.pointerEvents = 'auto';
+            dragClone.style.left = '';
+            dragClone.style.top = '';
+            dragClone.style.width = '';
+            dragClone.style.height = '';
+
+            if (!dragClone.classList.contains('section')) {
+              dragClone.classList.add('section');
+            }
+
+            dropZone.appendChild(dragClone);
+          }
+
+          dragClone.style.gridColumn = `${col} / span 1`;
+          dragClone.style.gridRow = `${row} / span 1`;
+        } else if (!isFromDropZone) {
+          dragClone.remove(); // Cancel drop if outside and not from container
         }
 
         dragClone = null;
+        isFromDropZone = false;
       }
     }
   });
-
-  // Prevent text selection during drag
-  document.querySelectorAll('.draggable').forEach(el => {
-    el.style.userSelect = 'none';
-  });
 });
 
-
+// RESIZING LOGIC
 interact('#drop-zone .section').resizable({
-    edges: { left: true, right: true, bottom: true, top: true },
-    modifiers: [
-        interact.modifiers.snapSize({
-            targets: [
-                interact.snappers.grid({ width: 50, height: 50 })
-            ],
-            range: Infinity,
-            offset: { x: 0, y: 0 }
-        }),
-        interact.modifiers.restrictSize({
-            min: { width: 150, height: 60 } // your original min size
-        })
-    ],
-    inertia: true
-}).on('resizemove', function (event) {
-    let { width, height } = event.rect;
+  edges: { left: true, right: true, bottom: true, top: true },
+  listeners: {
+    move(event) {
+      const target = event.target;
 
-    event.target.style.width = width + 'px';
-    event.target.style.height = height + 'px';
+      // Get current size from style or fallback to offset
+      let width = parseFloat(target.style.width) || target.offsetWidth;
+      let height = parseFloat(target.style.height) || target.offsetHeight;
+
+      // Add deltas from resize movement
+      let newWidth = width + event.deltaRect.width;
+      let newHeight = height + event.deltaRect.height;
+
+      // Snap to nearest 25px
+      newWidth = Math.round(newWidth / 20) * 20;
+      newHeight = Math.round(newHeight / 20) * 20;
+
+      // Get container bounds
+      const dropZone = document.getElementById('drop-zone');
+      const dzRect = dropZone.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+
+      // Compute max size based on current position
+      const maxWidth = dzRect.right - targetRect.left;
+      const maxHeight = dzRect.bottom - targetRect.top;
+
+      // Clamp to container limits
+      newWidth = Math.max(50, Math.min(newWidth, maxWidth));
+      newHeight = Math.max(50, Math.min(newHeight, maxHeight));
+
+      // Apply style updates
+      target.style.width = `${newWidth}px`;
+      target.style.height = `${newHeight}px`;
+    }
+  },
+  modifiers: [
+    interact.modifiers.restrictEdges({
+      outer: 'parent',
+    }),
+    interact.modifiers.restrictSize({
+      min: { width: 50, height: 50 },
+      max: { width: 1024, height: 768 },
+    }),
+  ],
+  inertia: true
 });
 
 
 </script>
-
 
 
 
