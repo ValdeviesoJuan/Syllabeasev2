@@ -14,7 +14,6 @@
             transform: scaleY(-1);
             min-width: '1880'
         }
-
         body {
             background-image: url("{{ asset('assets/wave.png') }}");
             background-repeat: no-repeat;
@@ -22,7 +21,6 @@
             background-attachment: fixed;
             background-size: contain;
         }
-
         table,
         tr,
         td,

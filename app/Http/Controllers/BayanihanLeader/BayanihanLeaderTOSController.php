@@ -155,7 +155,14 @@ class BayanihanLeaderTOSController extends Controller
             return redirect()->route('bayanihanleader.tos')->with('error', 'Tos not found.');
         }
         $tos->chair_submitted_at = Carbon::now();
-        $tos->tos_status = 'Pending';
+        
+        if ($tos->tos_status == "Draft") {
+            $tos->tos_status = 'Pending Review';
+
+        } else if ($tos->tos_status == "Requires Revision") {
+            $tos->tos_status = 'Revisions Applied';
+        }
+
         $tos->save();
 
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
@@ -172,12 +179,12 @@ class BayanihanLeaderTOSController extends Controller
             ->join('courses', 'courses.course_id', 'bayanihan_groups.course_id')
             ->select('bayanihan_groups.bg_school_year', 'courses.course_code')
             ->first();
+
         $course_code = $submitted_tos->course_code;
         $bg_school_year = $submitted_tos->bg_school_year;
         $chair->notify(new Chair_TOSSubmitted($course_code, $bg_school_year, $tos_id));
 
-
-        return redirect()->route('bayanihanleader.tos')->with('success', 'Tos submission successful.');
+        return redirect()->route('bayanihanleader.tos')->with('success', 'TOS submission successful.');
     }
     public function editTos($syll_id, $tos_id)
     {
@@ -204,9 +211,6 @@ class BayanihanLeaderTOSController extends Controller
             ->where('syll_id', $syll_id)
             ->pluck('syll_topics')
             ->filter()
-            ->flatMap(function ($topic) {
-                return array_map('trim', explode(',', $topic));
-            })
             ->unique()
             ->values()
             ->toArray();
@@ -216,9 +220,6 @@ class BayanihanLeaderTOSController extends Controller
             ->where('syll_id', $syll_id)
             ->pluck('syll_topics')
             ->filter()
-            ->flatMap(function ($topic) {
-                return array_map('trim', explode(',', $topic));
-            })
             ->unique()
             ->values()
             ->toArray();
@@ -233,7 +234,6 @@ class BayanihanLeaderTOSController extends Controller
             ->where('tos.tos_id', '=', $tos_id)
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->get();
-
         $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
             ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
             ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
@@ -331,6 +331,7 @@ class BayanihanLeaderTOSController extends Controller
         $tos = new Tos();
         $tos->syll_id = $syll_id;
         $tos->user_id = Auth::user()->id;
+        $tos->tos_status = "Draft";
         $tos->effectivity_date = $syllabus->effectivity_date;
         $tos->tos_term = $request->tos_term;
         $tos->tos_no_items = $request->tos_no_items;
@@ -686,7 +687,7 @@ class BayanihanLeaderTOSController extends Controller
             $newTos->chair_submitted_at = null;
             $newTos->chair_returned_at = null;
             $newTos->chair_approved_at = null;
-            $newTos->tos_status = null;
+            $newTos->tos_status = "Requires Revision";
             $newTos->tos_version = $oldTos->tos_version + 1;
             $newTos->save();
 

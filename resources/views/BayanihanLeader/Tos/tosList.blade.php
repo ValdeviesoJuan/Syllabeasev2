@@ -62,10 +62,10 @@
         @endif
     @endif
 <body>
-    <div class="mt-[6%] ml-[4px]">
+    <div class="mt-[6%]">
         <livewire:b-l-create-tos />
     </div>
-    <div class="m-auto pb-12 p-8 bg-white mt-[10px]  shadow-lg rounded  w-full">
+    <div class="m-auto pb-12 p-8 bg-white mt-[10px] shadow-lg rounded w-full">
         <div class="flex justify-center align-items-center">
             <div class="min-w-full inline-block align-middle">
                 <div class="overflow-hidden mb-6">

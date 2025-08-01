@@ -34,8 +34,8 @@
 
 <body>
     <div class="flex flex-col justify-center mb-[5px]">
-        <!-- If submitted na si TOS  -->
-        @if($tos->chair_submitted_at != null && $tos->tos_status == 'Pending')
+        <!-- Pending Review -->
+        @if($tos->chair_submitted_at != null && ($tos->tos_status == 'Pending Review' || $tos->tos_status == 'Revisions Applied'))
         <div class="">
             <div class="flex items-center m-auto justify-center border-2 border-[#22c55e] bg-opacity-75 w-[500px] w-[800px] rounded-lg bg-white py-3 mt-6">
                 <div class="mx-1">
@@ -76,10 +76,9 @@
                     <span class="font-semibold">Notice:</span> This TOS has already been <h1 class="inline text-[#22c55e] font-bold">approved</h1> by the chair; further edits are no longer permitted.
                 </div>
             </div>
-
         </div>
 
-        <!-- If Gi return si TOS  -->
+        <!-- Returned by Chair  -->
         @elseif($tos->chair_returned_at != null && $tos->tos_status == 'Returned by Chair')
         <div>
             <div class="flex items-center m-auto justify-center border-2 border-[#22c55e] bg-opacity-75 w-[500px] w-[800px] rounded-lg bg-white py-3 mt-6">

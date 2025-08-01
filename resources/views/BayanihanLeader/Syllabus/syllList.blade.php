@@ -76,7 +76,7 @@
             <h1 class="font-bold text-4xl text-[#201B50] mb-8">List of Syllabus</h1>
             <div class="">
                 <a href="{{ route('bayanihanleader.createSyllabus') }}"
-                    class="whitespace-nowrap w-50 rounded-xl mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
+                    class="whitespace-nowrap w-50 rounded mr-1.5 hover:scale-105 w-max transition ease-in-out p-2 text-black font-semibold flex items-center gap-2 max-w-full"
                     style="background: #d7ecf9;"
                     onmouseover="this.style.background='#c3dff3';"
                     onmouseout="this.style.background='#d7ecf9';">
@@ -88,7 +88,6 @@
                     </svg>
                     Create Syllabus
                 </a>
-                
             </div>
         </span>
         <livewire:b-l-syllabus-table />

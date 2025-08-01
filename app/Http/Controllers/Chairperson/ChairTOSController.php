@@ -124,6 +124,7 @@ class ChairTOSController extends Controller
         if (!$tos) {
             return redirect()->route('chairperson.tos')->with('error', 'Tos not found.');
         }
+        
         $tos->chair_returned_at = Carbon::now();
         $tos->tos_status = 'Returned by Chair';
         $tos->save();

@@ -35,12 +35,12 @@ class AdminTosTable extends Component
                 ->join('colleges', 'colleges.college_id', '=', 'departments.college_id')
                 ->select('tos.*', 'courses.*', 'bayanihan_groups.*')
                 ->whereIn('tos.tos_term', ['Midterm', 'Final'])
-                // ->whereRaw('tos.tos_version = (SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id AND chair_submitted_at IS NOT NULL)')
-                ->whereIn('tos.tos_version', function ($query) {
-                    $query->select(DB::raw('MAX(tos_version)'))
-                        ->from('tos')
-                        ->groupBy('syll_id', 'tos_term');
-                })
+                ->whereRaw('tos.tos_version = (SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id)')
+                // ->whereIn('tos.tos_version', function ($query) {
+                //     $query->select(DB::raw('MAX(tos_version)'))
+                //         ->from('tos')
+                //         ->groupBy('syll_id', 'tos_term');
+                // })
                 ->where(function ($query) {
                     $query->where('courses.course_year_level', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_semester', 'like', '%' . $this->search . '%')
@@ -75,7 +75,7 @@ class AdminTosTable extends Component
                 ->when($this->filters['college_id'], function ($query) {
                     $query->where('departments.college_id', 'like', '%' . $this->filters['college_id']);
                 })
-                ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*', 'tos.*', 'tos.chair_submitted_at as tos_chair_submitted_at')
+                ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*', 'tos.*')
                 ->paginate(10);
 
         return view('livewire.admin-tos-table', ['toss' => $toss, 'filters' => $this->filters, 'departments' => $departments, 'colleges' => $colleges]);

@@ -29,6 +29,7 @@ class BLTos extends Component
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('bayanihan_groups.bg_id')
             ->get();
+            
         if ($myGroup) {
             $myGroupBgIds = $myGroup->pluck('bg_id')->toArray();
             $toss = Tos::join('bayanihan_groups', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
@@ -44,7 +45,6 @@ class BLTos extends Component
                         ->groupBy('syll_id', 'tos_term');
                 })
                 // ->where('tos.bg_id', $myGroup->bg_id)
-                ->whereIn('tos.bg_id', $myGroupBgIds)
                 // ->whereNotNull('tos.chair_submitted_at')
                 ->where(function ($query) {
                     $query->where('courses.course_year_level', 'like', '%' . $this->search . '%')
