@@ -1,35 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Bayanihan Member Assignment</title>
 </head>
-<body>
-    <table width="100%" cellspacing="0" cellpadding="0">
-        <!-- Logo at Top -->
-        <tr>
-            <td style="text-align: left;">
-                <img src="https://i.imgur.com/e6DsGLI.png" alt="SyllabEase Logo" style="max-width: 200px;">
-            </td>
-        </tr>
+<body style="margin: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="80%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; max-width: 1000px; margin: auto;">
 
-        <!-- Title -->
+        <!-- Header Image -->
         <tr>
-            <td>
-                <h3>Bayanihan Member Assignment</h3>
+            <td style="padding: 0; margin: 0;" align="center">
+                <img src="https://i.imgur.com/G3P07dR.png" alt="SyllabEase Banner" width="100%" style="display: block; width: 100%; max-width: 1080px; height: auto; border: 0; margin: 0; padding: 0;">
             </td>
         </tr>
 
         <!-- Main Content -->
         <tr>
-            <td>
-                <h4>Hello {{ $user->firstname }},</h4>
+            <td style="padding: 20px;">
+                <h3 style="margin-top: 0;">Bayanihan Member Assignment</h3>
 
-                <p>
+                <h4 style="margin-bottom: 10px;">Hello {{ $user->firstname }},</h4>
+
+                <p style="font-size: 15px; margin-top: 0;">
                     You’ve been added as a <strong>Bayanihan Member</strong> for the course <strong>{{ $bGroup->course_id }}</strong>.
                 </p>
 
-                <table cellpadding="0" cellspacing="0">
+                <table cellpadding="0" cellspacing="0" style="font-size: 15px; margin-top: 15px;">
                     <tr>
                         <td><strong>School Year:</strong></td>
                         <td style="padding-left: 10px;">{{ $bGroup->bg_school_year }}</td>
@@ -44,21 +40,24 @@
                     </tr>
                 </table>
 
-                <p>Welcome to the Bayanihan Team!</p>
+                <p style="font-size: 15px; margin-top: 20px;">Welcome to the Bayanihan Team!</p>
             </td>
         </tr>
 
-        <!-- Automated Notice -->
+        <!-- Note -->
         <tr>
-            <td>
-                <p>This is an automated email. Please do not reply to this email.</p>
+            <td style="padding: 0 20px;">
+                <p style="font-size: 12px; color: #555;">This is an automated email. Please do not reply to this message.</p>
             </td>
         </tr>
 
         <!-- Footer -->
         <tr>
-            <td style="text-align: center;">
-                <small>&copy; {{ date('Y') }} Bayanihan System. All rights reserved.</small>
+            <td style="background-color: #000000; color: #ffffff; text-align: center; padding: 20px; font-size: 13px;">
+                <p style="margin: 0;"><strong>SyllabEase</strong></p>
+                <p style="margin: 4px 0;">Your Learning Management Assistant</p>
+                <p style="margin: 4px 0;">Email: support@syllabease.com | Contact No: +63 912 345 6789</p>
+                <p style="margin: 4px 0;">© {{ date('Y') }} SyllabEase. All rights reserved.</p>
             </td>
         </tr>
     </table>
