@@ -11,7 +11,7 @@
         <!-- Header Image -->
         <tr>
             <td style="padding: 0; margin: 0;" align="center">
-                <img src="https://i.imgur.com/G3P07dR.png" alt="SyllabEase Banner" width="100%" style="display: block; width: 100%; max-width: 1080px; height: 50%; border: 0; margin: 0; padding: 0;">
+                <img src="https://i.imgur.com/7pVnxWO.png" alt="SyllabEase Banner" width="100%" style="display: block; width: 100%; max-width: 1080px; height: 50%; border: 0; margin: 0; padding: 0;">
             </td>
         </tr>
 
