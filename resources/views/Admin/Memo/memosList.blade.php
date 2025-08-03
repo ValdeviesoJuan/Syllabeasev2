@@ -68,7 +68,7 @@
         </div>
     </form>
 
-    {{-- Table View --}}
+  {{-- Table View --}}
     <div id="tableView" class="overflow-x-auto">
         <table class="w-full table-fixed border-separate border-spacing-y-2">
             <thead>
@@ -76,59 +76,70 @@
                     <th class="px-2 py-2 w-[15%] rounded-l-lg">Title</th>
                     <th class="px-2 py-2 w-[55%]">Description</th>
                     <th class="px-2 py-2 w-[15%]">Date</th>
-                    <th class="px-2 py-2 w-[10%] rounded-r-lg">Action</th>
+                    <th class="px-2 py-2 w-[15%] rounded-r-lg">Action</th>
                 </tr>
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr onclick="handleRowClick(event, '{{ route('admin.showMemo', $memo->id) }}')"
-                    class="bg-white rounded shadow-sm cursor-pointer transition"
-                    style="transition: background-color 0.2s ease;"
-                    onmouseover="this.style.backgroundColor='#e6f0ff';"
-                    onmouseout="this.style.backgroundColor='white';"
-                >
-                    <td class="px-2 py-2 w-[15%]">{{ $memo->title }}</td>
-                    <td class="px-2 py-2 w-[55%]">{{ Str::limit($memo->description, 80) }}</td>
-                    <td class="px-2 py-2 w-[15%]">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
-                    <td class="px-2 py-2 w-[10%]">
-                        <div class="flex flex-wrap gap-2">
-                            @php
-                                $files = json_decode($memo->file_name, true);
-                                $files = is_array($files) ? $files : [$memo->file_name];
-                            @endphp
+                    @php
+                        $files = json_decode($memo->file_name, true);
+                        $files = is_array($files) ? $files : [$memo->file_name];
 
-                            {{-- Edit --}}
-                            <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
-                                title="Edit"
-                                class="stop-row-click border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
-                                style="color: #28a745;"
-                                onmouseover="this.style.backgroundColor='#d4edda';"
-                                onmouseout="this.style.backgroundColor='transparent';"
+                        $borderHex = match($memo->color) {
+                            'green' => '#22c55e',   // green
+                            'yellow' => '#facc15',  // yellow
+                            'red' => '#ef4444',     // red
+                            default => '#d1d5db',   // gray
+                        };
+                    @endphp
+
+                    <tr>
+                        <td colspan="4" class="p-0">
+                            <div onclick="handleRowClick(event, '{{ route('admin.showMemo', $memo->id) }}')"
+                                class="grid grid-cols-4 items-center bg-white rounded shadow-sm cursor-pointer transition px-2 py-2"
+                                style="border: 2px solid {{ $borderHex }}; transition: background-color 0.2s ease;"
+                                onmouseover="this.style.backgroundColor='#e6f0ff';"
+                                onmouseout="this.style.backgroundColor='white';"
                             >
-                                <iconify-icon icon="mdi:pencil" width="18" height="18" style="color: #28a745;"></iconify-icon>
-                            </button>
+                                <div class="truncate font-medium pr-2">{{ $memo->title }}</div>
+                                <div class="truncate px-2">{{ Str::limit($memo->description, 80) }}</div>
+                                <div class="text-sm text-gray-600 pr-2">
+                                    {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
+                                </div>
+                                <div class="flex justify-end gap-2 stop-row-click">
+                                    {{-- Edit --}}
+                                    <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
+                                        title="Edit"
+                                        class="border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
+                                        style="color: #28a745;"
+                                        onmouseover="this.style.backgroundColor='#d4edda';"
+                                        onmouseout="this.style.backgroundColor='transparent';"
+                                    >
+                                        <iconify-icon icon="mdi:pencil" width="18" height="18"></iconify-icon>
+                                    </button>
 
-                            {{-- Delete --}}
-                            <form action="{{ route('admin.memo.destroy', $memo->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure?')" class="inline stop-row-click">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" title="Delete"
-                                    class="border-[2px] border-[#dc3545] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
-                                    style="color: #dc3545;"
-                                    onmouseover="this.style.backgroundColor='#f8d7da';"
-                                    onmouseout="this.style.backgroundColor='transparent';"
-                                >
-                                    <iconify-icon icon="mdi:trash-can" width="18" height="18" style="color: #dc3545;"></iconify-icon>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                                    {{-- Delete --}}
+                                    <form action="{{ route('admin.memo.destroy', $memo->id) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure?')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" title="Delete"
+                                            class="border-[2px] border-[#dc3545] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
+                                            style="color: #dc3545;"
+                                            onmouseover="this.style.backgroundColor='#f8d7da';"
+                                            onmouseout="this.style.backgroundColor='transparent';"
+                                        >
+                                            <iconify-icon icon="mdi:trash-can" width="18" height="18"></iconify-icon>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="4" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
-                </tr>
+                    <tr>
+                        <td colspan="4" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -137,74 +148,82 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div onclick="window.location.href='{{ route('admin.showMemo', $memo->id) }}'"
-            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group overflow-hidden">
-
-            {{-- Title --}}
-            <h2 class="text-lg font-semibold mb-2 text-gray-800 truncate" title="{{ $memo->title }}">
-                {{ $memo->title }}
-            </h2>
-
-            {{-- Description --}}
-            <p class="text-gray-600 mb-2 break-words line-clamp-3">
-                {{ $memo->description }}
-            </p>
-
-            {{-- Date --}}
-            <div class="text-sm text-gray-500 mb-3">
-                {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
-            </div>
-
-            {{-- File Buttons --}}
             @php
                 $files = json_decode($memo->file_name, true);
                 $files = is_array($files) ? $files : [$memo->file_name];
+
+                // Use HEX values for border color based on importance
+                $borderHex = match($memo->color) {
+                    'green' => '#22c55e',   // green-500
+                    'yellow' => '#facc15',  // yellow-400
+                    'red' => '#ef4444',     // red-500
+                    default => '#d1d5db',   // gray-300
+                };
             @endphp
 
-            <div class="flex flex-wrap gap-2 z-10 relative">
-                @foreach ($files as $file)
-                    @php
-                        $ext = pathinfo($file, PATHINFO_EXTENSION);
-                        $icon = match(strtolower($ext)) {
-                            'pdf' => 'mdi:file-pdf-box',
-                            'doc', 'docx' => 'mdi:file-word-box',
-                            'xls', 'xlsx' => 'mdi:file-excel-box',
-                            'jpg', 'jpeg', 'png' => 'mdi:file-image',
-                            default => 'mdi:file-document-outline',
-                        };
+            <div onclick="window.location.href='{{ route('admin.showMemo', $memo->id) }}'"
+                class="p-4 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group overflow-hidden"
+                style="border: 2px solid {{ $borderHex }};"
+            >
 
-                        $iconColor = match(strtolower($ext)) {
-                            'pdf' => '#DC2626',
-                            'doc', 'docx' => '#1D4ED8',
-                            'xls', 'xlsx' => '#15803D',
-                            'jpg', 'jpeg', 'png' => '#CA8A04',
-                            default => '#2563EB',
-                        };
-                    @endphp
+                {{-- Title --}}
+                <h2 class="text-lg font-semibold mb-2 text-gray-800 truncate" title="{{ $memo->title }}">
+                    {{ $memo->title }}
+                </h2>
 
-                    <a href="{{ route('admin.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
-                        onclick="event.stopPropagation()"
-                        class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
-                        style="border-color: #B3D4FC;"
-                        title="Download {{ $file }}">
-                        <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
-                        <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
-                            {{ Str::limit($file, 20) }}
-                        </span>
-                    </a>
-                @endforeach
+                {{-- Description --}}
+                <p class="text-gray-600 mb-2 break-words line-clamp-3">
+                    {{ $memo->description }}
+                </p>
+
+                {{-- Date --}}
+                <div class="text-sm text-gray-500 mb-3">
+                    {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
+                </div>
+
+                {{-- File Buttons --}}
+                <div class="flex flex-wrap gap-2 z-10 relative">
+                    @foreach ($files as $file)
+                        @php
+                            $ext = pathinfo($file, PATHINFO_EXTENSION);
+                            $icon = match(strtolower($ext)) {
+                                'pdf' => 'mdi:file-pdf-box',
+                                'doc', 'docx' => 'mdi:file-word-box',
+                                'xls', 'xlsx' => 'mdi:file-excel-box',
+                                'jpg', 'jpeg', 'png' => 'mdi:file-image',
+                                default => 'mdi:file-document-outline',
+                            };
+
+                            $iconColor = match(strtolower($ext)) {
+                                'pdf' => '#DC2626',
+                                'doc', 'docx' => '#1D4ED8',
+                                'xls', 'xlsx' => '#15803D',
+                                'jpg', 'jpeg', 'png' => '#CA8A04',
+                                default => '#2563EB',
+                            };
+                        @endphp
+
+                        <a href="{{ route('admin.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
+                            onclick="event.stopPropagation()"
+                            class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
+                            style="border-color: #B3D4FC;"
+                            title="Download {{ $file }}">
+                            <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
+                            <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
+                                {{ Str::limit($file, 20) }}
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
-        </div>
         @empty
-        <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
+            <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
         @endforelse
     </div>
 
-
-
 <!-- Create Memo Modal -->
-<div id="memoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-6">
-    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-10 mb-10">
+<div id="memoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-4">
+    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-6 mb-6">
 
         <!-- Close Button -->
         <button onclick="closeMemoModal()"
@@ -212,60 +231,89 @@
             aria-label="Close Modal">&times;</button>
 
         <!-- Modal Content -->
-        <div class="p-6">
-            <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-white">Create New Memo</h2>
+        <div class="p-4">
+            <h2 class="text-lg font-bold mb-3 text-[#1F2937] dark:text-white">Create New Memo</h2>
 
             <form id="createMemoForm" action="{{ route('admin.memo.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Title -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
+                <div class="mb-3">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium">Title</label>
                     <input type="text" name="title" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- Description -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
-                    <textarea name="description" rows="3" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white"></textarea>
+                <div class="mb-3">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium">Description</label>
+                    <textarea name="description" rows="2" required
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm"></textarea>
                 </div>
 
                 <!-- Date -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
+                <div class="mb-3">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium">Date</label>
                     <input type="date" name="date" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload Files (PDF only)</label>
+                <div class="mb-3">
+                    <label class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium">Upload Files (PDF only)</label>
                     <input type="file" name="files[]" accept="application/pdf" multiple
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
-                <!-- Emails -->
-                <div class="mb-4">
-                    <label for="emails" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Recipient Emails</label>
-                    <select name="emails[]" id="emails" multiple
-                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white" size="10">
+                <!-- From -->
+                <div class="mb-3">
+                    <label for="from" class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium">From</label>
+                    <select name="from" id="from"
+                        class="select2 px-1 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                        <option></option>
                         @foreach($users as $user)
                             <option value="{{ $user->email }}">
                                 {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-sm text-[#6B7280] mt-1">You can select or type new email addresses.</p>
+                    <p class="text-xs text-[#6B7280] mt-1">You can select or type a new uploader email.</p>
                 </div>
 
-                <!-- Submit -->
-                <div class="text-right">
-                    <button type="submit"
-                        class="px-4 py-2 rounded text-white bg-[#000000] hover:bg-[#1F2937] transition duration-200">
-                        Upload Memo
-                    </button>
+                <!-- Emails -->
+                <div class="mb-3">
+                    <label for="emails" class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium">Recipient Emails</label>
+                    <select name="emails[]" id="emails" multiple
+                        class="select2 px-1 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm" size="6">
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-[#6B7280] mt-1">You can select or type new email addresses.</p>
+                </div>
+
+                <!-- Importance Level + Submit -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mt-3">
+                    <!-- Importance Dropdown -->
+                    <div class="w-full md:w-1/2">
+                        <label for="color" class="block text-[#374151] dark:text-[#D1D5DB] text-sm font-medium mb-1">Importance Level</label>
+                        <select name="color" id="color" required
+                            class="w-full px-3 py-1.5 border rounded-lg border-[#D1D5DB] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                            <option value="green">Normal (Green)</option>
+                            <option value="yellow">Important (Yellow)</option>
+                            <option value="red">Must Read (Red)</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="w-full md:w-auto text-right">
+                        <button type="submit"
+                            class="w-full md:w-auto px-4 py-1.5 rounded text-white bg-[#000000] hover:bg-[#1F2937] transition duration-200 mt-2 md:mt-6 text-sm">
+                            Upload Memo
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -273,8 +321,8 @@
 </div>
 
 <!-- Edit Memo Modal -->
-<div id="editMemoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-6">
-    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-10 mb-10">
+<div id="editMemoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-4">
+    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-6 mb-6">
 
         <!-- Close Button -->
         <button onclick="document.getElementById('editMemoModal').classList.add('hidden')"
@@ -282,8 +330,8 @@
             aria-label="Close Modal">&times;</button>
 
         <!-- Modal Content -->
-        <div class="p-6">
-            <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-[#FFFFFF]">Edit Memo</h2>
+        <div class="p-4">
+            <h2 class="text-lg font-bold mb-3 text-[#1F2937] dark:text-white">Edit Memo</h2>
 
             <form id="editMemoForm" method="POST"
                 action="{{ route('admin.memo.update', ['id' => '__ID__']) }}"
@@ -293,53 +341,82 @@
                 @method('PUT')
 
                 <!-- Title -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
                     <input type="text" name="title" id="editMemoTitle" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- Description -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
-                    <textarea name="description" id="editMemoDescription" rows="3" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white"></textarea>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
+                    <textarea name="description" id="editMemoDescription" rows="2" required
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm"></textarea>
                 </div>
 
                 <!-- Date -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
                     <input type="date" name="date" id="editMemoDate" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
                     <input type="file" name="files[]" accept="application/pdf" multiple
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
-                <!-- Emails -->
-                <div class="mb-4">
-                    <label for="editEmails" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Recipient Emails</label>
-                    <select name="emails[]" id="editEmails" multiple
-                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white" size="10">
+                <!-- From -->
+                <div class="mb-3">
+                    <label for="from" class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                    <select name="from" id="from"
+                        class="select2 px-1 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                        <option></option>
                         @foreach($users as $user)
                             <option value="{{ $user->email }}">
                                 {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-sm text-[#6B7280] mt-1">You can select or type new email addresses.</p>
+                    <p class="text-xs text-[#6B7280] mt-1">You can select or type a new uploader email.</p>
                 </div>
 
-                <!-- Submit -->
-                <div class="text-right">
-                    <button type="submit"
-                        class="px-4 py-2 rounded text-white bg-[#FACC15] hover:bg-[#EAB308] transition duration-200">
-                        Update Memo
-                    </button>
+                <!-- Emails -->
+                <div class="mb-3">
+                    <label for="editEmails" class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Recipient Emails</label>
+                    <select name="emails[]" id="editEmails" multiple
+                        class="select2 px-1 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm" size="6">
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-[#6B7280] mt-1">You can select or type new email addresses.</p>
+                </div>
+
+                <!-- Importance Level + Submit -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mt-3">
+                    <!-- Importance Dropdown -->
+                    <div class="w-full md:w-1/2">
+                        <label for="editColor" class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium mb-1">Importance Level</label>
+                        <select name="color" id="editColor" required
+                            class="w-full px-3 py-1.5 border rounded-lg border-[#D1D5DB] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                            <option value="green">Normal (Green)</option>
+                            <option value="yellow">Important (Yellow)</option>
+                            <option value="red">Must Read (Red)</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="w-full md:w-auto text-right">
+                        <button type="submit"
+                            class="w-full md:w-auto px-4 py-1.5 rounded text-white bg-[#FACC15] hover:bg-[#EAB308] transition duration-200 mt-2 md:mt-6 text-sm">
+                            Update Memo
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -395,6 +472,22 @@
             placeholder: "Select or type email(s)",
             width: '100%'
         });
+
+        $('#from, #editFrom').select2({
+            tags: true, // ✅ allow typing new email
+            tokenSeparators: [',', ' '],
+            placeholder: "Select or type uploader email",
+            width: '100%' // ✅ match width
+        });
+    });
+
+    $(document).ready(function () {
+        $('#emails, #editEmails').select2({
+            tags: true,
+            tokenSeparators: [',', ' '],
+            placeholder: "Select or type email(s)",
+            width: '100%'
+        });
     });
 
     function openMemoModal() {
@@ -413,15 +506,16 @@
         modal.classList.add('hidden');
     }
 
-    function openEditMemoModal(id, title, description, date, emails = []) {
+    function openEditMemoModal(id, title, description, date, emails = [], from = '') {
         const modal = document.getElementById('editMemoModal');
         const titleInput = document.getElementById('editMemoTitle');
         const descInput = document.getElementById('editMemoDescription');
         const dateInput = document.getElementById('editMemoDate');
         const emailSelect = $('#editEmails');
+        const fromSelect = $('#editFrom'); // 🆕 Select2 for 'From'
         const form = document.getElementById('editMemoForm');
 
-        if (!modal || !titleInput || !descInput || !form || !dateInput) {
+        if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect.length) {
             console.error('One or more elements not found');
             return;
         }
@@ -430,9 +524,10 @@
         titleInput.value = title;
         descInput.value = description;
         dateInput.value = date;
-
-        // Set selected emails (must be pre-loaded or dynamically added)
         emailSelect.val(emails).trigger('change');
+
+        // 🆕 Set the "From" dropdown
+        fromSelect.val(from).trigger('change');
 
         // Set form action
         const actionTemplate = form.getAttribute('data-action-template');

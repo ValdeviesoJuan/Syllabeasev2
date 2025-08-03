@@ -25,6 +25,12 @@
         <p class="text-sm text-gray-500 dark:text-gray-300">
             {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
         </p>
+        @if($memo->user)
+            <p class="text-sm text-gray-500 dark:text-gray-300">
+                Uploaded by: <span class="font-medium">{{ $memo->user->firstname }} {{ $memo->user->lastname }}</span>
+                ({{ $memo->user->email }})
+            </p>
+        @endif
     </div>
 
     <hr class="mb-6">

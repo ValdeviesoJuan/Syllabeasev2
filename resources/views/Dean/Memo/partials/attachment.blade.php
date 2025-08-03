@@ -30,7 +30,7 @@
         <p class="text-sm font-semibold truncate" style="color: #1E3A8A;">
             {{ $file }}
         </p>
-        <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+        <a href="{{ route('dean.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
            class="text-sm flex items-center gap-1 mt-1 hover:underline"
            style="color: #2563EB;">
             <iconify-icon icon="mdi:download" width="16" height="16"></iconify-icon>

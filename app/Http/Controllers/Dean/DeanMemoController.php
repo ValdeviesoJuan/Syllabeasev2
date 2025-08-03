@@ -40,6 +40,7 @@ class DeanMemoController extends Controller
             'files.*' => 'nullable|file|mimes:pdf',
             'emails' => 'required|array',
             'emails.*' => 'email',
+            'from' => 'required|email', // ✅ ensure uploader email is captured
         ]);
 
         $fileNames = [];
@@ -52,11 +53,15 @@ class DeanMemoController extends Controller
             }
         }
 
+        // ✅ Find the uploader by email
+        $uploader = User::where('email', $validated['from'])->first();
+
         $memo = Memo::create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'file_name' => json_encode($fileNames),
             'date' => $validated['date'] ?? null,
+            'user_id' => $uploader ? $uploader->id : null, // fallback null if not found
         ]);
 
         foreach ($validated['emails'] as $email) {
@@ -79,6 +84,7 @@ class DeanMemoController extends Controller
             'description' => 'required',
             'date' => 'required|date',
             'files.*' => 'nullable|mimes:pdf|max:2048',
+            'from' => 'required|email', // ✅ capture updated uploader email
         ]);
 
         $memo = Memo::findOrFail($id);
@@ -86,10 +92,13 @@ class DeanMemoController extends Controller
         $memo->description = $request->description;
         $memo->date = $request->date;
 
+        // ✅ Resolve uploader ID again (in case it's updated)
+        $uploader = User::where('email', $request->from)->first();
+        $memo->user_id = $uploader ? $uploader->id : null;
+
         $fileNames = $memo->file_name ? json_decode($memo->file_name, true) : [];
 
         if ($request->hasFile('files')) {
-            // Delete old files
             foreach ($fileNames as $file) {
                 if (Storage::exists('public/memos/' . $file)) {
                     Storage::delete('public/memos/' . $file);
@@ -140,7 +149,7 @@ class DeanMemoController extends Controller
 
     public function show($id)
     {
-        $memo = Memo::findOrFail($id);
+        $memo = Memo::with('user')->findOrFail($id);
         return view('Dean.Memo.showMemo', compact('memo'));
     }
 }

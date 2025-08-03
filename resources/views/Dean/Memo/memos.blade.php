@@ -100,7 +100,14 @@
                             @endphp
 
                             {{-- Edit --}}
-                            <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
+                            <button
+                                onclick="openEditMemoModal(
+                                    {{ $memo->id }},
+                                    `{{ addslashes($memo->title) }}`,
+                                    `{{ addslashes($memo->description) }}`,
+                                    '{{ $memo->date ? $memo->date->format('Y-m-d') : '' }}',
+                                    '{{ $memo->from }}'
+                                )"
                                 title="Edit"
                                 class="stop-row-click border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
                                 style="color: #28a745;"
@@ -184,7 +191,7 @@
                         };
                     @endphp
 
-                    <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+                    <a href="{{ route('dean.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
                         onclick="event.stopPropagation()"
                         class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
                         style="border-color: #B3D4FC;"
@@ -244,6 +251,21 @@
                     <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload Files (PDF only)</label>
                     <input type="file" name="files[]" accept="application/pdf" multiple
                         class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                </div>
+
+                <!-- From -->
+                <div class="mb-4">
+                    <label for="from" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                    <select name="from" id="from"
+                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white">
+                        <option></option> <!-- Empty for placeholder -->
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-sm text-[#6B7280] mt-1">You can select or type the uploader's email.</p>
                 </div>
 
                 <!-- Emails -->
@@ -313,6 +335,20 @@
                         class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
                 </div>
 
+                <!-- From -->
+                <div class="mb-4">
+                    <label for="editFrom" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                    <select name="from" id="editFrom"
+                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white">
+                        <option disabled selected hidden value="">Select uploader</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <!-- File Upload -->
                 <div class="mb-4">
                     <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
@@ -375,11 +411,12 @@
 <!-- Existing modal & edit modal scripts (unchanged) -->
 <script>
     $(document).ready(function() {
-        $('#emails').select2({
+        $('#from, #emails').select2({
             tags: true,
             tokenSeparators: [',', ' '],
-            placeholder: "Select or type email(s)",
-            width: '100%'
+            placeholder: "Select or type email",
+            width: '100%',
+            allowClear: true
         });
     });
 
@@ -388,6 +425,7 @@
         const form = modal.querySelector('form');
         form.reset();
         $('#emails').val(null).trigger('change');
+        $('#from').val(null).trigger('change'); // 👈 Clear From
         modal.classList.remove('hidden');
     }
 
@@ -396,26 +434,33 @@
         const form = modal.querySelector('form');
         form.reset();
         $('#emails').val(null).trigger('change');
+        $('#from').val(null).trigger('change'); // 👈 Clear From
         modal.classList.add('hidden');
     }
 
-    function openEditMemoModal(id, title, description) {
-        const modal = document.getElementById('editMemoModal');
-        const titleInput = document.getElementById('editMemoTitle');
-        const descInput = document.getElementById('editMemoDescription');
-        const form = document.getElementById('editMemoForm');
+    function openEditMemoModal(id, title, description, date, from = null) {
+    const modal = document.getElementById('editMemoModal');
+    const titleInput = document.getElementById('editMemoTitle');
+    const descInput = document.getElementById('editMemoDescription');
+    const dateInput = document.getElementById('editMemoDate');
+    const fromSelect = $('#editFrom');
+    const form = document.getElementById('editMemoForm');
 
-        if (!modal || !titleInput || !descInput || !form) {
-            console.error('One or more elements not found');
-            return;
-        }
-
-        modal.classList.remove('hidden');
-        titleInput.value = title;
-        descInput.value = description;
-
-        const actionTemplate = form.getAttribute('data-action-template');
-        form.action = actionTemplate.replace('__ID__', id);
+    if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect) {
+        console.error('Missing form elements');
+        return;
     }
+
+    titleInput.value = title;
+    descInput.value = description;
+    dateInput.value = date;
+
+    fromSelect.val(from).trigger('change'); // 👈 pre-select uploader
+
+    const actionTemplate = form.getAttribute('data-action-template');
+    form.action = actionTemplate.replace('__ID__', id);
+
+    modal.classList.remove('hidden');
+}
 </script>
 @endsection

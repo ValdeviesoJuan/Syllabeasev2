@@ -108,7 +108,7 @@
                         };
                     @endphp
 
-                    <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+                    <a href="{{ route('dean.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
                     onclick="event.stopPropagation()"
                     class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
                     style="border-color: #B3D4FC;"

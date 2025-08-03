@@ -1,6 +1,20 @@
 @extends('layouts.blSidebar')
 @section('content')
 <div class="mt-16 max-w-4xl mx-auto bg-white p-6 shadow rounded-lg dark:bg-gray-800">
+    <style>
+        .bg svg {
+            transform: scaleY(-1);
+            min-width: 1880px;
+        }
+
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+    </style>
 
     {{-- Header --}}
     <div class="mb-6">
@@ -8,6 +22,12 @@
         <p class="text-sm text-gray-500 dark:text-gray-300">
             {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
         </p>
+        @if($memo->user)
+            <p class="text-sm text-gray-500 dark:text-gray-300">
+                Uploaded by: <span class="font-medium">{{ $memo->user->firstname }} {{ $memo->user->lastname }}</span>
+                ({{ $memo->user->email }})
+            </p>
+        @endif
     </div>
 
     <hr class="mb-6">
