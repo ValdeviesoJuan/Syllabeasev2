@@ -222,7 +222,7 @@ Route::group(['prefix' => 'bayanihanleader', 'middleware' => ['auth', 'isBL']], 
     Route::get('/viewTos/{tos_id}', [BayanihanLeaderTOSController::class, 'viewTos'])->name('bayanihanleader.viewTos');
     
     Route::get('/editTosRow/{tos_id}', [BayanihanLeaderTOSController::class, 'editTosRow'])->name('bayanihanleader.editTosRow');
-    Route::post('/updateTosRow/{tos_id}', [BayanihanLeaderTOSController::class, 'updateTosRow'])->name('bayanihanleader.updateTosRow');
+    Route::put('/updateTosRow/{tos_id}', [BayanihanLeaderTOSController::class, 'updateTosRow'])->name('bayanihanleader.updateTosRow');
 
     Route::get('/commentTos/{tos_id}', [BayanihanLeaderTOSController::class, 'commentTos'])->name('bayanihanleader.commentTos');
     Route::get('/editTos/{syll_id}/{tos_id}', [BayanihanLeaderTOSController::class, 'editTos'])->name('bayanihanleader.editTos');

@@ -65,7 +65,7 @@
                             <div class="grid grid-cols-2 gap-3">
                                 @foreach($midtermTopics as $topic)
                                     <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded px-3 py-2 border border-[#a8a29e]">
-                                        <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
+                                        <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4" checked>
                                         <span class="text-sm text-gray-700">{{ $topic }}</span>
                                     </label>
                                 @endforeach
@@ -80,7 +80,7 @@
                             <div class="grid grid-cols-2 gap-3">
                                 @foreach($finalTopics as $topic)
                                     <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded px-3 py-2 border border-gray-200">
-                                        <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4">
+                                        <input type="checkbox" name="selected_topics[]" value="{{ $topic }}" class="accent-blue-600 w-4 h-4" checked>
                                         <span class="text-sm text-gray-700">{{ $topic }}</span>
                                     </label>
                                 @endforeach

@@ -31,20 +31,15 @@ class ChairTos extends Component
 
         if ($chairperson) {
             $department_id = $chairperson->entity_id;
-            $toss = Tos::join('bayanihan_groups', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            $toss = BayanihanGroup::join('tos', function ($join) {
+                    $join->on('tos.bg_id', '=', 'bayanihan_groups.bg_id')
+                    ->where('tos.tos_version', '=', DB::raw('(SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id AND chair_submitted_at IS NOT NULL)'));
+                })
                 ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
                 ->join('courses', 'courses.course_id', '=', 'tos.course_id')
                 ->select('tos.*', 'courses.*', 'bayanihan_groups.*')
                 ->where('tos.department_id', '=', $department_id)
-                ->whereNotNull('tos.chair_submitted_at')
                 ->whereIn('tos.tos_term', ['Midterm', 'Final'])
-                // ->whereRaw('tos.tos_version = (SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id AND chair_submitted_at IS NOT NULL)')
-                ->whereIn('tos.tos_version', function ($query) {
-                    $query->select(DB::raw('MAX(tos_version)'))
-                        ->from('tos')
-                        ->groupBy('syll_id', 'tos_term');
-                })
-                // ->whereNotNull('tos.chair_submitted_at')
                 ->where(function ($query) {
                     $query->where('courses.course_year_level', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_semester', 'like', '%' . $this->search . '%')

@@ -69,7 +69,7 @@
                             />
                         </div>
                         @error('email')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            <p class="text-sm text-[#f70b16] mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 

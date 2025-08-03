@@ -128,9 +128,7 @@
                 <td class="px-6 py-4">
                     <form class="" action="{{ route('chairperson.viewTos', $tos->tos_id) }}" method="GET">
                         @csrf
-                        <div class="flex justify-center items-center ">
-                            <a class="hover:text-yellow hover:underline cursor-pointer" type="submit">View</a>
-                        </div>
+                        <button class="hover:text-yellow hover:underline cursor-pointer" type="submit">View</button>
                     </form>
                 </td>
             </tr>

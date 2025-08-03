@@ -52,8 +52,8 @@
                     </div>
 
                     <!-- Midterm Topics -->
-                    <label class=" block mb-2">Select Midterm Topics</label>
                     <div id="midtermTopicsBox" class="bg-white border border-[#a8a29e] rounded-md shadow-sm p-4 mb-6 @if(old('tos_term', $tos->tos_term) !== 'Midterm') hidden @endif">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Midterm Topics</h4>    
                         <div class="grid grid-cols-2 gap-3">
                             @foreach($midtermTopics as $topic)
                                 <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-sm px-3 py-2 border border-[#a8a29e]">
@@ -71,11 +71,11 @@
                     </div>
 
                     <!-- Final Topics -->
-                    <div id="finalTopicsBox" class="bg-white border border-gray-300 rounded-xl shadow-sm p-4 mb-6 @if(old('tos_term', $tos->tos_term) !== 'Final') hidden @endif">
+                    <div id="finalTopicsBox" class="bg-white border border-[#a8a29e] rounded-md shadow-sm p-4 mb-6 @if(old('tos_term', $tos->tos_term) !== 'Final') hidden @endif">
                         <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Select Final Topics</h4>
                         <div class="grid grid-cols-2 gap-3">
                             @foreach($finalTopics as $topic)
-                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-gray-200">
+                                <label class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 transition rounded-lg px-3 py-2 border border-[#a8a29e]">
                                     <input 
                                         type="checkbox" 
                                         name="selected_topics[]" 
