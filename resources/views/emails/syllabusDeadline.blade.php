@@ -1,58 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Syllabus Deadline Notification</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-    <table width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; margin: auto; border-radius: 8px; padding: 20px;">
-        
-        <!-- Logo -->
+<body style="margin: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="80%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; max-width: 1000px; margin: auto;">
+
+        <!-- Header Image -->
         <tr>
-            <td style="text-align: left;">
-                <img src="https://i.imgur.com/e6DsGLI.png" alt="SyllabEase Logo" style="max-width: 200px;">
+            <td style="padding: 0; margin: 0;" align="center">
+                <img src="https://i.imgur.com/7pVnxWO.png" alt="SyllabEase Banner" width="100%" style="display: block; width: 100%; max-width: 1080px; height: auto; border: 0; margin: 0; padding: 0;">
             </td>
         </tr>
 
-        <!-- Message Title -->
+        <!-- Title and Content -->
         <tr>
-            <td>
-                <h3 style="color: #333;">Syllabus Deadline Alert</h3>
-            </td>
-        </tr>
+            <td style="padding: 20px;">
+                <h3 style="margin-top: 0; color: #333;">Syllabus Deadline Alert</h3>
 
-        <!-- Dynamic Message from getMessage() -->
-        <tr>
-            <td>
-                <p style="font-size: 16px; color: #444;">
-                    <p>{{ $customMessage }}</p>
+                <p style="font-size: 15px; color: #444;">
+                    {{ $customMessage }}
                 </p>
+
+                <p style="font-size: 15px;">You may log in to the system to review the syllabus requirements or deadlines.</p>
             </td>
         </tr>
 
-        <!-- Call to Action -->
+        <!-- Automated Message -->
         <tr>
-            <td>
-                <p>You may log in to the system to review the syllabus requirements or deadlines.</p>
-            </td>
-        </tr>
-
-        <!-- Automated Note -->
-        <tr>
-            <td>
-                <p style="font-size: 12px; color: #888;">
-                    This is an automated email. Please do not reply.
-                </p>
+            <td style="padding: 0 20px;">
+                <p style="font-size: 12px; color: #888;">This is an automated email. Please do not reply.</p>
             </td>
         </tr>
 
         <!-- Footer -->
         <tr>
-            <td style="text-align: center;">
-                <small style="color: #999;">&copy; {{ date('Y') }} Bayanihan System. All rights reserved.</small>
+            <td style="background-color: #000000; color: #ffffff; text-align: center; padding: 20px; font-size: 13px;">
+                <p style="margin: 0;"><strong>SyllabEase</strong></p>
+                <p style="margin: 4px 0;">Your Learning Management Assistant</p>
+                <p style="margin: 4px 0;">Email: support@syllabease.com | Contact No: +63 912 345 6789</p>
+                <p style="margin: 4px 0;">© {{ date('Y') }} SyllabEase. All rights reserved.</p>
             </td>
         </tr>
-
     </table>
 </body>
 </html>
