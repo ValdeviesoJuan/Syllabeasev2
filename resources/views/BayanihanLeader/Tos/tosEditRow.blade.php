@@ -1,16 +1,12 @@
 @extends('layouts.blNav')
 @section('content')
 @include('layouts.modal')
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Syllabease</title>
     @vite('resources/css/app.css')
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
     <style>
         body {
             background-image: url("{{ asset('assets/Wave.png') }}");
@@ -41,132 +37,218 @@
 
     <div class="p-2 justify-center m-auto text-center">
         <div class="relative mt-2 w-[90%] flex flex-col bg-gradient-to-r from-[#FFF] to-[#dbeafe] rounded-l shadow-lg p-12 mx-auto border border-white bg-white">
-            <livewire:b-l-tos-edit :tos_id={{ $tos_id }} />
+            <div>
+                <button class="bg-blue text-white px-4 py-2 rounded-lg shadow-lg hover:scale-105 w-max transition ease-in-out" id="roundButton">Round Values</button>
+
+                <form id="tosForm" method="post" action="{{ route('bayanihanleader.updateTosRow', $tos->tos_id) }}">
+                    @csrf
+                    @method('PUT')
+                    <!-- TOS Table -->
+                    <table id="tosTable" class="mt-4 w-full table-fixed border border-black bg-white text-sm font-serif">
+                        <thead>
+                            <tr>
+                                <th class="w-[25%] px-2 py-1 border" rowspan="3">Topics</th>
+                                <th class="w-[5%] px-2 py-1 border" rowspan="3">No. of<br>Hours</th>
+                                <th class="w-[5%] px-2 py-1 border" rowspan="3">%</th>
+                                <th class="w-[5%] px-2 py-1 border" rowspan="3">No. of<br>Test Items</th>
+                                <th colspan="4" class="w-[45%] px-2 py-1 border text-center">Cognitive Level</th>
+                                <th rowspan="2" class="w-[10%] px-2 py-1 border"></th>
+                            </tr>
+                            <tr> 
+                                <th class="border">Knowledge</th>
+                                <th class="border">Comprehension</th>
+                                <th class="border">Application /<br>Analysis</th>
+                                <th class="border">Synthesis /<br>Evaluation</th>
+                            </tr>
+                            <tr> 
+                                <th class="border">{{$tos->col_1_per}}%</th>
+                                <th class="border">{{$tos->col_2_per}}%</th>
+                                <th class="border">{{$tos->col_3_per}}%</th>
+                                <th class="border">{{$tos->col_4_per}}%</th>
+                                <th class="border">Actual Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(count($tos_rows) > 0)
+                                @foreach($tos_rows as $tos_row)
+                                <tr class="hover:bg-gray-50">
+                                    <input type="hidden" name="tos_r_id[]" value="{{ $tos_row->tos_r_id }}">
+                                    <td class="border px-2 text-left align-center text-center">{{ $tos_row->tos_r_topic }}</td>
+                                    <td class="border text-center align-center">{{ $tos_row->tos_r_no_hours }}</td>
+                                    <td class="border text-center align-center">{{ $tos_row->tos_r_percent }}</td>
+                                    <td class="border text-center align-center">
+                                        <input type="number" name="tos_r_no_items[]" value="{{ $tos_row->tos_r_no_items }}" 
+                                            class="w-full text-base text-center " step="1" and min="0" />
+                                    </td>
+                                    <td class="border text-center align-top">
+                                        <input type="number" name="tos_r_col_1[]" value="{{ $tos_row->tos_r_col_1 }}" 
+                                            class="w-full text-center" step="1" and min="0" />
+                                    </td>
+                                    <td class="border text-center align-top">
+                                        <input type="number" name="tos_r_col_2[]" value="{{ $tos_row->tos_r_col_2 }}" 
+                                            class="w-full text-center" step="1" and min="0" />
+                                    </td>
+                                    <td class="border text-center align-top">
+                                        <input type="number" name="tos_r_col_3[]" value="{{ $tos_row->tos_r_col_3 }}" 
+                                            class="w-full text-center" step="1" and min="0" />
+                                    </td>
+                                    <td class="border text-center align-top">
+                                        <input type="number" name="tos_r_col_4[]" value="{{ $tos_row->tos_r_col_4 }}" 
+                                            class="w-full text-center" step="1" and min="0" />
+                                    </td>
+                                    <td class="border text-center align-top" id="individualRowTotal"> </td>
+                                </tr>
+                                @endforeach
+                            @else
+                            <tr>
+                                <td colspan="8" class="text-center border py-2">No data available</td>
+                            </tr>
+                            @endif
+
+                            <tr class="bg-gray-100 font-semibold">
+                                <td class="text-right px-2 py-1 border">Actual Total:</td>
+                                <td class="text-center border"></td>
+                                <td class="text-center border"></td>
+                                <td class="text-center border underline" id="actualTotalItems"></td>
+                                <td class="text-center border underline" id="totalCol1"></td>
+                                <td class="text-center border underline" id="totalCol2"></td>
+                                <td class="text-center border underline" id="totalCol3"></td>
+                                <td class="text-center border underline" id="totalCol4"></td>
+                                <td class="text-center border underline" id="actualRowTotal"></td>
+                            </tr>
+                            <tr class="bg-gray-100 font-semibold">
+                                <td class="text-right px-2 py-1 border">Expected Total:</td>
+                                <td class="text-center border"></td>
+                                <td class="text-center border"></td>
+                                <td class="text-center border">{{$tos->tos_no_items}}</td>
+                                <td class="text-center border">{{$tos->col_1_exp}}</td>
+                                <td class="text-center border">{{$tos->col_2_exp}}</td>
+                                <td class="text-center border">{{$tos->col_3_exp}}</td>
+                                <td class="text-center border">{{$tos->col_4_exp}}</td>
+                            </tr>
+                            <input type="hidden" id="expectedItems" value="{{ $tos->tos_no_items }}">
+                        </tbody>
+                    </table>
+
+                    <button type="submit"
+                        class="mt-4 bg-blue text-white px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition ease-in-out">
+                        Update
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+</body>
 
+<script>
+    function roundInputs() {
+        const fieldsToRound = [
+            'tos_r_no_items[]',
+            'tos_r_col_1[]',
+            'tos_r_col_2[]',
+            'tos_r_col_3[]',
+            'tos_r_col_4[]'
+        ];
 
-    <script>
-        $(document).ready(function() {
-            // Listen for input changes on all number input fields
-            $('input[type="number"]').on('input', function() {
-                updateTotals();
-                updateCol();
+        fieldsToRound.forEach(fieldName => {
+            document.querySelectorAll(`input[name="${fieldName}"]`).forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) {
+                    input.value = Math.round(val);
+                }
             });
+        });
+    }
 
-            // Initial calculation of totals on page load
-            updateTotals();
-            updateCol();
+    function calculateTotals() {
+        let totalCol1 = 0, totalCol2 = 0, totalCol3 = 0, totalCol4 = 0, totalItems = 0;
 
-            function updateCol() {
-                var expcol1 = parseFloat($('#expCol1').text()) || 0;
-                var expcol2 = parseFloat($('#expCol2').text()) || 0;
-                var expcol3 = parseFloat($('#expCol3').text()) || 0;
-                var expcol4 = parseFloat($('#expCol4').text()) || 0;
+        const rows = document.querySelectorAll('#tosTable tbody tr');
+        rows.forEach(row => {
+            const col1 = row.querySelector('input[name="tos_r_col_1[]"]');
+            const col2 = row.querySelector('input[name="tos_r_col_2[]"]');
+            const col3 = row.querySelector('input[name="tos_r_col_3[]"]');
+            const col4 = row.querySelector('input[name="tos_r_col_4[]"]');
+            const items = row.querySelector('input[name="tos_r_no_items[]"]');
 
-                var totalCol1 = parseFloat($('#totalCol1').text()) || 0;
-                var inputCol1 = parseFloat($('input#col1').text()) || 0;
+            // Parse values or default to 0
+            const val1 = col1 ? parseInt(col1.value) || 0 : 0;
+            const val2 = col2 ? parseInt(col2.value) || 0 : 0;
+            const val3 = col3 ? parseInt(col3.value) || 0 : 0;
+            const val4 = col4 ? parseInt(col4.value) || 0 : 0;
+            const itemVal = items ? parseInt(items.value) || 0 : 0;
 
-                var totalCol2 = parseFloat($('#totalCol2').text()) || 0;
-                var inputCol2 = parseFloat($('input#col2').text()) || 0;
+            totalCol1 += val1;
+            totalCol2 += val2;
+            totalCol3 += val3;
+            totalCol4 += val4;
+            totalItems += itemVal;
 
-                var totalCol3 = parseFloat($('#totalCol3').text()) || 0;
-                var inputCol3 = parseFloat($('input#col3').text()) || 0;
-
-                var totalCol4 = parseFloat($('#totalCol4').text()) || 0;
-                var inputCol4 = parseFloat($('input#col4').text()) || 0;
-
-                if (totalCol1 !== expcol1) {
-                    $('#totalCol1').css('color', 'red'); // Change to your desired color
-                    $('input#col1').css('color', 'red'); // Change to your desired color
-                } else {
-                    $('#totalCol1').css('color', ''); // Reset to default color
-                    $('input#col1').css('color', ''); // Change to your desired color
-                }
-                if (totalCol2 !== expcol2) {
-                    $('#totalCol2').css('color', 'red'); // Change to your desired color
-                    $('input#col2').css('color', 'red'); // Change to your desired color
-                } else {
-                    $('#totalCol2').css('color', ''); // Reset to default color
-                    $('input#col2').css('color', ''); // Change to your desired color
-                }
-                if (totalCol3 !== expcol3) {
-                    $('#totalCol3').css('color', 'red'); // Change to your desired color
-                    $('input#col3').css('color', 'red'); // Change to your desired color
-                } else {
-                    $('#totalCol3').css('color', ''); // Reset to default color
-                    $('input#col3').css('color', ''); // Change to your desired color
-                }
-                if (totalCol4 !== expcol4) {
-                    $('#totalCol4').css('color', 'red'); // Change to your desired color
-                    $('input#col4').css('color', 'red'); // Change to your desired color
-                } else {
-                    $('#totalCol4').css('color', ''); // Reset to default color
-                    $('input#col4').css('color', ''); // Change to your desired color
-                }
+            const rowTotal = val1 + val2 + val3 + val4;
+            const totalCell = row.querySelector('#individualRowTotal');
+            if (totalCell) {
+                totalCell.textContent = rowTotal;
             }
+        });
 
-            function updateTotals() {
-                var totalCol1 = 0,
-                    totalCol2 = 0,
-                    totalCol3 = 0,
-                    totalCol4 = 0;
+        const expectedItems = parseInt(document.getElementById('expectedItems').value) || 0;
+        const actualRowTotal = totalCol1 + totalCol2 + totalCol3 + totalCol4;
 
-                // Loop through each row and update totals
-                $('tr:not(:last-child)').each(function() {
-                    var col1 = parseFloat($(this).find('input#col1').val()) || 0;
-                    var col2 = parseFloat($(this).find('input#col2').val()) || 0;
-                    var col3 = parseFloat($(this).find('input#col3').val()) || 0;
-                    var col4 = parseFloat($(this).find('input#col4').val()) || 0;
-                    var cell = $(this).find('td.cell');
-                    var totalRow = col1 + col2 + col3 + col4;
+        // Set values
+        document.getElementById('totalCol1').textContent = totalCol1;
+        document.getElementById('totalCol2').textContent = totalCol2;
+        document.getElementById('totalCol3').textContent = totalCol3;
+        document.getElementById('totalCol4').textContent = totalCol4;
+        document.getElementById('actualRowTotal').textContent = totalCol1 + totalCol2 + totalCol3 + totalCol4;
+        document.getElementById('actualTotalItems').textContent = totalItems;
 
-                    var totalRowCell = $(this).find('td#TotalRow');
-                    totalRowCell.text(totalRow.toFixed(2));
+        // Color feedback
+        const actualRowEl = document.getElementById('actualRowTotal');
+        const actualItemsEl = document.getElementById('actualTotalItems');
 
-                    totalCol1 += col1;
-                    totalCol2 += col2;
-                    totalCol3 += col3;
-                    totalCol4 += col4;
+        if (actualRowTotal !== expectedItems) {
+            actualRowEl.classList.add('text-red', 'font-bold');
+        } else {
+            actualRowEl.classList.remove('text-red', 'font-bold');
+        }
 
-                    var tosRNoItemsCell = $(this).find('td#tos_r_no_items');
-                    if (totalRow != parseFloat(tosRNoItemsCell.text())) {
-                        totalRowCell.css('color', 'red'); // Change to your desired color
-                        $(this).find('input[type="number"]').css('color', 'red'); // Change input color
-                        cell.css('color', 'red');
+        if (totalItems !== expectedItems) {
+            actualItemsEl.classList.add('text-red', 'font-bold');
+        } else {
+            actualItemsEl.classList.remove('text-red', 'font-bold');
+        }
 
-                    } else {
-                        totalRowCell.css('color', ''); // Reset to default color
-                        $(this).find('input[type="number"]').css('color', ''); // Change input color
-                        cell.css('color', '');
-                    }
-                });
+        // Return if valid or not
+        return actualRowTotal === expectedItems && totalItems === expectedItems;
+    }
 
-                // Update the total cells
-                $('td#totalCol1').text(totalCol1.toFixed(2));
-                $('td#totalCol2').text(totalCol2.toFixed(2));
-                $('td#totalCol3').text(totalCol3.toFixed(2));
-                $('td#totalCol4').text(totalCol4.toFixed(2));
-            }
-            function roundInputValues() {
-            $('input[type="number"]').each(function() {
-                var currentValue = parseFloat($(this).val());
-                if (!isNaN(currentValue)) {
-                    var roundedValue = Math.round(currentValue);
-                    $(this).val(roundedValue);
+    // On DOM load (Page Load)
+    document.addEventListener('DOMContentLoaded', function () {
+        roundInputs();      // ⬅️ Automatically round values on page load
+        calculateTotals();  // ⬅️ Then calculate totals
+
+        // Recalculate on input change
+        document.querySelectorAll('#tosTable input[type="number"]').forEach(input => {
+            input.addEventListener('input', calculateTotals);
+        });
+
+        // Button handler to round again manually
+        document.getElementById('roundButton').addEventListener('click', function () {
+            roundInputs();
+            calculateTotals();
+        });
+
+        // ✅ Form submit prevention (NOW inside DOMContentLoaded)
+        const form = document.getElementById('tosForm')
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                console.log("Submitting...");
+                if (!calculateTotals()) {
+                    e.preventDefault();
+                    alert('Cannot submit: Actual totals do not match expected values.');
                 }
             });
         }
-        $('#roundButton').on('click', function() {
-            roundInputValues();
-            updateTotals();
-            updateCol();
-        });
-
-        });
-    </script>
-</body>
-
-</html>
-
+    });
+</script>
 @endsection

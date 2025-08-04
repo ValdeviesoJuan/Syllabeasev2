@@ -45,9 +45,12 @@
         </select>
         <select wire:model="filters.tos_status" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[15%]" placeholder="Status">
             <option value="">Status (All)</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved by Chair">Approved by Chair</option>
+            <option value="Draft">Draft</option>
+            <option value="Pending Review">Pending Review</option>
             <option value="Returned by Chair">Returned by Chair</option>
+            <option value="Requires Revision">Requires Revision</option>
+            <option value="Revisions Applied">Revisions Applied</option>
+            <option value="Approved by Chair">Approved by Chair</option>
         </select>
         <button wire:click="applyFilters" class="bg-blue5 hover:bg-blue focus:outline-none focus:border-blue cursor-pointer rounded text-white p-[4px]">Apply Filters</button>
     </div>
@@ -109,12 +112,22 @@
                 Version {{$tos->tos_version}}
                 </td>
                 <td class="px-6 py-4">
-                    <div class="
-                    {{ $tos->tos_status === 'Pending' ? 'w-[100%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
-                    {{ $tos->tos_status === 'Approved by Chair' ? 'w-[100%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $tos->tos_status === 'Returned by Chair' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
-                        {{$tos->tos_status}}
-                    </div>
+                    @php
+                        $status = $tos->tos_status;
+                        $statusStyles = [
+                            'Draft' => 'background-color: #D1D5DB; color: #4B5563; border-color: #9CA3AF;', // gray
+                            'Pending Review' => 'background-color: #FEF3C7; color: #D97706; border-color: #FCD34D;', // amber
+                            'Returned by Chair' => 'background-color: #FECACA; color: #E11D48; border-color: #F87171;', // rose
+                            'Requires Revision' => 'background-color: #FEE2E2; color: #EF4444; border-color: #FCA5A5;', // red
+                            'Revisions Applied' => 'background-color: #DBEAFE; color: #3B82F6; border-color: #93C5FD;', // blue
+                            'Approved by Chair' => 'background-color: #D1FAE5; color: #059669; border-color: #6EE7B7;', // green
+                        ];
+                        $style = $statusStyles[$status] ?? 'background-color: #F3F4F6; color: #6B7280; border-color: #D1D5DB;';
+                    @endphp
+
+                    <div class="w-full text-center px-1 py-1 border-2 rounded-lg" style="{{ $style }}">
+                        {{ $tos->tos_status }}
+                    </div> 
                 </td>
                 <td class="px-6 py-4 flex">
                     <form class="" action="{{ route('bayanihanteacher.commentTos', $tos->tos_id) }}" method="GET">

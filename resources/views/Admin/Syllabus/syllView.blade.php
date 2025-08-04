@@ -1059,53 +1059,50 @@
             <div class="flex justify-center">
                 Prepared By:
             </div>
-            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
-            <div>
-                @if($syll->chair_submitted_at != null)
-                <div class="flex justify-center mt-20">
-                    sgd
+            @foreach ($bLeaders as $bleader)
+                <div class="mt-5">
+                    <div class="flex justify-center">
+                        @if($syll->chair_submitted_at && $bleader->signature)
+                            <img src="{{ asset('assets/signatures/' . $bleader->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                        @endif
+                    </div>
+                    <div class="flex justify-center font-semibold underline mt-2 text-center">
+                        {{ strtoupper(collect([
+                            $bleader->prefix,
+                            $bleader->firstname,
+                            $bleader->lastname,
+                            $bleader->suffix
+                        ])->filter()->implode(' ')) }}
+                    </div>
+                    <div class="flex justify-center text-center">
+                        Instructor
+                    </div>
                 </div>
-                @else
-                <div class="flex justify-center mt-20">
-
-                </div>
-                @endif
-                <div class="flex justify-center font-semibold underline">
-                    {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
-                </div>
-                <div class="flex justify-center">
-                    Instructor
-                </div>
-            </div>
             @endforeach
         </div>
         <div>
             <div class="flex justify-center">
                 Checked and Recommended for Approval:
             </div>
-            @if($syll->dean_submitted_at != null)
-            <div class="flex justify-center mt-20">
-                sgd
+            <div class="flex justify-center mt-5">
+                @if($syll->dean_submitted_at != null && $chair->signature)
+                    <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">            
+                @endif
             </div>
-            @else
-            <div class="flex justify-center mt-20">
-
-            </div>
-            @endif
             <div class="flex justify-center font-semibold underline">
                 {{ strtoupper($syll->syll_chair) }}
             </div>
-            <div class="flex justify-center">
-                Chairperson, {{$syll->department_name}}
+            <div class="flex justify-center text-center">
+                Department Chair
             </div>
         </div>
         <div>
             <div class="flex justify-center">
                 Approved by:
             </div>
-            @if($syll->dean_approved_at != null)
-            <div class="flex justify-center mt-20">
-                sgd
+            @if($syll->dean_approved_at != null && $dean->signature)
+            <div class="flex justify-center mt-5">
+                <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
             </div>
             @else
             <div class="flex justify-center mt-20">
@@ -1115,8 +1112,8 @@
             <div class="flex justify-center font-semibold underline">
                 {{ strtoupper($syll->syll_dean) }}
             </div>
-            <div class="flex justify-center">
-                Dean, {{$syll->college_code}}
+            <div class="flex justify-center text-center">
+                Dean
             </div>
         </div>
     </div>

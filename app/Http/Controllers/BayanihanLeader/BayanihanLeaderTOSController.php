@@ -56,6 +56,51 @@ class BayanihanLeaderTOSController extends Controller
 
         return view('bayanihanleader.tos.tosList', compact('notifications', 'toss'));
     }
+    public function viewTos($tos_id)
+    {
+        $tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first(); 
+            
+        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
+            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
+            ->select('tos.*', 'tos_rows.*')
+            ->get();
+
+        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
+       
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
+            ->get();
+            
+        $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->select('tos.*')
+            ->get();
+
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->select('syllabi.*', 'tos.*', 'users.*')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->first();
+
+        return view('bayanihanleader.tos.tosView', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
+    }
     public function createTos($syll_id)
     {
         $syllabus = Syllabus::join('courses', 'courses.course_id', '=', 'syllabi.course_id')
@@ -87,208 +132,6 @@ class BayanihanLeaderTOSController extends Controller
             'finalTopics'
         ));
     }
-    public function viewTos($tos_id)
-    {
-        $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
-            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
-            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
-        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
-        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
-            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
-            ->select('tos.*', 'tos_rows.*')
-            ->get();
-
-        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
-            ->select('bayanihan_group_users.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->where('bayanihan_group_users.bg_role', '=', 'leader')
-            ->get();
-        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
-            ->select('bayanihan_group_users.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->where('bayanihan_group_users.bg_role', '=', 'member')
-            ->get();
-            
-        $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
-            ->select('tos.*')
-            ->get();
-
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->first();
-
-        return view('bayanihanleader.tos.tosView', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
-    }
-    public function destroyTos(Tos $tos_id)
-    {
-        $tos_id->delete();
-        return redirect()->route('bayanihanleader.tos')->with('success', 'Tos deleted successfully.');
-    }
-    public function submitTos($tos_id)
-    {
-        $tos = Tos::find($tos_id);
-
-        if (!$tos) {
-            return redirect()->route('bayanihanleader.tos')->with('error', 'Tos not found.');
-        }
-        $tos->chair_submitted_at = Carbon::now();
-        $tos->tos_status = 'Pending';
-        $tos->save();
-
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->where('departments.department_id', '=', $tos->department_id)
-            ->select('users.*', 'departments.*')
-            ->first();
-
-        $submitted_tos = Tos::where('tos_id', $tos_id)
-            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', 'tos.bg_id')
-            ->join('courses', 'courses.course_id', 'bayanihan_groups.course_id')
-            ->select('bayanihan_groups.bg_school_year', 'courses.course_code')
-            ->first();
-        $course_code = $submitted_tos->course_code;
-        $bg_school_year = $submitted_tos->bg_school_year;
-        $chair->notify(new Chair_TOSSubmitted($course_code, $bg_school_year, $tos_id));
-
-
-        return redirect()->route('bayanihanleader.tos')->with('success', 'Tos submission successful.');
-    }
-    public function editTos($syll_id, $tos_id)
-    {
-        $syllabus = Syllabus::join('courses', 'courses.course_id', '=', 'syllabi.course_id')
-            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-            ->select('syllabi.*', 'courses.*', 'bayanihan_groups.*')
-            ->where('syllabi.syll_id', $syll_id) // ← fix missing WHERE condition
-            ->first();
-
-        $tos = Tos::where('tos_id', $tos_id)
-            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
-            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
-            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')
-            ->first();
-
-        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
-            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
-            ->select('tos.*', 'tos_rows.*')
-            ->get();
-
-        // Get Midterm topics from syllabus_course_outlines_midterms
-        $midtermTopics = DB::table('syllabus_course_outlines_midterms')
-            ->where('syll_id', $syll_id)
-            ->pluck('syll_topics')
-            ->filter()
-            ->flatMap(function ($topic) {
-                return array_map('trim', explode(',', $topic));
-            })
-            ->unique()
-            ->values()
-            ->toArray();
-
-        // Get Final topics from syllabus_course_outlines_finals
-        $finalTopics = DB::table('syllabus_course_outlines_finals')
-            ->where('syll_id', $syll_id)
-            ->pluck('syll_topics')
-            ->filter()
-            ->flatMap(function ($topic) {
-                return array_map('trim', explode(',', $topic));
-            })
-            ->unique()
-            ->values()
-            ->toArray();
-
-        // Also get selected topics from tos_rows
-        $selectedTopics = $tos_rows->pluck('tos_r_topic')->toArray();
-
-        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
-            ->select('bayanihan_group_users.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->where('bayanihan_group_users.bg_role', '=', 'leader')
-            ->get();
-
-        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
-            ->select('bayanihan_group_users.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->where('bayanihan_group_users.bg_role', '=', 'member')
-            ->get();
-
-        $user = Auth::user();
-        $notifications = $user->notifications;
-
-        return view('bayanihanleader.tos.tosEdit', compact(
-            'notifications',
-            'tos_rows',
-            'tos',
-            'tos_id',
-            'bMembers',
-            'bLeaders',
-            'syllabus',
-            'syll_id',
-            'midtermTopics',
-            'finalTopics',
-            'selectedTopics'
-        ));
-    }
-
-    public function commentTos($tos_id)
-    {
-        $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
-            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
-            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
-
-        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
-
-        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
-            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
-            ->select('tos.*', 'tos_rows.*')
-            ->get();
-
-        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
-            ->select('bayanihan_group_users.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->where('bayanihan_group_users.bg_role', '=', 'leader')
-            ->get();
-        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
-            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
-            ->select('bayanihan_group_users.*', 'users.*')
-            ->where('tos.tos_id', '=', $tos_id)
-            ->where('bayanihan_group_users.bg_role', '=', 'member')
-            ->get();
-
-        $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
-            ->select('tos.*')
-            ->get();
-            
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->first();
-
-        return view('bayanihanleader.tos.tosComment', compact('chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
-    }
     public function storeTos(Request $request, $syll_id)
     {
         $syllabus = Syllabus::where('syll_id', $syll_id)->first();
@@ -317,6 +160,7 @@ class BayanihanLeaderTOSController extends Controller
         $tos = new Tos();
         $tos->syll_id = $syll_id;
         $tos->user_id = Auth::user()->id;
+        $tos->tos_status = "Draft";
         $tos->effectivity_date = $syllabus->effectivity_date;
         $tos->tos_term = $request->tos_term;
         $tos->tos_no_items = $request->tos_no_items;
@@ -329,13 +173,10 @@ class BayanihanLeaderTOSController extends Controller
         $tos->course_id = $syllabus->course_id;
         $tos->department_id = $syllabus->department_id;
         $tos->bg_id = $syllabus->bg_id;
-        $tos->save();
-        $tableName = $request->tos_term === 'Final' ? 'syllabus_course_outlines_finals' : 'syllabus_course_outlines_midterms';
+        $tos->save(); 
 
         $selectedTopics = $request->input('selected_topics', []);
-
         $outlineModel = $request->tos_term === 'Final' ? SyllabusCourseOutlinesFinal::class : SyllabusCourseOutlineMidterm::class;
-
         $selectedEntries = $outlineModel::where('syll_id', $syll_id)
             ->whereIn('syll_topics', $selectedTopics)
             ->get();
@@ -373,6 +214,7 @@ class BayanihanLeaderTOSController extends Controller
             $tosColExpUpdate->col_4_exp = $col4Exp;
             $tosColExpUpdate->save();
         } else {
+            return redirect()->route('bayanihanleader.tos')->with('error', 'Something went wrong when Creating the TOS.');
         }
 
         $totalNoHours = 0;
@@ -420,8 +262,6 @@ class BayanihanLeaderTOSController extends Controller
                 $lastDecimalRow->tos_r_percent += $adjustment;
                 $lastDecimalRow->save();
             }
-
-
 
             // ADJUST THE NO OF ITEMS PARA EQUAL SA TOTAL ITEMS HEHE 
             $totalRoundedItems = 0;
@@ -516,7 +356,118 @@ class BayanihanLeaderTOSController extends Controller
 
         return redirect()->route('bayanihanleader.viewTos', $tos->tos_id);
     }
+    public function submitTos($tos_id)
+    {
+        $tos = Tos::find($tos_id);
 
+        if (!$tos) {
+            return redirect()->route('bayanihanleader.tos')->with('error', 'Tos not found.');
+        }
+        $tos->chair_submitted_at = Carbon::now();
+        
+        if ($tos->tos_status == "Draft") {
+            $tos->tos_status = 'Pending Review';
+
+        } else if ($tos->tos_status == "Requires Revision") {
+            $tos->tos_status = 'Revisions Applied';
+        }
+
+        $tos->save();
+
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('departments.department_id', '=', $tos->department_id)
+            ->select('users.*', 'departments.*')
+            ->first();
+
+        $submitted_tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', 'tos.bg_id')
+            ->join('courses', 'courses.course_id', 'bayanihan_groups.course_id')
+            ->select('bayanihan_groups.bg_school_year', 'courses.course_code')
+            ->first();
+
+        $course_code = $submitted_tos->course_code;
+        $bg_school_year = $submitted_tos->bg_school_year;
+        $chair->notify(new Chair_TOSSubmitted($course_code, $bg_school_year, $tos_id));
+
+        return redirect()->route('bayanihanleader.tos')->with('success', 'TOS submission successful.');
+    }
+    public function editTos($syll_id, $tos_id)
+    {
+        $syllabus = Syllabus::join('courses', 'courses.course_id', '=', 'syllabi.course_id')
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
+            ->select('syllabi.*', 'courses.*', 'bayanihan_groups.*')
+            ->where('syllabi.syll_id', $syll_id) // ← fix missing WHERE condition
+            ->first();
+
+        $tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')
+            ->first();
+
+        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
+            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
+            ->select('tos.*', 'tos_rows.*')
+            ->get();
+
+        // Get Midterm topics from syllabus_course_outlines_midterms
+        $midtermTopics = DB::table('syllabus_course_outlines_midterms')
+            ->where('syll_id', $syll_id)
+            ->pluck('syll_topics')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        // Get Final topics from syllabus_course_outlines_finals
+        $finalTopics = DB::table('syllabus_course_outlines_finals')
+            ->where('syll_id', $syll_id)
+            ->pluck('syll_topics')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        // Also get selected topics from tos_rows
+        $selectedTopics = $tos_rows->pluck('tos_r_topic')->toArray();
+
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
+            ->get();
+
+        $user = Auth::user();
+        $notifications = $user->notifications;
+
+        return view('bayanihanleader.tos.tosEdit', compact(
+            'notifications',
+            'tos_rows',
+            'tos',
+            'tos_id',
+            'bMembers',
+            'bLeaders',
+            'syllabus',
+            'syll_id',
+            'midtermTopics',
+            'finalTopics',
+            'selectedTopics'
+        ));
+    }
     public function updateTos(Request $request, $syll_id, $tos_id)
     {
         $syllabus = Syllabus::where('syll_id', $syll_id)->first();
@@ -661,7 +612,110 @@ class BayanihanLeaderTOSController extends Controller
 
         return redirect()->route('bayanihanleader.viewTos', $tos_id)->with('success', 'Updated Tos Successfully');
     }
+    public function editTosRow($tos_id) 
+    {
+        $tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first(); 
+            
+        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
+            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
+            ->select('tos.*', 'tos_rows.*')
+            ->get();
+            
+        $user = Auth::user();
+        $notifications = $user->notifications;
 
+        return view('bayanihanleader.tos.tosEditRow', compact('tos', 'tos_rows', 'notifications'));
+    }
+    public function updateTosRow(Request $request, $tos_id)
+    {
+        $tos = Tos::findorFail($tos_id);
+        
+        $validatedData = $request->validate([
+            'tos_r_id.*' => 'required',
+            'tos_r_no_items.*' => 'required',   
+            'tos_r_col_1.*' => 'required',
+            'tos_r_col_2.*' => 'required',
+            'tos_r_col_3.*' => 'required',
+            'tos_r_col_4.*' => 'required',
+        ]);
+
+        $totalItems = collect($validatedData['tos_r_no_items'])->sum();
+        $totalCognitive = collect($validatedData['tos_r_col_1'])->sum()
+                     + collect($validatedData['tos_r_col_2'])->sum()
+                     + collect($validatedData['tos_r_col_3'])->sum()
+                     + collect($validatedData['tos_r_col_4'])->sum();
+
+        // ❌ If mismatch, reject update
+        if ($totalItems !== $tos->tos_no_items || $totalCognitive !== $tos->tos_no_items) {
+            return back()->withErrors([
+                'totals' => 'The total number of items and cognitive values must match the expected value of ' . $tos->tos_no_items . '.'
+            ])->withInput();
+        }
+
+        foreach ($validatedData['tos_r_id'] as $key => $tos_r_id) {
+            $tosRow = TosRows::find($tos_r_id);
+
+            if ($tosRow) {
+                $tosRow->tos_r_no_items = $validatedData['tos_r_no_items'][$key];
+                $tosRow->tos_r_col_1 = $validatedData['tos_r_col_1'][$key];
+                $tosRow->tos_r_col_2 = $validatedData['tos_r_col_2'][$key];
+                $tosRow->tos_r_col_3 = $validatedData['tos_r_col_3'][$key];
+                $tosRow->tos_r_col_4 = $validatedData['tos_r_col_4'][$key];
+                $tosRow->save();
+            }
+        }
+
+        // You can return a response as needed
+        return redirect()->route('bayanihanleader.viewTos', $tos_id)->with('success', 'TOS adjusted successfully');
+    }    
+    public function commentTos($tos_id)
+    {
+        $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+            ->join('courses', 'courses.course_id', '=', 'tos.course_id')
+            ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
+
+        $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
+
+        $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
+            ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
+            ->select('tos.*', 'tos_rows.*')
+            ->get();
+
+        $bLeaders = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'leader')
+            ->get();
+        $bMembers = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
+            ->join('tos', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
+            ->join('users', 'users.id', '=', 'bayanihan_group_users.user_id')
+            ->select('bayanihan_group_users.*', 'users.*')
+            ->where('tos.tos_id', '=', $tos_id)
+            ->where('bayanihan_group_users.bg_role', '=', 'member')
+            ->get();
+
+        $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->select('tos.*')
+            ->get();
+            
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
+            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
+            ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->select('users.*', 'tos.*')
+            ->first();
+
+        return view('bayanihanleader.tos.tosComment', compact('chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
+    }
     public function replicateTos($tos_id)
     {
         $oldTos = Tos::where('tos_id', $tos_id)->first();
@@ -672,7 +726,7 @@ class BayanihanLeaderTOSController extends Controller
             $newTos->chair_submitted_at = null;
             $newTos->chair_returned_at = null;
             $newTos->chair_approved_at = null;
-            $newTos->tos_status = null;
+            $newTos->tos_status = "Requires Revision";
             $newTos->tos_version = $oldTos->tos_version + 1;
             $newTos->save();
 
@@ -685,40 +739,23 @@ class BayanihanLeaderTOSController extends Controller
                 ->with('success', 'Tos replicated successfully');
         }
     }
-    public function editTosRow($tos_id) 
+    public function destroyTos(Tos $tos_id)
     {
-        $tos_id = TOS::where('tos_id', '=', $tos_id)
-            ->select('tos_id')
-            ->first();
-            
-        $user = Auth::user();
-        $notifications = $user->notifications;
+        
+        $tos = Syllabus::where('syll_id', $tos_id)->firstorfail();
 
-        return view('bayanihanleader.tos.tosEditRow', compact('tos_id', 'notifications'));
-    }
-    public function updateTosRow(Request $request, $tos_id)
-    {
-        $validatedData = $request->validate([
-            'tos_r_id.*' => 'required',
-            'tos_r_col_1.*' => 'required',
-            'tos_r_col_2.*' => 'required',
-            'tos_r_col_3.*' => 'required',
-            'tos_r_col_4.*' => 'required',
-        ]);
+        $hasApprovedTOSDocument = Tos::where('bg_id', operator: $tos->bg_id)
+            ->where('status', 'Approved by Chair')
+            ->whereNotNull('chair_approved_at')
+            ->exists();
 
-        foreach ($validatedData['tos_r_id'] as $key => $tos_r_id) {
-            $tosRow = TosRows::find($tos_r_id);
-
-            if ($tosRow) {
-                $tosRow->tos_r_col_1 = $validatedData['tos_r_col_1'][$key];
-                $tosRow->tos_r_col_2 = $validatedData['tos_r_col_2'][$key];
-                $tosRow->tos_r_col_3 = $validatedData['tos_r_col_3'][$key];
-                $tosRow->tos_r_col_4 = $validatedData['tos_r_col_4'][$key];
-                $tosRow->save();
-            }
+        if ($hasApprovedTOSDocument) {
+            return redirect()->route('bayanihanleader.tos')
+                ->with('error', 'Cannot delete this TOS because it already has been approved.');
         }
-
-        // You can return a response as needed
-        return redirect()->route('bayanihanleader.viewTos', $tos_id)->with('success', 'Tos adjusted successfully');
+        
+        $tos_id->delete();
+    
+        return redirect()->route('bayanihanleader.tos')->with('success', 'Tos deleted successfully.');
     }
 }

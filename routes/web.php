@@ -54,17 +54,6 @@ Route::middleware(['auth', 'isBayanihanLeader'])->group(function () {
     Route::get('/bayanihanleader/syllList', [BLSyllabusController::class, 'index'])->name('bayanihanleader.syllList');
 });
 
-
-//Privilege Date Routes
-Route::get('/admin/privilege-date-syllabus', function () {
-    return view('Admin.privilege_date_SYLLABUS');
-})->name('admin.privilegeDateSyllabus');
-Route::get('/admin/privilege-date-tos', function () {
-    return view('Admin.privilege_date_TOS');
-})->name('admin.privilegeDateTOS');
-
-
-
 //Admin Controls
 use App\Http\Controllers\Admin\AdminCollegeController;
 use App\Http\Controllers\Admin\AdminCurrController;
@@ -78,6 +67,7 @@ use App\Http\Controllers\Admin\AdminPOController;
 use App\Http\Controllers\Admin\AdminPOEController;
 use App\Http\Controllers\Admin\AdminAuditController;
 use App\Http\Controllers\Admin\AdminBayanihanController;
+use App\Http\Controllers\Admin\AdminDateOverriderController;
 use App\Http\Controllers\Auth\EditProfileController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderAuditController;
 
@@ -232,7 +222,7 @@ Route::group(['prefix' => 'bayanihanleader', 'middleware' => ['auth', 'isBL']], 
     Route::get('/viewTos/{tos_id}', [BayanihanLeaderTOSController::class, 'viewTos'])->name('bayanihanleader.viewTos');
     
     Route::get('/editTosRow/{tos_id}', [BayanihanLeaderTOSController::class, 'editTosRow'])->name('bayanihanleader.editTosRow');
-    Route::post('/updateTosRow/{tos_id}', [BayanihanLeaderTOSController::class, 'updateTosRow'])->name('bayanihanleader.updateTosRow');
+    Route::put('/updateTosRow/{tos_id}', [BayanihanLeaderTOSController::class, 'updateTosRow'])->name('bayanihanleader.updateTosRow');
 
     Route::get('/commentTos/{tos_id}', [BayanihanLeaderTOSController::class, 'commentTos'])->name('bayanihanleader.commentTos');
     Route::get('/editTos/{syll_id}/{tos_id}', [BayanihanLeaderTOSController::class, 'editTos'])->name('bayanihanleader.editTos');
@@ -431,7 +421,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::put('/updateChair/{chairman_id}', [AdminDepartmentController::class, 'updateChair'])->name('admin.updateChair');
     Route::delete('/destroyChair/{chairman_id}', [AdminDepartmentController::class, 'destroyChair'])->name('admin.destroyChair');
 
-    // Bayanihan Team 
+    // Admin: Bayanihan Team 
     Route::get('/bayanihan', [AdminBayanihanController::class, 'index'])->name('admin.bayanihan');
     Route::get('/createBTeam', [AdminBayanihanController::class, 'createBTeam'])->name('admin.createBTeam');
     Route::post('/storeBTeam', [AdminBayanihanController::class, 'storeBTeam'])->name('admin.storeBTeam');
@@ -461,6 +451,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::get('/admin/commentSyllabus/{syll_id}', [AdminSyllabusController::class, 'commentSyllabus'])->name('admin.commentSyllabus');
     Route::get('admin/destroySyllabus/{syll_id}', [AdminSyllabusController::class, 'destroySyllabus'])->name('admin.destroySyllabus');
     Route::get('/admin/viewReviewForm/{syll_id}', [AdminSyllabusController::class, 'viewReviewForm'])->name('admin.viewReviewForm');
+    
+    Route::get('admin/viewSyllabusDates/{bg_id}', [AdminDateOverriderController::class, 'viewSyllabusDates'])->name('admin.viewSyllabusDates');
+    Route::put('admin/overrideSyllabusDate/{syll_id}', [AdminDateOverriderController::class, 'overrideSyllabusDate'])->name('admin.overrideSyllabusDate');
     //Admin Syllabus Audit Trail
     Route::get('/syllabus/auditTrail/{syll_id}', [AdminAuditController::class, 'viewSyllabusAudit'])->name('admin.viewSyllabusAudit');
 
@@ -469,6 +462,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::get('/admin/viewTos/{tos_id}', [AdminTOSController::class, 'viewTos'])->name('admin.viewTos');
     Route::get('/admin/commentTos/{tos_id}', [AdminTOSController::class, 'commentTos'])->name('admin.commentTos');
     Route::get('/admin/destroyTos/{tos_id}', [AdminTOSController::class, 'destroyTos'])->name('admin.destroyTos');
+
+    Route::get('admin/viewTOSDates/{bg_id}/{tos_term}', [AdminDateOverriderController::class, 'viewTOSDates'])->name('admin.viewTOSDates');
+    Route::put('admin/overrideTOSDate/{tos_id}', [AdminDateOverriderController::class, 'overrideTOSDate'])->name('admin.overrideTOSDate'); 
     //Admin TOS Audit Trail
     Route::get('/tos/auditTrail/{tos_id}', [AdminAuditController::class, 'viewTosAudit'])->name('admin.viewTosAudit');
 
@@ -513,6 +509,14 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'isAdmin']], function ()
     Route::get('admin/department/{department_id}/poe/edit_poe/', [AdminPOEController::class, 'editPoe'])->name('admin.editPoe');
     Route::put('admin/department/{department_id}/poe/update_poe', [AdminPOEController::class, 'updatePoe'])->name('admin.updatePoe');
     Route::delete('admin/department/poe/destroy_poe/{poe_id}', [AdminPOEController::class, 'destroyPoe'])->name('admin.destroyPoe');
+
+    //Privilege Date Routes
+    Route::get('admin/override-date-syllabus', function () {
+        return view('Admin.privilege_date_SYLLABUS');
+    })->name('admin.privilegeDateSyllabus');
+    Route::get('admin/override-date-tos', function () {
+        return view('Admin.privilege_date_TOS');
+    })->name('admin.privilegeDateTOS');
 
     //Admin: User Management Controls
     Route::get('admin/home', [ManageUser::class, 'index'])->name('admin.home');

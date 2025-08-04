@@ -37,6 +37,12 @@
             <option value="Mid Year">Mid Year</option>
         </select>
 
+        <select wire:model="filters.tos_term" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[13%] min-w-0" placeholder="Term">
+            <option value="">Term (All)</option>
+            <option value="Midterm">Midterm</option>
+            <option value="Finals">Finals</option>
+        </select>
+
         <select wire:model="filters.bg_school_year"
             class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[17%]"
             placeholder="School Year">
@@ -49,13 +55,32 @@
             <option value="2028-2029">2028-2029</option>
             <option value="2029-2030">2029-2030</option>
         </select>
+        
+        <select wire:model="filters.tos_status" class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[15%]" placeholder="Status">
+            <option value="">Status (All)</option>
+            <option value="Draft">Draft</option>
+            <option value="Pending Review">Pending Review</option>
+            <option value="Returned by Chair">Returned by Chair</option>
+            <option value="Requires Revision">Requires Revision</option>
+            <option value="Revisions Applied">Revisions Applied</option>
+            <option value="Approved by Chair">Approved by Chair</option>
+        </select>
 
-        <select wire:model="filters.department"
+        <select wire:model="filters.department_id"
             class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[17%]"
             placeholder="Department">
             <option value="">Department(All)</option>
             @foreach ($departments as $department)
-                <option value="{{ $department->department_code }}">{{ $department->department_code }}</option>
+                <option value="{{ $department->department_id }}">{{ $department->department_code }}</option>
+            @endforeach
+        </select>
+        
+        <select wire:model="filters.college_id"
+            class="border focus:outline-none focus:border-blue cursor-pointer rounded p-1 w-[17%]"
+            placeholder="College">
+            <option value="">College(All)</option>
+            @foreach ($colleges as $college)
+                <option value="{{ $college->college_id }}">{{ $college->college_code }}</option>
             @endforeach
         </select>
 
@@ -70,10 +95,7 @@
         <thead class="rounded text-xs text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" class="bg-blue5 rounded-tl px-6 py-3">
-                    Course Code
-                </th>
-                <th scope="col" class="bg-blue5 px-6 py-3">
-                    Course Title
+                    Course
                 </th>
                 <th scope="col" class="bg-blue5 px-6 py-3">
                     School Year
@@ -88,6 +110,9 @@
                     Submitted At
                 </th>
                 <th scope="col" class="bg-blue5 px-6 py-3">
+                    Approved At
+                </th>
+                <th scope="col" class="bg-blue5 px-6 py-3">
                     Version
                 </th>
                 <th scope="col" class="bg-blue5 px-6 py-3">
@@ -98,65 +123,78 @@
                 </th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-[#e5e7eb]">
         @foreach ($toss as $tos)
-            <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white border- dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
+            <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
                 <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                {{ $tos->course_title }}
+                    {{ $tos->course_code . " - " . $tos->course_title}}
+                </td> 
+                <td class="px-6 py-4">
+                    {{ $tos->bg_school_year }}
                 </td>
                 <td class="px-6 py-4">
-                {{ $tos->course_code }}
+                    {{ $tos->course_semester }}
                 </td>
                 <td class="px-6 py-4">
-                {{ $tos->bg_school_year }}
+                    {{$tos->tos_term}}
                 </td>
                 <td class="px-6 py-4">
-                {{ $tos->course_semester }}
+                    {{$tos->chair_submitted_at}}
                 </td>
                 <td class="px-6 py-4">
-                {{$tos->tos_term}}
+                    {{$tos->chair_approved_at}}
                 </td>
                 <td class="px-6 py-4">
-                {{$tos->chair_submitted_at}}
+                    {{"Version ". $tos->tos_version}}
                 </td>
                 <td class="px-6 py-4">
-                Version {{$tos->tos_version}}
-                </td>
-                <td class="px-6 py-4">
-                    <div class="
-                    {{ $tos->tos_status === 'Pending' ? 'w-[100%] bg-amber-100 text-amber-500 border-2 border-amber-300 rounded-lg' : '' }}
-                    {{ $tos->tos_status === 'Approved by Chair' ? 'w-[100%]  bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}
-                    {{ $tos->tos_status === 'Returned by Chair' ? 'w-[100%] bg-rose-300 text-rose-600 border-2 border-rose-500 rounded-lg' : ' ' }}">
-                        {{$tos->tos_status}}
-                    </div>
-                </td>
-                <td class="px-6 py-4 relative">
-                    <div x-data="{ open: false }" class="relative inline-block text-left w-full">
-                    <button @click="open = !open"
-                        class="bg-[#d7ecf9] hover:scale-105 transition ease-in-out font-semibold text-black px-4 py-2 rounded-xl flex items-center justify-center gap-2 w-full">
-                        Actions
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+                    @php
+                        $status = $tos->tos_status;
+                        $statusStyles = [
+                            'Draft' => 'background-color: #D1D5DB; color: #4B5563; border-color: #9CA3AF;', // gray
+                            'Pending Review' => 'background-color: #FEF3C7; color: #D97706; border-color: #FCD34D;', // amber
+                            'Returned by Chair' => 'background-color: #FECACA; color: #E11D48; border-color: #F87171;', // rose
+                            'Requires Revision' => 'background-color: #FEE2E2; color: #EF4444; border-color: #FCA5A5;', // red
+                            'Revisions Applied' => 'background-color: #DBEAFE; color: #3B82F6; border-color: #93C5FD;', // blue
+                            'Approved by Chair' => 'background-color: #D1FAE5; color: #059669; border-color: #6EE7B7;', // green
+                        ];
+                        $style = $statusStyles[$status] ?? 'background-color: #F3F4F6; color: #6B7280; border-color: #D1D5DB;';
+                    @endphp
 
-                    <div x-show="open" @click.away="open = false"
-                        class="absolute z-10 mt-2 w-52 origin-top-right bg-white border border-gray-200 rounded-xl shadow-lg">
-                        <div class="py-2 px-4 text-sm text-gray-700">
-                            <a href="{{ route('admin.viewTos', $tos->tos_id) }}"
-                                class="block px-4 py-2 hover:bg-gray-100 rounded">View</a>
-                            <a href="{{ route('admin.privilegeDateTOS') }}"
-                                class="block w-full text-left px-4 py-2 hover:bg-gray-100">Override Date</a>
+                    <div class="w-full text-center px-1 py-1 border-2 rounded-lg" style="{{ $style }}">
+                        {{ $tos->tos_status }}
+                    </div> 
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <div x-data="{ open: false }" class="relative inline-block text-left">
+                        <button @click="open = !open"
+                            class="flex items-center justify-center rounded-md p-2 bg-white text-sm text-gray-700 hover:bg-gray-50 focus:outline-none">
+                            <svg class="h-5 w-5 text-blue" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" @click.outside="open = false" x-transition
+                            class="origin-top-right absolute right-0 mt-2 w-52 rounded-md shadow-lg bg-white ring-1 ring-blue ring-opacity-5 z-10">
+                            <div class="py-1 space-y-1">
+                                <a href="{{ route('admin.viewTos', $tos->tos_id) }}"
+                                class="block w-full text-left px-4 py-2 text-sm text-blue hover:bg-gray5 rounded">
+                                    View TOS
+                                </a>
+                                <a href="{{ route('admin.viewTOSDates', ['bg_id' => $tos->bg_id, 'tos_term' => $tos->tos_term]) }}"
+                                class="block w-full text-left px-4 py-2 text-sm text-[#edc001] hover:bg-gray5 rounded">
+                                    Override Date
+                                </a>
+                                <!-- Optional: add more actions here -->
                             </div>
                         </div>
                     </div>
-                </div>
-            </td>
-
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
-        {{ $toss->links() }}
+    {{ $toss->links() }}
 </div>

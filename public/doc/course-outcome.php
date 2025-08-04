@@ -25,7 +25,7 @@
         </td>
         @endforeach
         <td class="relative w-4">
-            <livewire:BL-Comment-Modal :syll_co_id="$co->syll_co_id" />
+            @livewire('bl-comment-modal', ['syll_co_id' => $co->syll_co_id])
         </td>
     </tr>
     @endforeach

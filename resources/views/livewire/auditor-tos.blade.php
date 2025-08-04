@@ -94,10 +94,22 @@
                     <td class="px-6 py-4">{{ $tos->chair_submitted_at }}</td>
                     <td class="px-6 py-4">Version {{ $tos->tos_version }}</td>
                     <td class="px-6 py-4">
-                        <button class="
-                        {{ $tos->tos_status === 'Approved by Chair' ? 'w-[100%] bg-emerald-200 text-emerald-600 border-2 border-emerald-400 rounded-lg' : '' }}">
+                        @php
+                            $status = $tos->tos_status;
+                            $statusStyles = [
+                                'Draft' => 'background-color: #D1D5DB; color: #4B5563; border-color: #9CA3AF;', // gray
+                                'Pending Review' => 'background-color: #FEF3C7; color: #D97706; border-color: #FCD34D;', // amber
+                                'Returned by Chair' => 'background-color: #FECACA; color: #E11D48; border-color: #F87171;', // rose
+                                'Requires Revision' => 'background-color: #FEE2E2; color: #EF4444; border-color: #FCA5A5;', // red
+                                'Revisions Applied' => 'background-color: #DBEAFE; color: #3B82F6; border-color: #93C5FD;', // blue
+                                'Approved by Chair' => 'background-color: #D1FAE5; color: #059669; border-color: #6EE7B7;', // green
+                            ];
+                            $style = $statusStyles[$status] ?? 'background-color: #F3F4F6; color: #6B7280; border-color: #D1D5DB;';
+                        @endphp
+
+                        <div class="w-full text-center px-1 py-1 border-2 rounded-lg" style="{{ $style }}">
                             {{ $tos->tos_status }}
-                        </button>
+                        </div>
                     </td>
                     <td class="px-6 py-4 flex">
                         <form action="" method="GET">

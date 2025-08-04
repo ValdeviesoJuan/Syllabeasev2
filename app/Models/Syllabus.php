@@ -36,6 +36,14 @@ class Syllabus extends Model implements Auditable
         'status',
         'version'
     ];
+
+    protected $casts = [
+        'chair_submitted_at' => 'datetime',
+        'dean_submitted_at' => 'datetime',
+        'chair_rejected_at' => 'datetime',
+        'dean_rejected_at' => 'datetime',
+        'dean_approved_at' => 'datetime',
+    ];
     public function SyllabusInstructors()
     {
         return $this->hasMany(SyllabusInstructor::class, 'syll_id', 'syll_id');

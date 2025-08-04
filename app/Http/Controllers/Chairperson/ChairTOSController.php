@@ -70,6 +70,7 @@ class ChairTOSController extends Controller
         $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
             ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
             ->join('users', 'users.id', '=', 'user_roles.user_id')
+            ->select('syllabi.*', 'users.*')
             ->where('user_roles.entity_type', '=', 'Department')
             ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
             ->first();
@@ -124,6 +125,7 @@ class ChairTOSController extends Controller
         if (!$tos) {
             return redirect()->route('chairperson.tos')->with('error', 'Tos not found.');
         }
+        
         $tos->chair_returned_at = Carbon::now();
         $tos->tos_status = 'Returned by Chair';
         $tos->save();

@@ -285,8 +285,8 @@
                 @foreach($bLeaders as $bLeader)
                 <div class="mb-10 mt-10">
                     <div class="flex justify-center">
-                        @if($tos->chair_submitted_at != null)
-                        sgd
+                        @if($tos->chair_submitted_at && $bLeader->signature)
+                            <img src="{{ asset('assets/signatures/' . $bLeader->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
                         @endif
                     </div>
 
@@ -311,8 +311,8 @@
 
             <div class="">
                 <div class="flex justify-center items-center mt-10">
-                    @if($tos->chair_approved_at != null)
-                    sgd
+                    @if($tos->chair_approved_at != null && $chair->signature)
+                        <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chairperson Signature" class="h-16 object-contain">
                     @endif
                 </div>
 

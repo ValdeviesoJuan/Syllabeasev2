@@ -421,10 +421,14 @@
             <div class="flex justify-center">
                 Prepared By:
             </div>
-            <!-- need loop here -->
-            @foreach ($instructors[$syll->syll_id] ?? [] as $key => $instructor)
-            <div>
-                <div class="flex justify-center font-semibold underline mt-20">
+            @foreach ($bLeaders ?? [] as $key => $instructor)
+            <div class="mt-5">
+                <div class="flex justify-center">
+                    @if($syll->chair_submitted_at && $instructor->signature)
+                        <img src="{{ asset('assets/signatures/' . $instructor->signature) }}" alt="Instructor Signature" class="h-16 object-contain">
+                    @endif
+                </div>
+                <div class="flex justify-center font-semibold underline mt-20 text-center">
                     {{ strtoupper($instructor->prefix) }} {{ strtoupper($instructor->firstname) }} {{ strtoupper($instructor->lastname) }} {{ strtoupper($instructor->suffix) }}
                 </div>
                 <div class="flex justify-center">
@@ -432,21 +436,17 @@
                 </div>
             </div>
             @endforeach
-
-            <!-- <div>
-                <div class="flex justify-center font-semibold underline mt-20">
-                    JOHN-REY JAMAGO
-                </div>
-                <div class="flex justify-center">
-                    Instructor
-                </div>
-            </div> -->
         </div>
         <div>
             <div class="flex justify-center">
+                @if($syll->dean_submitted_at != null && $chair->signature)
+                    <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
+                @endif
+            </div>
+            <div class="flex justify-center">
                 Checked and Recommended for Approval:
             </div>
-            <div class="flex justify-center font-semibold underline mt-20">
+            <div class="flex justify-center font-semibold underline mt-20 text-center">
                 {{ strtoupper($syll->syll_chair) }}
             </div>
             <div class="flex justify-center">
@@ -455,9 +455,14 @@
         </div>
         <div>
             <div class="flex justify-center">
+                @if($syll->dean_approved_at != null && $dean->signature)
+                    <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
+                @endif
+            </div>
+            <div class="flex justify-center">
                 Approved by:
             </div>
-            <div class="flex justify-center font-semibold underline mt-20">
+            <div class="flex justify-center font-semibold underline mt-20 text-center">
                 {{ strtoupper($syll->syll_dean) }}
             </div>
             <div class="flex justify-center">

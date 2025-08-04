@@ -80,7 +80,7 @@ class BayanihanLeaderSyllabusController extends Controller
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
-            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code', 'colleges.college_id')
+            ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.*')
             ->first();
 
         // Get chairperson of the department
@@ -635,7 +635,20 @@ class BayanihanLeaderSyllabusController extends Controller
     // }
     public function destroySyllabus(Syllabus $syll_id)
     {
+        $syll = Syllabus::where('syll_id', $syll_id)->firstorfail();
+
+        $hasApprovedSyllabusDocument = Syllabus::where('bg_id', $syll->bg_id)
+            ->where('status', 'Approved by Dean')
+            ->whereNotNull('dean_approved_at')
+            ->exists();
+
+        if ($hasApprovedSyllabusDocument) {
+            return redirect()->route('bayanihanleader.home')
+                ->with('error', 'Cannot delete this syllabus because it already has been approved.');
+        }
+        
         $syll_id->delete();
+
         return redirect()->route('bayanihanleader.home')->with('success', 'Syllabus deleted successfully.');
     }
     public function viewReviewForm($syll_id)
