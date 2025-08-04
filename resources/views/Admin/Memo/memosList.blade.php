@@ -95,11 +95,11 @@
 
                     <tr>
                         <td colspan="4" class="p-0">
-                            <div onclick="handleRowClick(event, '{{ route('admin.showMemo', $memo->id) }}')"
-                                class="grid grid-cols-4 items-center bg-white rounded shadow-sm cursor-pointer transition px-2 py-2"
-                                style="border: 2px solid {{ $borderHex }}; transition: background-color 0.2s ease;"
-                                onmouseover="this.style.backgroundColor='#e6f0ff';"
-                                onmouseout="this.style.backgroundColor='white';"
+                            <div 
+                                onclick="handleRowClick(event, '{{ route('admin.showMemo', $memo->id) }}', {{ $memo->id }})"
+                                class="memo-row grid grid-cols-4 items-center rounded shadow-sm cursor-pointer transition px-2 py-2"
+                                data-memo-id="{{ $memo->id }}"
+                                style="border: 2px solid {{ $borderHex }};"
                             >
                                 <div class="truncate font-medium pr-2">{{ $memo->title }}</div>
                                 <div class="truncate px-2">{{ Str::limit($memo->description, 80) }}</div>
@@ -161,9 +161,10 @@
                 };
             @endphp
 
-            <div onclick="window.location.href='{{ route('admin.showMemo', $memo->id) }}'"
-                class="p-4 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group overflow-hidden"
-                style="border: 2px solid {{ $borderHex }};"
+            <div onclick="handleTileClick(event, '{{ route('admin.showMemo', $memo->id) }}', {{ $memo->id }})"
+                class="tile-memo p-4 rounded-lg shadow cursor-pointer transition relative group overflow-hidden"
+                data-memo-id="{{ $memo->id }}"
+                style="border: 2px solid {{ $borderHex }}; background-color: #e5e7eb;"
             >
 
                 {{-- Title --}}
@@ -429,11 +430,75 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 
 <script>
-    function handleRowClick(event, url) {
-        // If the clicked element or its parent has a "stop-row-click" class, don't redirect
+    function handleRowClick(event, url, memoId) {
         if (event.target.closest('.stop-row-click')) return;
+
+        const readMemos = JSON.parse(localStorage.getItem('readMemos')) || [];
+
+        if (!readMemos.includes(memoId)) {
+            readMemos.push(memoId);
+            localStorage.setItem('readMemos', JSON.stringify(readMemos));
+        }
+
         window.location = url;
     }
+</script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        setView('table');
+
+        const readMemos = JSON.parse(localStorage.getItem('readMemos')) || [];
+
+        document.querySelectorAll('.memo-row').forEach(row => {
+            const memoId = parseInt(row.dataset.memoId);
+            const isRead = readMemos.includes(memoId);
+
+            // Flip: Unread = gray, Read = white
+            row.style.backgroundColor = isRead ? '#ffffff' : '#e5e7eb';
+
+            row.addEventListener('mouseover', () => {
+                if (!isRead) row.style.backgroundColor = '#e6f0ff'; // only highlight if unread
+            });
+
+            row.addEventListener('mouseout', () => {
+                row.style.backgroundColor = readMemos.includes(memoId) ? '#ffffff' : '#e5e7eb';
+            });
+        });
+    });
+</script>
+
+<script>
+    function handleTileClick(event, url, memoId) {
+        const readMemos = JSON.parse(localStorage.getItem('readMemos')) || [];
+
+        if (!readMemos.includes(memoId)) {
+            readMemos.push(memoId);
+            localStorage.setItem('readMemos', JSON.stringify(readMemos));
+        }
+
+        window.location = url;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const readMemos = JSON.parse(localStorage.getItem('readMemos')) || [];
+
+        document.querySelectorAll('.tile-memo').forEach(tile => {
+            const memoId = parseInt(tile.dataset.memoId);
+            const isRead = readMemos.includes(memoId);
+
+            // Flip logic: unread = gray, read = white
+            tile.style.backgroundColor = isRead ? '#ffffff' : '#e5e7eb';
+
+            tile.addEventListener('mouseover', () => {
+                if (!isRead) tile.style.backgroundColor = '#e6f0ff';
+            });
+
+            tile.addEventListener('mouseout', () => {
+                tile.style.backgroundColor = readMemos.includes(memoId) ? '#ffffff' : '#e5e7eb';
+            });
+        });
+    });
 </script>
 
 <script>

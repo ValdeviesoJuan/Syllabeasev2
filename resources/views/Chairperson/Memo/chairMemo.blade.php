@@ -63,16 +63,32 @@
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr onclick="handleRowClick(event, '{{ route('chair.memo.show', $memo->id) }}')"
-                    class="bg-white rounded shadow-sm cursor-pointer hover:bg-gray-100 transition">
-                    <td class="px-2 py-2 w-[15%]">{{ $memo->title }}</td>
-                    <td class="px-2 py-2 w-[60%]">{{ Str::limit($memo->description, 80) }}</td>
-                    <td class="px-2 py-2 w-[10%]">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
-                </tr>
+                    @php
+                        $borderHex = match($memo->color) {
+                            'green' => '#22c55e',
+                            'yellow' => '#facc15',
+                            'red' => '#ef4444',
+                            default => '#d1d5db',
+                        };
+                    @endphp
+
+                    <tr>
+                        <td colspan="3" class="p-0">
+                            <div onclick="handleRowClick(event, '{{ route('chair.memo.show', $memo->id) }}', {{ $memo->id }})"
+                                class="chair-memo-row grid grid-cols-3 items-center rounded shadow-sm cursor-pointer px-2 py-2 transition"
+                                data-memo-id="{{ $memo->id }}"
+                                style="border: 2px solid {{ $borderHex }};"
+                            >
+                                <div class="truncate pr-2 font-medium">{{ $memo->title }}</div>
+                                <div class="truncate px-2">{{ Str::limit($memo->description, 80) }}</div>
+                                <div class="text-sm text-gray-600 pr-2">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</div>
+                            </div>
+                        </td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="4" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
-                </tr>
+                    <tr>
+                        <td colspan="3" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -81,72 +97,127 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div onclick="window.location.href='{{ route('chair.memo.show', $memo->id) }}'"
-            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group">
-
-            {{-- Title --}}
-            <h2 class="text-lg font-semibold mb-2 text-gray-800">{{ $memo->title }}</h2>
-
-            {{-- Description --}}
-            <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
-
-            {{-- Date --}}
-            <div class="text-sm text-gray-500 mb-3">
-                {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
-            </div>
-
-            {{-- File Buttons (Prevent row click) --}}
             @php
-                $files = json_decode($memo->file_name, true);
-                $files = is_array($files) ? $files : [$memo->file_name];
+                $borderHex = match($memo->color) {
+                    'green' => '#22c55e',
+                    'yellow' => '#facc15',
+                    'red' => '#ef4444',
+                    default => '#d1d5db',
+                };
             @endphp
 
-            <div class="flex flex-wrap gap-2 z-10 relative">
-                @foreach ($files as $file)
-                    @php
-                        $ext = pathinfo($file, PATHINFO_EXTENSION);
-                        $icon = match(strtolower($ext)) {
-                            'pdf' => 'mdi:file-pdf-box',
-                            'doc', 'docx' => 'mdi:file-word-box',
-                            'xls', 'xlsx' => 'mdi:file-excel-box',
-                            'jpg', 'jpeg', 'png' => 'mdi:file-image',
-                            default => 'mdi:file-document-outline',
-                        };
+            <div onclick="handleRowClick(event, '{{ route('chair.memo.show', $memo->id) }}', {{ $memo->id }})"
+                class="chair-tile-memo p-4 border rounded-lg shadow cursor-pointer transition relative group overflow-hidden"
+                data-memo-id="{{ $memo->id }}"
+                style="border: 2px solid {{ $borderHex }};"
+            >
+                {{-- Title --}}
+                <h2 class="text-lg font-semibold mb-2 text-gray-800">{{ $memo->title }}</h2>
 
-                        $iconColor = match(strtolower($ext)) {
-                            'pdf' => '#DC2626',
-                            'doc', 'docx' => '#1D4ED8',
-                            'xls', 'xlsx' => '#15803D',
-                            'jpg', 'jpeg', 'png' => '#CA8A04',
-                            default => '#2563EB',
-                        };
-                    @endphp
+                {{-- Description --}}
+                <p class="text-gray-600 mb-2">{{ Str::limit($memo->description, 100) }}</p>
 
-                    <a href="{{ route('dean.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
-                    onclick="event.stopPropagation()"
-                    class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
-                    style="border-color: #B3D4FC;"
-                    title="Download {{ $file }}">
-                        <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
-                        <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
-                            {{ Str::limit($file, 20) }}
-                        </span>
-                    </a>
-                @endforeach
+                {{-- Date --}}
+                <div class="text-sm text-gray-500 mb-3">
+                    {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
+                </div>
+
+                {{-- Files --}}
+                @php
+                    $files = json_decode($memo->file_name, true);
+                    $files = is_array($files) ? $files : [$memo->file_name];
+                @endphp
+
+                <div class="flex flex-wrap gap-2 z-10 relative">
+                    @foreach ($files as $file)
+                        @php
+                            $ext = pathinfo($file, PATHINFO_EXTENSION);
+                            $icon = match(strtolower($ext)) {
+                                'pdf' => 'mdi:file-pdf-box',
+                                'doc', 'docx' => 'mdi:file-word-box',
+                                'xls', 'xlsx' => 'mdi:file-excel-box',
+                                'jpg', 'jpeg', 'png' => 'mdi:file-image',
+                                default => 'mdi:file-document-outline',
+                            };
+
+                            $iconColor = match(strtolower($ext)) {
+                                'pdf' => '#DC2626',
+                                'doc', 'docx' => '#1D4ED8',
+                                'xls', 'xlsx' => '#15803D',
+                                'jpg', 'jpeg', 'png' => '#CA8A04',
+                                default => '#2563EB',
+                            };
+                        @endphp
+
+                        <a href="{{ route('dean.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
+                            onclick="event.stopPropagation()"
+                            class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
+                            style="border-color: #B3D4FC;"
+                            title="Download {{ $file }}">
+                            <iconify-icon icon="{{ $icon }}" width="20" height="20" style="color: {{ $iconColor }}"></iconify-icon>
+                            <span class="text-sm font-medium text-[#1E3A8A] truncate max-w-[120px]">
+                                {{ Str::limit($file, 20) }}
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
-        </div>
         @empty
-        <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
+            <p class="text-center py-6 text-gray-500 col-span-full">No memos available at the moment.</p>
         @endforelse
     </div>
 
 <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 
 <script>
-    function handleRowClick(event, url) {
-        // If the clicked element or its parent has a "stop-row-click" class, don't redirect
+    function handleRowClick(event, url, id) {
         if (event.target.closest('.stop-row-click')) return;
+
+        // Save memo as read
+        const readMemos = JSON.parse(localStorage.getItem("chairReadMemos") || "[]");
+        if (!readMemos.includes(String(id))) {
+            readMemos.push(String(id));
+            localStorage.setItem("chairReadMemos", JSON.stringify(readMemos));
+        }
+
         window.location = url;
+    }
+</script>
+
+<script>
+    // Highlight read memos on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        const readMemos = JSON.parse(localStorage.getItem("chairReadMemos") || "[]");
+
+        // Table rows
+        document.querySelectorAll(".chair-memo-row").forEach(row => {
+            const memoId = row.dataset.memoId;
+            if (readMemos.includes(memoId)) {
+                row.style.backgroundColor = "#ffffff"; // white
+            } else {
+                row.style.backgroundColor = "#e5e7eb"; // light gray
+            }
+        });
+
+        // Tile view
+        document.querySelectorAll(".chair-tile-memo").forEach(tile => {
+            const memoId = tile.dataset.memoId;
+            if (readMemos.includes(memoId)) {
+                tile.style.backgroundColor = "#ffffff";
+            } else {
+                tile.style.backgroundColor = "#e5e7eb";
+            }
+        });
+    });
+
+    // When clicking a row or tile, mark it as read
+    function handleRowClick(event, url, id) {
+        const readMemos = JSON.parse(localStorage.getItem("chairReadMemos") || "[]");
+        if (!readMemos.includes(String(id))) {
+            readMemos.push(String(id));
+            localStorage.setItem("chairReadMemos", JSON.stringify(readMemos));
+        }
+        window.location.href = url;
     }
 </script>
 

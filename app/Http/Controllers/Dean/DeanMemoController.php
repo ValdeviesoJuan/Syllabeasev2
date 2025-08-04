@@ -41,6 +41,7 @@ class DeanMemoController extends Controller
             'emails' => 'required|array',
             'emails.*' => 'email',
             'from' => 'required|email', // ✅ ensure uploader email is captured
+            'color' => 'required|in:green,yellow,red',
         ]);
 
         $fileNames = [];
@@ -62,6 +63,7 @@ class DeanMemoController extends Controller
             'file_name' => json_encode($fileNames),
             'date' => $validated['date'] ?? null,
             'user_id' => $uploader ? $uploader->id : null, // fallback null if not found
+            'color' => $validated['color'],
         ]);
 
         foreach ($validated['emails'] as $email) {
