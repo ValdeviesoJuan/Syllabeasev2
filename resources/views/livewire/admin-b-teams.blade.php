@@ -52,25 +52,22 @@
     <table class=" w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="rounded text-xs text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-                <th scope="col" class="bg-blue5 rounded-tl-lg px-6 py-3">
-                    Course Code
-                </th>
-                <th scope="col" class="bg-blue5 px-6 py-3">
+                <th scope="col" class="bg-blue5 rounded-tl-lg px-4 py-3">
                     Course Title
                 </th>
-                <th scope="col" class="bg-blue5 px-6 py-3">
+                <th scope="col" class="bg-blue5 px-4 py-3">
                     School Year
                 </th>
-                <th scope="col" class="bg-blue5 px-6 py-3">
+                <th scope="col" class="bg-blue5 px-4 py-3">
                     Semester
                 </th>
-                <th scope="col" class="bg-blue5 px-6 py-3">
+                <th scope="col" class="bg-blue5 px-4 py-3">
                     Leader/s
                 </th>
-                <th scope="col" class="bg-blue5 px-6 py-3">
+                <th scope="col" class="bg-blue5 px-4 py-3">
                     Member/s
                 </th>
-                <th scope="col" class="bg-blue5 rounded-tr-lg px-6 py-3">
+                <th scope="col" class="bg-blue5 rounded-tr-lg px-4 py-3">
                     Action
                 </th>
             </tr>
@@ -78,31 +75,26 @@
         <tbody>
             @foreach ($bgroups as $bgroup)
             <tr class="{{ $loop->iteration % 2 == 0 ? 'bg-white' : 'bg-[#e9edf7]' }} bg-white border- dark:bg-gray-800 dark:border-gray-700 hover:bg-gray4 dark:hover:bg-gray-600">
-                <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {{ $bgroup->course_code }}
+                <td scope="row" class="px-4 py-4 font-medium text-[#111827] whitespace-nowrap dark:text-white">
+                    {{ $bgroup->course_code . ' - ' . $bgroup->course_title }}
                 </td>
-                <td class="px-6 py-4">
-                    {{ $bgroup->course_title }}
-                </td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-4 font-medium">
                     {{ $bgroup->bg_school_year }}
                 </td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-4 font-medium">
                     {{$bgroup->course_semester}}
                 </td>
-                <td class="px-6 py-4">
-                    @forelse ($bleaders[$bgroup->bg_id] ?? [] as $leader)
-                    <p>{{ $leader->lastname }}, {{ $leader->firstname }}</p>
-                    @empty
-                    @endforelse
+                <td class="px-4 py-4">
+                    @foreach ($bleaders[$bgroup->bg_id] ?? [] as $leader)
+                        <p>{{ $leader->lastname }}, {{ $leader->firstname }}</p>
+                    @endforeach
                 </td>
-                <td class="px-6 py-4">
-                    @forelse ($bmembers[$bgroup->bg_id] ?? [] as $member)
-                    <p>{{ $member->lastname }}, {{ $member->firstname }}</p>
-                    @empty
-                    @endforelse
+                <td class="px-4 py-4">
+                    @foreach ($bmembers[$bgroup->bg_id] ?? [] as $member)
+                        <p>{{ $member->lastname }}, {{ $member->firstname }}</p>
+                    @endforeach
                 </td>
-                <td class="px-6 py-4 flex">
+                <td class="px-4 py-4 flex">
                     <form action="{{ route('admin.editBTeam', $bgroup->bg_id) }}" method="GET">
                         @csrf
                         <button type="submit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1 text-green">

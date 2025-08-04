@@ -222,7 +222,19 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">TOS</span>
                     </a>
                 </li>
-                            
+                
+                <li>
+                    <a href="{{ route('admin.memo') }}" class="{{request()->route()->getName() == 'admin.memo' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
+                        <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4C4 2.895 4.895 2 6 2H14L20 8V20C20 21.105 19.105 22 18 22H6C4.895 22 4 21.105 4 20V4Z" stroke="white" stroke-width="2" fill="none"/>
+                            <path d="M14 2V8H20" stroke="white" stroke-width="2" fill="none"/>
+                        </svg>
+                        <span class="ms-3">Memo</span>
+                    </a>
+                </li>
+
+                <ul class=" space-y-2 border-t border-white dark:border-gray-700"></ul>
+
                 <li>
                     <a href="{{ route('admin.bayanihan') }}" class="{{request()->route()->getName() == 'admin.bayanihan' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -307,55 +319,8 @@
                         <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
                     </a>
                 </li>
+            </ul>
 
-                <ul class="pt-4 mt-4 space-y-2 font- border-t border-white dark:border-gray-700"></ul>
-              
-                <li>
-                    <a href="{{ route('admin.memo') }}" class="{{request()->route()->getName() == 'admin.memo' ? 'bg-blue4' : ''}} flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-blue4 dark:hover:bg-gray-700 group">
-                        <svg class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 4C4 2.895 4.895 2 6 2H14L20 8V20C20 21.105 19.105 22 18 22H6C4.895 22 4 21.105 4 20V4Z" stroke="white" stroke-width="2" fill="none"/>
-                            <path d="M14 2V8H20" stroke="white" stroke-width="2" fill="none"/>
-                        </svg>
-                        <span class="ms-3">Memo</span>
-                    </a>
-                </li>
-            <!-- <div class="absolute bottom-0 flex w-[225px] px-3 mb-5 justify-between items-center p-2 text-white rounded-lg dark:text-white bg-blue4 dark:hover:bg-gray-700 group">
-                <div class="w-8 h-8 bg-yellow border rounded-full text-white text-sm flex justify-center items-center">
-                    {{ Str::upper(substr(Auth::user()->firstname, 0, 1)) . Str::upper(substr(Auth::user()->lastname, 0, 1)) }}
-                </div>
-                <div class="ml-2">
-                    <div class="font-semibold text-sm">
-                        {{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
-
-                    </div>
-                    <div class="opacity-50 text-xs">
-                        {{ Auth::user()->email }}
-
-                    </div>
-                </div>
-                <div class="ml-auto">
-                    <button type="button" data-collapse-toggle="dropdown-profile">
-                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="6" r="2" transform="rotate(90 12 6)" fill="#ffffff" />
-                            <circle cx="12" cy="12" r="2" transform="rotate(90 12 12)" fill="#ffffff" />
-                            <path d="M12 20C10.8954 20 10 19.1046 10 18C10 16.8954 10.8954 16 12 16C13.1046 16 14 16.8954 14 18C14 19.1046 13.1046 20 12 20Z" fill="#ffffff" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="absolute z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-profile">
-                <div class="px-4 py-3" role="none">
-                    <p class="text-sm text-gray-900 dark:text-white font-semibold" role="none">
-                        Profile
-                    </p>
-                </div>
-                <ul class="py-1" role="none">
-                    <li>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
-                            Sign Out
-                        </a>
-                    </li>
-            </div> -->
             <div class="right-2 bottom-[60px] absolute hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-profile">
                 <div class="px-4 py-2" role="none">
                     <a class="text-sm text-gray-900 dark:text-white hover:text-yellow" href="{{ route('profile.edit') }}">My Profile</a>

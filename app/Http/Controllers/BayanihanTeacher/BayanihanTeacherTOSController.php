@@ -80,6 +80,7 @@ class BayanihanTeacherTOSController extends Controller
             ->join('users', 'users.id', '=', 'user_roles.user_id')
             ->where('user_roles.entity_type', 'Department')
             ->where('user_roles.role_id', $chairRoleId)
+            ->select('users.*', 'tos.*')
             ->first();
             
         return view('BayanihanTeacher.Tos.tosComment', compact('chair','tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
