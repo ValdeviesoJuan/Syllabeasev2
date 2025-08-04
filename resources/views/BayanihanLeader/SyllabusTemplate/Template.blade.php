@@ -311,8 +311,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       move(event) {
         if (!dragClone) return;
-        const x = event.client.x - dragClone.offsetWidth / 2;
-        const y = event.client.y - dragClone.offsetHeight / 2;
+        const dropRect = dropZone.getBoundingClientRect();
+
+        let x = event.client.x - dragClone.offsetWidth / 2;
+        let y = event.client.y - dragClone.offsetHeight / 2;
+
+        // Clamp to container
+        x = Math.max(dropRect.left, Math.min(x, dropRect.right - dragClone.offsetWidth));
+        y = Math.max(dropRect.top, Math.min(y, dropRect.bottom - dragClone.offsetHeight));
 
         if (!isFromDropZone) {
           dragClone.style.left = `${x}px`;
@@ -367,7 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
           dragClone.style.gridColumn = `${col} / span 1`;
           dragClone.style.gridRow = `${row} / span 1`;
         } else if (!isFromDropZone) {
-          dragClone.remove(); // Cancel drop if outside and not from container
+          dragClone.remove();
         }
 
         dragClone = null;
@@ -383,50 +389,59 @@ interact('#drop-zone .section').resizable({
   listeners: {
     move(event) {
       const target = event.target;
-
-      // Get current size from style or fallback to offset
-      let width = parseFloat(target.style.width) || target.offsetWidth;
-      let height = parseFloat(target.style.height) || target.offsetHeight;
-
-      // Add deltas from resize movement
-      let newWidth = width + event.deltaRect.width;
-      let newHeight = height + event.deltaRect.height;
-
-      // Snap to nearest 25px
-      newWidth = Math.round(newWidth / 20) * 20;
-      newHeight = Math.round(newHeight / 20) * 20;
-
-      // Get container bounds
       const dropZone = document.getElementById('drop-zone');
       const dzRect = dropZone.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
 
-      // Compute max size based on current position
-      const maxWidth = dzRect.right - targetRect.left;
-      const maxHeight = dzRect.bottom - targetRect.top;
+      // 1. Compute new size clamped to container
+      let w = parseFloat(target.style.width) || target.offsetWidth;
+      let h = parseFloat(target.style.height) || target.offsetHeight;
+      let newW = Math.round((w + event.deltaRect.width) / 20) * 20;
+      let newH = Math.round((h + event.deltaRect.height) / 20) * 20;
 
-      // Clamp to container limits
-      newWidth = Math.max(50, Math.min(newWidth, maxWidth));
-      newHeight = Math.max(50, Math.min(newHeight, maxHeight));
+      newW = Math.max(50, Math.min(newW, dzRect.right - targetRect.left));
+      newH = Math.max(50, Math.min(newH, dzRect.bottom - targetRect.top));
+      target.style.width = newW + 'px';
+      target.style.height = newH + 'px';
 
-      // Apply style updates
-      target.style.width = `${newWidth}px`;
-      target.style.height = `${newHeight}px`;
+      const tRect = target.getBoundingClientRect();
+      const sections = [...dropZone.querySelectorAll('.section')].filter(s => s !== target);
+
+      // 2. For each overlapping neighbor, attempt to push, respecting container
+      sections.forEach(section => {
+        const sRect = section.getBoundingClientRect();
+        const overlapX = tRect.left < sRect.right && tRect.right > sRect.left;
+        const overlapY = tRect.top < sRect.bottom && tRect.bottom > sRect.top;
+        if (overlapX && overlapY) {
+          const sTop = parseFloat(section.style.top) || section.offsetTop;
+          const sLeft = parseFloat(section.style.left) || section.offsetLeft;
+
+          const shiftY = (tRect.bottom - sRect.top) + 10;
+          const maxShiftY = dzRect.bottom - sRect.bottom;
+          if (shiftY <= maxShiftY) {
+            section.style.top = (sTop + shiftY) + 'px';
+          } else {
+            // Shrink height instead
+            section.style.height = Math.max(50, sRect.height - (shiftY - maxShiftY)) + 'px';
+          }
+
+          const shiftX = (tRect.right - sRect.left) + 10;
+          const maxShiftX = dzRect.right - sRect.right;
+          if (shiftX <= maxShiftX) {
+            section.style.left = (sLeft + shiftX) + 'px';
+          } else {
+            section.style.width = Math.max(50, sRect.width - (shiftX - maxShiftX)) + 'px';
+          }
+        }
+      });
     }
   },
   modifiers: [
-    interact.modifiers.restrictEdges({
-      outer: 'parent',
-    }),
-    interact.modifiers.restrictSize({
-      min: { width: 50, height: 50 },
-      max: { width: 1024, height: 768 },
-    }),
+    interact.modifiers.restrictEdges({ outer: 'parent' }),
+    interact.modifiers.restrictSize({ min: { width: 50, height: 50 }, max: { width: 1024, height: 768 } })
   ],
   inertia: true
 });
-
-
 </script>
 
 
