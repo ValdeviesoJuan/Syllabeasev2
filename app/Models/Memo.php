@@ -14,9 +14,17 @@ class Memo extends Model
         'description',
         'file_name',
         'date',
+        'user_id',
+        'color',
     ];
 
     protected $casts = [
         'date' => 'date',
     ];
+
+    // ✅ Relationship: Memo belongs to a User (uploader)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

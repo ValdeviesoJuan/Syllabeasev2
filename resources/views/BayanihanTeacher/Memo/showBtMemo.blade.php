@@ -2,13 +2,46 @@
 
 @section('content')
 <div class="mt-16 max-w-4xl mx-auto bg-white p-6 shadow rounded-lg dark:bg-gray-800">
+    <style>
+        .bg svg {
+            transform: scaleY(-1);
+            min-width: 1880px;
+        }
+
+        body {
+            background-image: url("{{ asset('assets/Wave.png') }}");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+    </style>
 
     {{-- Header --}}
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ $memo->title }}</h1>
+        <h1 
+            class="text-2xl font-bold break-words" 
+            style="
+                color: 
+                @if($memo->color === 'green') #22c55e;    /* Tailwind green-500 */
+                @elseif($memo->color === 'yellow') #eab308;  /* Tailwind yellow-500 */
+                @elseif($memo->color === 'red') #dc2626;    /* Tailwind red-600 */
+                @else #1f2937;    /* Tailwind gray-800 fallback */
+                @endif
+            "
+            title="{{ $memo->title }}"
+        >
+            {{ $memo->title }}
+        </h1>
         <p class="text-sm text-gray-500 dark:text-gray-300">
             {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
         </p>
+        @if($memo->user)
+            <p class="text-sm text-gray-500 dark:text-gray-300">
+                Uploaded by: <span class="font-medium">{{ $memo->user->firstname }} {{ $memo->user->lastname }}</span>
+                ({{ $memo->user->email }})
+            </p>
+        @endif
     </div>
 
     <hr class="mb-6">

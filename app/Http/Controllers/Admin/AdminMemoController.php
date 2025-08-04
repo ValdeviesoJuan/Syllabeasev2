@@ -27,7 +27,7 @@ class AdminMemoController extends Controller
     }
     public function show($id)
     {
-        $memo = Memo::findOrFail($id);
+        $memo = Memo::with('user')->findOrFail($id); // eager load uploader info
         return view('admin.memo.showMemo', compact('memo'));
     }
     public function store(Request $request)
@@ -38,7 +38,9 @@ class AdminMemoController extends Controller
             'files.*' => 'required|file|mimes:pdf',
             'date' => 'nullable|date',
             'emails' => 'required|array',
-            'emails.*' => 'email'
+            'emails.*' => 'email',
+            'from' => 'required|email',
+            'color' => 'required|in:green,yellow,red',
         ]);
 
         $fileNames = [];
@@ -51,12 +53,17 @@ class AdminMemoController extends Controller
             }
         }
 
+        $fromUser = User::where('email', $validated['from'])->firstOrFail();
+
         $memo = Memo::create([
+            'user_id' => $fromUser->id,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'file_name' => json_encode($fileNames),
             'date' => $validated['date'],
+            'color' => $validated['color'],
         ]);
+
 
         foreach ($validated['emails'] as $email) {
             Mail::to($email)->send(new \App\Mail\MemoNotification($memo));
@@ -89,12 +96,19 @@ class AdminMemoController extends Controller
             'description' => 'required',
             'date' => 'required|date',
             'files.*' => 'nullable|mimes:pdf|max:2048',
+            'from' => 'required|email', // 🆕
         ]);
 
         $memo = Memo::findOrFail($id);
         $memo->title = $request->title;
         $memo->description = $request->description;
         $memo->date = $request->date;
+
+        // 🆕 Update uploader
+        $fromUser = User::where('email', $request->from)->first();
+        if ($fromUser) {
+            $memo->user_id = $fromUser->id;
+        }
 
         $fileNames = $memo->file_name ? json_decode($memo->file_name, true) : [];
 

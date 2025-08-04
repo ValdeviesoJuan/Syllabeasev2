@@ -83,54 +83,70 @@
             </thead>
             <tbody class="text-sm text-gray-700">
                 @forelse($memos as $memo)
-                <tr onclick="handleRowClick(event, '{{ route('dean.showMemo', $memo->id) }}')"
-                    class="bg-white rounded shadow-sm cursor-pointer transition"
-                    style="transition: background-color 0.2s ease;"
-                    onmouseover="this.style.backgroundColor='#e6f0ff';"
-                    onmouseout="this.style.backgroundColor='white';"
-                >
-                    <td class="px-2 py-2 w-[15%]">{{ $memo->title }}</td>
-                    <td class="px-2 py-2 w-[55%]">{{ Str::limit($memo->description, 80) }}</td>
-                    <td class="px-2 py-2 w-[15%]">{{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}</td>
-                    <td class="px-2 py-2 w-[10%]">
-                        <div class="flex flex-wrap gap-2">
-                            @php
-                                $files = json_decode($memo->file_name, true);
-                                $files = is_array($files) ? $files : [$memo->file_name];
-                            @endphp
+                    @php
+                        $borderHex = match($memo->color) {
+                            'green' => '#22c55e',
+                            'yellow' => '#facc15',
+                            'red' => '#ef4444',
+                            default => '#d1d5db',
+                        };
+                    @endphp
 
-                            {{-- Edit --}}
-                            <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
-                                title="Edit"
-                                class="stop-row-click border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
-                                style="color: #28a745;"
-                                onmouseover="this.style.backgroundColor='#d4edda';"
-                                onmouseout="this.style.backgroundColor='transparent';"
+                    <tr>
+                        <td colspan="4" class="p-0">
+                            <div onclick="handleDeanRowClick(event, '{{ route('dean.showMemo', $memo->id) }}', {{ $memo->id }})"
+                                class="dean-memo-row grid grid-cols-4 items-center bg-[#e5e7eb] rounded shadow-sm cursor-pointer transition px-2 py-2"
+                                data-memo-id="{{ $memo->id }}"
+                                style="border: 2px solid {{ $borderHex }}; transition: background-color 0.2s ease;"
+                                onmouseover="this.style.backgroundColor='#e6f0ff';"
+                                onmouseout="this.style.backgroundColor='#e5e7eb';"
                             >
-                                <iconify-icon icon="mdi:pencil" width="18" height="18" style="color: #28a745;"></iconify-icon>
-                            </button>
+                                <div class="truncate font-medium pr-2">{{ $memo->title }}</div>
+                                <div class="truncate px-2">{{ Str::limit($memo->description, 80) }}</div>
+                                <div class="text-sm text-gray-600 pr-2">
+                                    {{ \Carbon\Carbon::parse($memo->date)->format('F d, Y') }}
+                                </div>
+                                <div class="flex justify-end gap-2 stop-row-click">
+                                    {{-- Edit --}}
+                                    <button
+                                        onclick="openEditMemoModal(
+                                            {{ $memo->id }},
+                                            `{{ addslashes($memo->title) }}`,
+                                            `{{ addslashes($memo->description) }}`,
+                                            '{{ $memo->date ? $memo->date->format('Y-m-d') : '' }}',
+                                            '{{ $memo->from }}'
+                                        )"
+                                        title="Edit"
+                                        class="border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
+                                        style="color: #28a745;"
+                                        onmouseover="this.style.backgroundColor='#d4edda';"
+                                        onmouseout="this.style.backgroundColor='transparent';"
+                                    >
+                                        <iconify-icon icon="mdi:pencil" width="18" height="18" style="color: #28a745;"></iconify-icon>
+                                    </button>
 
-                            {{-- Delete --}}
-                            <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure?')" class="inline stop-row-click">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" title="Delete"
-                                    class="border-[2px] border-[#dc3545] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
-                                    style="color: #dc3545;"
-                                    onmouseover="this.style.backgroundColor='#f8d7da';"
-                                    onmouseout="this.style.backgroundColor='transparent';"
-                                >
-                                    <iconify-icon icon="mdi:trash-can" width="18" height="18" style="color: #dc3545;"></iconify-icon>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                                    {{-- Delete --}}
+                                    <form action="{{ route('dean.memo.destroy', $memo->id) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure?')" class="inline stop-row-click">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" title="Delete"
+                                            class="border-[2px] border-[#dc3545] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
+                                            style="color: #dc3545;"
+                                            onmouseover="this.style.backgroundColor='#f8d7da';"
+                                            onmouseout="this.style.backgroundColor='transparent';"
+                                        >
+                                            <iconify-icon icon="mdi:trash-can" width="18" height="18" style="color: #dc3545;"></iconify-icon>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="4" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
-                </tr>
+                    <tr>
+                        <td colspan="4" class="text-center py-6 text-gray-500">No memos available at the moment.</td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -139,8 +155,20 @@
     {{-- Tile View --}}
     <div id="tileView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse($memos as $memo)
-        <div onclick="window.location.href='{{ route('dean.showMemo', $memo->id) }}'"
-            class="p-4 border rounded-lg shadow bg-white cursor-pointer hover:bg-gray-100 transition relative group overflow-hidden">
+        @php
+            $borderHex = match($memo->color) {
+                'green' => '#22c55e',   // Green
+                'yellow' => '#facc15',  // Yellow
+                'red' => '#ef4444',     // Red
+                default => '#d1d5db',   // Gray
+            };
+        @endphp
+
+       <div onclick="handleDeanTileClick(event, '{{ route('dean.showMemo', $memo->id) }}', {{ $memo->id }})"
+            class="dean-tile-memo p-4 rounded-lg shadow cursor-pointer transition relative group overflow-hidden"
+            data-memo-id="{{ $memo->id }}"
+            style="background-color: #e5e7eb; border: 2px solid {{ $borderHex }};"
+        >
 
             {{-- Title --}}
             <h2 class="text-lg font-semibold mb-2 text-gray-800 truncate" title="{{ $memo->title }}">
@@ -184,7 +212,7 @@
                         };
                     @endphp
 
-                    <a href="{{ route('dean.memo.download', ['id' => $memo->id, 'filename' => $file]) }}"
+                    <a href="{{ route('dean.downloadMemo', ['id' => $memo->id, 'filename' => $file]) }}"
                         onclick="event.stopPropagation()"
                         class="flex items-center gap-2 px-3 py-2 border rounded-lg shadow-md bg-[#E8F1FF] hover:shadow-lg transition"
                         style="border-color: #B3D4FC;"
@@ -244,6 +272,21 @@
                     <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload Files (PDF only)</label>
                     <input type="file" name="files[]" accept="application/pdf" multiple
                         class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                </div>
+
+                <!-- From -->
+                <div class="mb-4">
+                    <label for="from" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                    <select name="from" id="from"
+                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white">
+                        <option></option> <!-- Empty for placeholder -->
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-sm text-[#6B7280] mt-1">You can select or type the uploader's email.</p>
                 </div>
 
                 <!-- Emails -->
@@ -313,6 +356,20 @@
                         class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
                 </div>
 
+                <!-- From -->
+                <div class="mb-4">
+                    <label for="editFrom" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                    <select name="from" id="editFrom"
+                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white">
+                        <option disabled selected hidden value="">Select uploader</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <!-- File Upload -->
                 <div class="mb-4">
                     <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
@@ -338,11 +395,65 @@
 <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 
 <script>
-    function handleRowClick(event, url) {
-        // If the clicked element or its parent has a "stop-row-click" class, don't redirect
+    function handleDeanRowClick(event, url, memoId) {
         if (event.target.closest('.stop-row-click')) return;
+
+        const readDeanMemos = JSON.parse(localStorage.getItem('readDeanMemos')) || [];
+
+        if (!readDeanMemos.includes(memoId)) {
+            readDeanMemos.push(memoId);
+            localStorage.setItem('readDeanMemos', JSON.stringify(readDeanMemos));
+        }
+
         window.location = url;
     }
+
+    function handleDeanTileClick(event, url, memoId) {
+        const readDeanMemos = JSON.parse(localStorage.getItem('readDeanMemos')) || [];
+
+        if (!readDeanMemos.includes(memoId)) {
+            readDeanMemos.push(memoId);
+            localStorage.setItem('readDeanMemos', JSON.stringify(readDeanMemos));
+        }
+
+        window.location = url;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const readDeanMemos = JSON.parse(localStorage.getItem('readDeanMemos')) || [];
+
+        // Table rows
+        document.querySelectorAll('.dean-memo-row').forEach(row => {
+            const memoId = parseInt(row.dataset.memoId);
+            const isRead = readDeanMemos.includes(memoId);
+
+            row.style.backgroundColor = isRead ? '#ffffff' : '#e5e7eb';
+
+            row.addEventListener('mouseover', () => {
+                if (!isRead) row.style.backgroundColor = '#e6f0ff';
+            });
+
+            row.addEventListener('mouseout', () => {
+                row.style.backgroundColor = readDeanMemos.includes(memoId) ? '#ffffff' : '#e5e7eb';
+            });
+        });
+
+        // Tile cards
+        document.querySelectorAll('.dean-tile-memo').forEach(tile => {
+            const memoId = parseInt(tile.dataset.memoId);
+            const isRead = readDeanMemos.includes(memoId);
+
+            tile.style.backgroundColor = isRead ? '#ffffff' : '#e5e7eb';
+
+            tile.addEventListener('mouseover', () => {
+                if (!isRead) tile.style.backgroundColor = '#e6f0ff';
+            });
+
+            tile.addEventListener('mouseout', () => {
+                tile.style.backgroundColor = readDeanMemos.includes(memoId) ? '#ffffff' : '#e5e7eb';
+            });
+        });
+    });
 </script>
 
 <script>
@@ -375,11 +486,12 @@
 <!-- Existing modal & edit modal scripts (unchanged) -->
 <script>
     $(document).ready(function() {
-        $('#emails').select2({
+        $('#from, #emails').select2({
             tags: true,
             tokenSeparators: [',', ' '],
-            placeholder: "Select or type email(s)",
-            width: '100%'
+            placeholder: "Select or type email",
+            width: '100%',
+            allowClear: true
         });
     });
 
@@ -388,6 +500,7 @@
         const form = modal.querySelector('form');
         form.reset();
         $('#emails').val(null).trigger('change');
+        $('#from').val(null).trigger('change'); // 👈 Clear From
         modal.classList.remove('hidden');
     }
 
@@ -396,26 +509,33 @@
         const form = modal.querySelector('form');
         form.reset();
         $('#emails').val(null).trigger('change');
+        $('#from').val(null).trigger('change'); // 👈 Clear From
         modal.classList.add('hidden');
     }
 
-    function openEditMemoModal(id, title, description) {
-        const modal = document.getElementById('editMemoModal');
-        const titleInput = document.getElementById('editMemoTitle');
-        const descInput = document.getElementById('editMemoDescription');
-        const form = document.getElementById('editMemoForm');
+    function openEditMemoModal(id, title, description, date, from = null) {
+    const modal = document.getElementById('editMemoModal');
+    const titleInput = document.getElementById('editMemoTitle');
+    const descInput = document.getElementById('editMemoDescription');
+    const dateInput = document.getElementById('editMemoDate');
+    const fromSelect = $('#editFrom');
+    const form = document.getElementById('editMemoForm');
 
-        if (!modal || !titleInput || !descInput || !form) {
-            console.error('One or more elements not found');
-            return;
-        }
-
-        modal.classList.remove('hidden');
-        titleInput.value = title;
-        descInput.value = description;
-
-        const actionTemplate = form.getAttribute('data-action-template');
-        form.action = actionTemplate.replace('__ID__', id);
+    if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect) {
+        console.error('Missing form elements');
+        return;
     }
+
+    titleInput.value = title;
+    descInput.value = description;
+    dateInput.value = date;
+
+    fromSelect.val(from).trigger('change'); // 👈 pre-select uploader
+
+    const actionTemplate = form.getAttribute('data-action-template');
+    form.action = actionTemplate.replace('__ID__', id);
+
+    modal.classList.remove('hidden');
+}
 </script>
 @endsection

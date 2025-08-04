@@ -13,11 +13,16 @@ return new class extends Migration
     {
         Schema::create('memos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id'); // 👈 uploader (from)
             $table->text('title');
-            $table->text('description')->nullable(); // already correct
-            $table->text('file_name'); // ✅ changed from string to text
-            $table->date('date')->nullable(); // optional: for display
+            $table->text('description')->nullable();
+            $table->text('file_name');
+            $table->date('date')->nullable();
+            $table->string('color')->nullable();
             $table->timestamps();
+
+            // Foreign key constraint
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
