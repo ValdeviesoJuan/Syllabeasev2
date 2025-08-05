@@ -1,5 +1,3 @@
-Latest base v2
-
 
 @extends('layouts.blNav')
 
@@ -47,6 +45,7 @@ Latest base v2
             resize: none; /* interactJS handles resizing */
             z-index: 1;
             user-select: none;
+            font-family: 'Times New Roman', Times, serif;
         }
 
         /* Interact.js resize handles */
@@ -143,6 +142,7 @@ Latest base v2
             width: 1024px;
             height: 768px;
             position: relative;
+            overflow: hidden;
         }
         #hover-highlight {
             position: absolute;
@@ -152,10 +152,24 @@ Latest base v2
             z-index: 100;
             display: none;
         }
+        #swap-highlight {
+            position: absolute;
+            border: 2px solid #22c55e; /* solid green */
+            background: rgba(34, 197, 94, 0.15); /* light green */
+            z-index: 101;
+            pointer-events: none;
+            display: none;
+        }
 
+        .section.swap-hover {
+            background-color: rgba(59, 130, 246, 0.25); /* Tailwind blue-500 with opacity */
+            transition: background 0.15s;
+        }
 
-
-
+        .section.selected {
+            box-shadow: 0 0 0 3px #2563eb; /* blue outline */
+            z-index: 10;
+        }
     
     </style>
 </head>
@@ -180,7 +194,7 @@ Latest base v2
     <div class="flex items-start px-4 py-6 gap-4 bg-gray-100">
         
             <!-- Sidebar (Selection) -->
-            <div class="w-[350px] h-[898px] overflow-y-auto border-2 border-blue-500 p-4 bg-white space-y-4">
+            <div class="w-[350px] h-[898px] overflow-y-auto border-2 border-yellow p-4 bg-[#6495ED] space-y-4 br-2 rounded-lg">
 
                 <!-- Clone of all sections for selection (no functional logic yet) -->
                 <div class="section draggable" id="college-name">
@@ -264,8 +278,8 @@ Latest base v2
             <div class="flex-1 flex justify-center">
                 <div id="drop-zone" class="grid grid-cols-3 grid-rows-4 gap-0 p-0 border-2 border-gray h-[898px] w-full max-w-[1024px] bg-white shadow-md overflow-y-auto" >
                     <div id="hover-highlight"></div>
-    
-                <!-- Empty for now, drag-and-drop will populate this -->
+                    <div id="swap-highlight" style="display:none; position:absolute; z-index:101; pointer-events:none;"></div>
+                    <!-- Empty for now, drag-and-drop will populate this -->
                 </div>
             </div>
     </div>
@@ -312,11 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
       move(event) {
         if (!dragClone) return;
         const dropRect = dropZone.getBoundingClientRect();
-
         let x = event.client.x - dragClone.offsetWidth / 2;
         let y = event.client.y - dragClone.offsetHeight / 2;
-
-        // Clamp to container
         x = Math.max(dropRect.left, Math.min(x, dropRect.right - dragClone.offsetWidth));
         y = Math.max(dropRect.top, Math.min(y, dropRect.bottom - dragClone.offsetHeight));
 
@@ -336,6 +347,26 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           highlight.style.display = 'none';
         }
+
+        [...dropZone.querySelectorAll('.section.swap-hover')].forEach(s => s.classList.remove('swap-hover'));
+
+        let targetSection = null;
+        [...dropZone.querySelectorAll('.section')].forEach(section => {
+          if (section === dragClone) return;
+          const rect = section.getBoundingClientRect();
+          if (
+            event.client.x >= rect.left &&
+            event.client.x <= rect.right &&
+            event.client.y >= rect.top &&
+            event.client.y <= rect.bottom
+          ) {
+            targetSection = section;
+          }
+        });
+
+        if (targetSection) {
+          targetSection.classList.add('swap-hover');
+        }
       },
 
       end(event) {
@@ -352,26 +383,77 @@ document.addEventListener("DOMContentLoaded", () => {
           centerY <= dropRect.bottom;
 
         highlight.style.display = 'none';
+        [...dropZone.querySelectorAll('.section.swap-hover')].forEach(s => s.classList.remove('swap-hover'));
 
         if (isInside) {
-          if (!isFromDropZone) {
-            dragClone.classList.remove('dragging-clone');
-            dragClone.style.position = '';
-            dragClone.style.pointerEvents = 'auto';
-            dragClone.style.left = '';
-            dragClone.style.top = '';
-            dragClone.style.width = '';
-            dragClone.style.height = '';
-
-            if (!dragClone.classList.contains('section')) {
-              dragClone.classList.add('section');
+          let targetSection = null;
+          [...dropZone.querySelectorAll('.section')].forEach(section => {
+            if (section === dragClone) return;
+            const rect = section.getBoundingClientRect();
+            if (
+              centerX >= rect.left &&
+              centerX <= rect.right &&
+              centerY >= rect.top &&
+              centerY <= rect.bottom
+            ) {
+              targetSection = section;
             }
+          });
 
-            dropZone.appendChild(dragClone);
+          if (targetSection) {
+            const dragGridCol = dragClone.style.gridColumn;
+            const dragGridRow = dragClone.style.gridRow;
+            const dragWidth = dragClone.style.width;
+            const dragHeight = dragClone.style.height;
+
+            const targetGridCol = targetSection.style.gridColumn;
+            const targetGridRow = targetSection.style.gridRow;
+            const targetWidth = targetSection.style.width;
+            const targetHeight = targetSection.style.height;
+
+            dragClone.style.gridColumn = targetGridCol;
+            dragClone.style.gridRow = targetGridRow;
+            dragClone.style.width = targetWidth;
+            dragClone.style.height = targetHeight;
+
+            targetSection.style.gridColumn = dragGridCol || `${col} / span 1`;
+            targetSection.style.gridRow = dragGridRow || `${row} / span 1`;
+            targetSection.style.width = dragWidth || '';
+            targetSection.style.height = dragHeight || '';
+          } else {
+            let cellOccupied = false;
+            [...dropZone.querySelectorAll('.section')].forEach(section => {
+              const style = window.getComputedStyle(section);
+              const sectionCol = parseInt(style.gridColumnStart);
+              const sectionRow = parseInt(style.gridRowStart);
+              if (sectionCol === col && sectionRow === row) {
+                cellOccupied = true;
+              }
+            });
+
+            if (cellOccupied) {
+              if (!isFromDropZone) dragClone.remove();
+            } else {
+              if (!isFromDropZone) {
+                dragClone.classList.remove('dragging-clone');
+                dragClone.style.position = '';
+                dragClone.style.pointerEvents = 'auto';
+                dragClone.style.left = '';
+                dragClone.style.top = '';
+                dragClone.style.width = '';
+                dragClone.style.height = '';
+
+                if (!dragClone.classList.contains('section')) {
+                  dragClone.classList.add('section');
+                }
+
+                dropZone.appendChild(dragClone);
+              }
+
+              dragClone.style.gridColumn = `${col} / span 1`;
+              dragClone.style.gridRow = `${row} / span 1`;
+            }
           }
-
-          dragClone.style.gridColumn = `${col} / span 1`;
-          dragClone.style.gridRow = `${row} / span 1`;
         } else if (!isFromDropZone) {
           dragClone.remove();
         }
@@ -381,6 +463,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+
+  dropZone.addEventListener('click', function(e) {
+    const section = e.target.closest('.section');
+    if (!section) return;
+
+    [...dropZone.querySelectorAll('.section.selected')].forEach(s => s.classList.remove('selected'));
+    section.classList.add('selected');
+  });
 });
 
 // RESIZING LOGIC
@@ -388,26 +478,48 @@ interact('#drop-zone .section').resizable({
   edges: { left: true, right: true, bottom: true, top: true },
   listeners: {
     move(event) {
+      if (!event.target.classList.contains('selected')) return;
+
       const target = event.target;
       const dropZone = document.getElementById('drop-zone');
       const dzRect = dropZone.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
 
-      // 1. Compute new size clamped to container
       let w = parseFloat(target.style.width) || target.offsetWidth;
       let h = parseFloat(target.style.height) || target.offsetHeight;
       let newW = Math.round((w + event.deltaRect.width) / 20) * 20;
       let newH = Math.round((h + event.deltaRect.height) / 20) * 20;
 
-      newW = Math.max(50, Math.min(newW, dzRect.right - targetRect.left));
-      newH = Math.max(50, Math.min(newH, dzRect.bottom - targetRect.top));
+      // ✅ Enforce both left and right boundaries
+      const leftEdge = targetRect.left + event.deltaRect.left;
+      const rightEdge = targetRect.right + event.deltaRect.right;
+
+      if (leftEdge < dzRect.left) {
+        const overflow = dzRect.left - leftEdge;
+        newW -= overflow;
+      }
+
+      if (rightEdge > dzRect.right) {
+        const overflow = rightEdge - dzRect.right;
+        newW -= overflow;
+      }
+
+      // ✅ Enforce bottom boundary
+      const bottomEdge = targetRect.bottom + event.deltaRect.bottom;
+      if (bottomEdge > dzRect.bottom) {
+        const overflow = bottomEdge - dzRect.bottom;
+        newH -= overflow;
+      }
+
+      newW = Math.max(50, newW);
+      newH = Math.max(50, newH);
+
       target.style.width = newW + 'px';
       target.style.height = newH + 'px';
 
       const tRect = target.getBoundingClientRect();
       const sections = [...dropZone.querySelectorAll('.section')].filter(s => s !== target);
 
-      // 2. For each overlapping neighbor, attempt to push, respecting container
       sections.forEach(section => {
         const sRect = section.getBoundingClientRect();
         const overlapX = tRect.left < sRect.right && tRect.right > sRect.left;
@@ -421,7 +533,6 @@ interact('#drop-zone .section').resizable({
           if (shiftY <= maxShiftY) {
             section.style.top = (sTop + shiftY) + 'px';
           } else {
-            // Shrink height instead
             section.style.height = Math.max(50, sRect.height - (shiftY - maxShiftY)) + 'px';
           }
 
@@ -443,6 +554,7 @@ interact('#drop-zone .section').resizable({
   inertia: true
 });
 </script>
+
 
 
 
