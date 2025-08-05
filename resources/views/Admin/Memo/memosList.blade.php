@@ -108,9 +108,11 @@
                                 </div>
                                 <div class="flex justify-end gap-2 stop-row-click">
                                     {{-- Edit --}}
-                                    <button onclick="openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
+                                    <button 
+                                        type="button"
+                                        onclick="event.stopPropagation(); openEditMemoModal({{ $memo->id }}, '{{ $memo->title }}', '{{ $memo->description }}')"
                                         title="Edit"
-                                        class="border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
+                                        class="border-[2px] border-[#28a745] rounded-full px-3 py-2 inline-flex items-center justify-center transition stop-row-click"
                                         style="color: #28a745;"
                                         onmouseover="this.style.backgroundColor='#d4edda';"
                                         onmouseout="this.style.backgroundColor='transparent';"
@@ -124,7 +126,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Delete"
-                                            class="border-[2px] border-[#dc3545] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
+                                            class="stop-row-click border-[2px] border-[#dc3545] rounded-full px-3 py-2 inline-flex items-center justify-center transition"
                                             style="color: #dc3545;"
                                             onmouseover="this.style.backgroundColor='#f8d7da';"
                                             onmouseout="this.style.backgroundColor='transparent';"
@@ -531,23 +533,7 @@
 <!-- Existing modal & edit modal scripts (unchanged) -->
 <script>
     $(document).ready(function () {
-        $('#emails, #editEmails').select2({
-            tags: true,
-            tokenSeparators: [',', ' '],
-            placeholder: "Select or type email(s)",
-            width: '100%'
-        });
-
-        $('#from, #editFrom').select2({
-            tags: true, // ✅ allow typing new email
-            tokenSeparators: [',', ' '],
-            placeholder: "Select or type uploader email",
-            width: '100%' // ✅ match width
-        });
-    });
-
-    $(document).ready(function () {
-        $('#emails, #editEmails').select2({
+        $('#emails, #editEmails, #from, #editFrom').select2({
             tags: true,
             tokenSeparators: [',', ' '],
             placeholder: "Select or type email(s)",
@@ -572,33 +558,31 @@
     }
 
     function openEditMemoModal(id, title, description, date, emails = [], from = '') {
-        const modal = document.getElementById('editMemoModal');
-        const titleInput = document.getElementById('editMemoTitle');
-        const descInput = document.getElementById('editMemoDescription');
-        const dateInput = document.getElementById('editMemoDate');
-        const emailSelect = $('#editEmails');
-        const fromSelect = $('#editFrom'); // 🆕 Select2 for 'From'
-        const form = document.getElementById('editMemoForm');
+    const modal = document.getElementById('editMemoModal');
+    const titleInput = document.getElementById('editMemoTitle');
+    const descInput = document.getElementById('editMemoDescription');
+    const dateInput = document.getElementById('editMemoDate');
+    const emailSelect = $('#editEmails');
+    const fromSelect = $('#from'); // ✅ fix: match ID in the modal
+    const form = document.getElementById('editMemoForm');
 
-        if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect.length) {
-            console.error('One or more elements not found');
-            return;
-        }
-
-        // Populate fields
-        titleInput.value = title;
-        descInput.value = description;
-        dateInput.value = date;
-        emailSelect.val(emails).trigger('change');
-
-        // 🆕 Set the "From" dropdown
-        fromSelect.val(from).trigger('change');
-
-        // Set form action
-        const actionTemplate = form.getAttribute('data-action-template');
-        form.action = actionTemplate.replace('__ID__', id);
-
-        modal.classList.remove('hidden');
+    if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect.length) {
+        console.error('One or more elements not found');
+        return;
     }
+
+    // Populate fields
+    titleInput.value = title;
+    descInput.value = description;
+    dateInput.value = date;
+    emailSelect.val(emails).trigger('change');
+    fromSelect.val(from).trigger('change');
+
+    // Set form action
+    const actionTemplate = form.getAttribute('data-action-template');
+    form.action = actionTemplate.replace('__ID__', id);
+
+    modal.classList.remove('hidden');
+}
 </script>
 @endsection

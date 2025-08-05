@@ -30,16 +30,50 @@
 </head>
 
 <body class="">
-    @if($missingSignature)
-        <div class="absolute z-50 top-10 left-1/2 transform -translate-x-1/2 w-[500px] p-4 rounded-lg shadow-lg border border-[#facc15] bg-[#fefce8] text-[#16a34a] flex justify-between items-center">
-            <div class="text-sm font-semibold">
-                <strong>Missing Signature:</strong> You haven't uploaded your signature yet.
+    @if($missingSignature || (auth()->user() && auth()->user()->unreadNotifications->where('type', \App\Notifications\DeadlineSetNotification::class)->first()))
+        <div class="absolute z-50 top-10 left-1/2 transform -translate-x-1/2 w-[500px] p-4 rounded-lg shadow-lg border border-[#facc15] bg-[#fefce8] text-[#16a34a]">
+            <div class="space-y-3 text-sm font-semibold">
+                {{-- Missing Signature Message --}}
+                @if($missingSignature)
+                    <div class="flex justify-between items-center">
+                        <span><strong>Missing Signature:</strong> You haven't uploaded your signature yet.</span>
+                        <a href="{{ route('profile.edit') }}" 
+                        class="ml-4 bg-[#facc15] hover:bg-[#eab308] text-white font-semibold py-1 px-4 rounded-lg transition-all">
+                            Go to Profile
+                        </a>
+                    </div>
+                @endif
+
+                {{-- Deadline Notification Message --}}
+                @php
+                    $notif = auth()->user()?->unreadNotifications
+                        ->where('type', \App\Notifications\DeadlineSetNotification::class)
+                        ->first();
+                @endphp
+
+                @if($notif)
+                    <div class="flex justify-between items-center">
+                        <span>
+                            <strong>Notice:</strong> {{ $notif->data['message'] ?? 'You have a new deadline notification.' }}
+                        </span>
+                        <button onclick="dismissNotif('{{ route('notifications.markRead', ['id' => $notif->id]) }}')"
+                            class="ml-4 bg-[#facc15] hover:bg-[#eab308] text-white font-semibold py-1 px-4 rounded-lg transition-all">
+                            Dismiss
+                        </button>
+                    </div>
+                @endif
             </div>
-            <a href="{{ route('profile.edit') }}" 
-            class="ml-4 bg-[#facc15] hover:bg-[#eab308] text-white font-semibold py-1 px-4 rounded-lg transition-all">
-                Go to Profile
-            </a>
         </div>
+
+        <script>
+            function dismissNotif(url) {
+                fetch(url)
+                    .then(() => {
+                        document.querySelector('#floating-alert')?.remove();
+                        location.reload(); // optional: refresh to hide if combined
+                    });
+            }
+        </script>
     @endif
     <div class="p-4 pb-4 mt-14">
         <div class="flex w-" id="whole">

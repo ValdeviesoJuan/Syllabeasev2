@@ -96,13 +96,15 @@ class AdminMemoController extends Controller
             'description' => 'required',
             'date' => 'required|date',
             'files.*' => 'nullable|mimes:pdf|max:2048',
-            'from' => 'required|email', // 🆕
+            'from' => 'required|email',
+            'color' => 'required|in:green,yellow,red', // ✅ make sure this is validated
         ]);
 
         $memo = Memo::findOrFail($id);
         $memo->title = $request->title;
         $memo->description = $request->description;
         $memo->date = $request->date;
+        $memo->color = $request->color; // ✅ update color
 
         // 🆕 Update uploader
         $fromUser = User::where('email', $request->from)->first();
