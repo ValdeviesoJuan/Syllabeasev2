@@ -231,84 +231,96 @@
     </div>
 
 <!-- Create Memo Modal -->
-<div id="memoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-6">
-    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-10 mb-10">
+<div id="memoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-4">
+    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-4 mb-4">
 
         <!-- Close Button -->
         <button onclick="closeMemoModal()"
-            class="absolute top-3 right-3 text-[#9CA3AF] hover:text-[#4B5563] text-2xl font-bold z-10"
+            class="absolute top-3 right-3 text-[#9CA3AF] hover:text-[#4B5563] text-xl font-bold z-10"
             aria-label="Close Modal">&times;</button>
 
         <!-- Modal Content -->
-        <div class="p-6">
-            <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-white">Create New Memo</h2>
+        <div class="p-4">
+            <h2 class="text-lg font-bold mb-3 text-[#1F2937] dark:text-white">Create New Memo</h2>
 
             <form id="createMemoForm" action="{{ route('dean.memo.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Title -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">Title</label>
                     <input type="text" name="title" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-md bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- Description -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
-                    <textarea name="description" rows="3" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white"></textarea>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">Description</label>
+                    <textarea name="description" rows="2" required
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-md bg-white dark:bg-[#374151] dark:text-white text-sm"></textarea>
                 </div>
 
                 <!-- Date -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">Date</label>
                     <input type="date" name="date" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-md bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload Files (PDF only)</label>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">Upload Files (PDF only)</label>
                     <input type="file" name="files[]" accept="application/pdf" multiple
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-md bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- From -->
-                <div class="mb-4">
-                    <label for="from" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">From</label>
                     <select name="from" id="from"
-                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white">
-                        <option></option> <!-- Empty for placeholder -->
+                        class="select2 px-2 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                        <option></option>
                         @foreach($users as $user)
                             <option value="{{ $user->email }}">
                                 {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-sm text-[#6B7280] mt-1">You can select or type the uploader's email.</p>
+                    <p class="text-xs text-[#6B7280] mt-1">Select or type the uploader's email.</p>
                 </div>
 
                 <!-- Emails -->
-                <div class="mb-4">
-                    <label for="emails" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Recipient Emails</label>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">Recipient Emails</label>
                     <select name="emails[]" id="emails" multiple
-                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white" size="10">
+                        class="select2 px-2 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm" size="8">
                         @foreach($users as $user)
                             <option value="{{ $user->email }}">
                                 {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-sm text-[#6B7280] mt-1">You can select or type new email addresses.</p>
+                    <p class="text-xs text-[#6B7280] mt-1">Select or type recipient emails.</p>
                 </div>
 
-                <!-- Submit -->
-                <div class="text-right">
-                    <button type="submit"
-                        class="px-4 py-2 rounded text-white bg-[#000000] hover:bg-[#1F2937] transition duration-200">
-                        Upload Memo
-                    </button>
+                <!-- Importance + Submit -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-3 mt-3">
+                    <div class="w-full md:w-1/2">
+                        <label class="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB] mb-1">Importance Level</label>
+                        <select name="color" id="color" required
+                            class="w-full px-3 py-1.5 border rounded-md border-[#D1D5DB] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                            <option value="green">Normal (Green)</option>
+                            <option value="yellow">Important (Yellow)</option>
+                            <option value="red">Must Read (Red)</option>
+                        </select>
+                    </div>
+
+                    <div class="w-full md:w-auto text-right">
+                        <button type="submit"
+                            class="w-full md:w-auto px-4 py-1.5 rounded text-white bg-[#000000] hover:bg-[#1F2937] transition duration-200 mt-2 md:mt-6 text-sm">
+                            Upload Memo
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -316,8 +328,8 @@
 </div>
 
 <!-- Edit Memo Modal -->
-<div id="editMemoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-6">
-    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-10 mb-10">
+<div id="editMemoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#00000080] overflow-y-auto px-4 py-4">
+    <div class="relative bg-white dark:bg-[#1F2937] w-full max-w-lg rounded-lg shadow-lg mt-6 mb-6">
 
         <!-- Close Button -->
         <button onclick="document.getElementById('editMemoModal').classList.add('hidden')"
@@ -325,8 +337,8 @@
             aria-label="Close Modal">&times;</button>
 
         <!-- Modal Content -->
-        <div class="p-6">
-            <h2 class="text-xl font-bold mb-4 text-[#1F2937] dark:text-[#FFFFFF]">Edit Memo</h2>
+        <div class="p-4">
+            <h2 class="text-lg font-bold mb-3 text-[#1F2937] dark:text-white">Edit Memo</h2>
 
             <form id="editMemoForm" method="POST"
                 action="{{ route('dean.memo.update', ['id' => '__ID__']) }}"
@@ -336,53 +348,82 @@
                 @method('PUT')
 
                 <!-- Title -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Title</label>
                     <input type="text" name="title" id="editMemoTitle" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- Description -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
-                    <textarea name="description" id="editMemoDescription" rows="3" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white"></textarea>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Description</label>
+                    <textarea name="description" id="editMemoDescription" rows="2" required
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm"></textarea>
                 </div>
 
                 <!-- Date -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Date</label>
                     <input type="date" name="date" id="editMemoDate" required
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
+                </div>
+
+                <!-- File Upload -->
+                <div class="mb-3">
+                    <label class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
+                    <input type="file" name="files[]" accept="application/pdf" multiple
+                        class="w-full px-3 py-1.5 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white text-sm">
                 </div>
 
                 <!-- From -->
-                <div class="mb-4">
-                    <label for="editFrom" class="block text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
-                    <select name="from" id="editFrom"
-                        class="form-control select2 px-1 py-[6px] w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white">
-                        <option disabled selected hidden value="">Select uploader</option>
+                <div class="mb-3">
+                    <label for="from" class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">From</label>
+                    <select name="from" id="from"
+                        class="select2 px-1 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                        <option></option>
                         @foreach($users as $user)
                             <option value="{{ $user->email }}">
                                 {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
                             </option>
                         @endforeach
                     </select>
+                    <p class="text-xs text-[#6B7280] mt-1">You can select or type a new uploader email.</p>
                 </div>
 
-                <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="block text-[#374151] dark:text-[#D1D5DB] font-medium">Upload New Files (PDF only)</label>
-                    <input type="file" name="files[]" accept="application/pdf" multiple
-                        class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg bg-white dark:bg-[#374151] dark:text-white">
+                <!-- Emails -->
+                <div class="mb-3">
+                    <label for="editEmails" class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium">Recipient Emails</label>
+                    <select name="emails[]" id="editEmails" multiple
+                        class="select2 px-1 py-1 w-full border rounded border-[#a3a3a3] bg-white dark:bg-[#374151] dark:text-white text-sm" size="6">
+                        @foreach($users as $user)
+                            <option value="{{ $user->email }}">
+                                {{ $user->lastname }} {{ $user->firstname }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-[#6B7280] mt-1">You can select or type new email addresses.</p>
                 </div>
 
-                <!-- Submit -->
-                <div class="text-right">
-                    <button type="submit"
-                        class="px-4 py-2 rounded text-white bg-[#FACC15] hover:bg-[#EAB308] transition duration-200">
-                        Update Memo
-                    </button>
+                <!-- Importance Level + Submit -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mt-3">
+                    <!-- Importance Dropdown -->
+                    <div class="w-full md:w-1/2">
+                        <label for="editColor" class="block text-sm text-[#374151] dark:text-[#D1D5DB] font-medium mb-1">Importance Level</label>
+                        <select name="color" id="editColor" required
+                            class="w-full px-3 py-1.5 border rounded-lg border-[#D1D5DB] bg-white dark:bg-[#374151] dark:text-white text-sm">
+                            <option value="green">Normal (Green)</option>
+                            <option value="yellow">Important (Yellow)</option>
+                            <option value="red">Must Read (Red)</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="w-full md:w-auto text-right">
+                        <button type="submit"
+                            class="w-full md:w-auto px-4 py-1.5 rounded text-white bg-[#FACC15] hover:bg-[#EAB308] transition duration-200 mt-2 md:mt-6 text-sm">
+                            Update Memo
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -485,13 +526,12 @@
 
 <!-- Existing modal & edit modal scripts (unchanged) -->
 <script>
-    $(document).ready(function() {
-        $('#from, #emails').select2({
+    $(document).ready(function () {
+        $('#emails, #editEmails, #from, #editFrom').select2({
             tags: true,
             tokenSeparators: [',', ' '],
-            placeholder: "Select or type email",
-            width: '100%',
-            allowClear: true
+            placeholder: "Select or type email(s)",
+            width: '100%'
         });
     });
 
@@ -513,25 +553,28 @@
         modal.classList.add('hidden');
     }
 
-    function openEditMemoModal(id, title, description, date, from = null) {
+    function openEditMemoModal(id, title, description, date, emails = [], from = '') {
     const modal = document.getElementById('editMemoModal');
     const titleInput = document.getElementById('editMemoTitle');
     const descInput = document.getElementById('editMemoDescription');
     const dateInput = document.getElementById('editMemoDate');
-    const fromSelect = $('#editFrom');
+    const emailSelect = $('#editEmails');
+    const fromSelect = $('#from'); // ✅ fix: match ID in the modal
     const form = document.getElementById('editMemoForm');
 
-    if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect) {
-        console.error('Missing form elements');
+    if (!modal || !titleInput || !descInput || !form || !dateInput || !fromSelect.length) {
+        console.error('One or more elements not found');
         return;
     }
 
+    // Populate fields
     titleInput.value = title;
     descInput.value = description;
     dateInput.value = date;
+    emailSelect.val(emails).trigger('change');
+    fromSelect.val(from).trigger('change');
 
-    fromSelect.val(from).trigger('change'); // 👈 pre-select uploader
-
+    // Set form action
     const actionTemplate = form.getAttribute('data-action-template');
     form.action = actionTemplate.replace('__ID__', id);
 

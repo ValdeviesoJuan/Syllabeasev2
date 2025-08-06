@@ -35,12 +35,11 @@ class DeanMemoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'files.*' => 'required|file|mimes:pdf',
             'date' => 'nullable|date',
-            'files' => 'nullable|array',
-            'files.*' => 'nullable|file|mimes:pdf',
             'emails' => 'required|array',
             'emails.*' => 'email',
-            'from' => 'required|email', // ✅ ensure uploader email is captured
+            'from' => 'required|email',
             'color' => 'required|in:green,yellow,red',
         ]);
 
@@ -54,17 +53,17 @@ class DeanMemoController extends Controller
             }
         }
 
-        // ✅ Find the uploader by email
-        $uploader = User::where('email', $validated['from'])->first();
+        $fromUser = User::where('email', $validated['from'])->firstOrFail();
 
         $memo = Memo::create([
+            'user_id' => $fromUser->id,
             'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
+            'description' => $validated['description'],
             'file_name' => json_encode($fileNames),
-            'date' => $validated['date'] ?? null,
-            'user_id' => $uploader ? $uploader->id : null, // fallback null if not found
+            'date' => $validated['date'],
             'color' => $validated['color'],
         ]);
+
 
         foreach ($validated['emails'] as $email) {
             Mail::to($email)->send(new \App\Mail\MemoNotification($memo));
@@ -86,21 +85,26 @@ class DeanMemoController extends Controller
             'description' => 'required',
             'date' => 'required|date',
             'files.*' => 'nullable|mimes:pdf|max:2048',
-            'from' => 'required|email', // ✅ capture updated uploader email
+            'from' => 'required|email',
+            'color' => 'required|in:green,yellow,red', // ✅ make sure this is validated
         ]);
 
         $memo = Memo::findOrFail($id);
         $memo->title = $request->title;
         $memo->description = $request->description;
         $memo->date = $request->date;
+        $memo->color = $request->color; // ✅ update color
 
-        // ✅ Resolve uploader ID again (in case it's updated)
-        $uploader = User::where('email', $request->from)->first();
-        $memo->user_id = $uploader ? $uploader->id : null;
+        // 🆕 Update uploader
+        $fromUser = User::where('email', $request->from)->first();
+        if ($fromUser) {
+            $memo->user_id = $fromUser->id;
+        }
 
         $fileNames = $memo->file_name ? json_decode($memo->file_name, true) : [];
 
         if ($request->hasFile('files')) {
+            // Delete old files
             foreach ($fileNames as $file) {
                 if (Storage::exists('public/memos/' . $file)) {
                     Storage::delete('public/memos/' . $file);
