@@ -149,22 +149,25 @@ class BayanihanTeacherSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.*')
             ->first();
+            
+        $dean = $syll->dean; 
+        $chair = $syll->chair;
 
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->department_id)
-            ->where('entity_type', 'Department')
-            ->where('role_id', $chairRoleId)
-            ->select('users.*')
-            ->first();
+        // $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        // $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->department_id)
+        //     ->where('entity_type', 'Department')
+        //     ->where('role_id', $chairRoleId)
+        //     ->select('users.*')
+        //     ->first();
 
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->college_id)
-            ->where('entity_type', 'College')
-            ->where('role_id', $deanRoleId)
-            ->select('users.*')
-            ->first();
+        // $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        // $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->college_id)
+        //     ->where('entity_type', 'College')
+        //     ->where('role_id', $deanRoleId)
+        //     ->select('users.*')
+        //     ->first();
         
         $previousSyllabus = Syllabus::where('syllabi.bg_id', $syll->bg_id)
             ->whereRaw('CAST(version AS UNSIGNED) < ?', [intval($syll->version)])

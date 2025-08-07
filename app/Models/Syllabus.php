@@ -26,15 +26,17 @@ class Syllabus extends Model implements Auditable
         'department_id',
         'curr_id',
         'syll_course_requirements',
-        'syll_dean',
-        'syll_chair',
         'chair_submitted_at',
         'dean_submitted_at',
         'chair_rejected_at',
         'dean_rejected_at',
         'dean_approved_at',
         'status',
-        'version'
+        'version',
+        'syll_dean',
+        'syll_chair',
+        'dean',   
+        'chair',  
     ];
 
     protected $casts = [
@@ -43,6 +45,8 @@ class Syllabus extends Model implements Auditable
         'chair_rejected_at' => 'datetime',
         'dean_rejected_at' => 'datetime',
         'dean_approved_at' => 'datetime',
+        'dean' => 'array',
+        'chair' => 'array',
     ];
     public function SyllabusInstructors()
     {

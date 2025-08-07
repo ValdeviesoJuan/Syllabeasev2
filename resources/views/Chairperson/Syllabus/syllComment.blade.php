@@ -439,15 +439,15 @@
         </div>
         <div>
             <div class="flex justify-center">
-                @if($syll->dean_submitted_at != null && $chair->signature)
-                    <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chair Signature" class="h-16 object-contain">
+                @if($syll->dean_submitted_at != null && !empty($chair['signature']))
+                    <img src="{{ asset('assets/signatures/' . $chair['signature']) }}" alt="Chair Signature" class="h-16 object-contain">
                 @endif
             </div>
             <div class="flex justify-center">
                 Checked and Recommended for Approval:
             </div>
             <div class="flex justify-center font-semibold underline mt-20 text-center">
-                {{ strtoupper($syll->syll_chair) }}
+                {{ strtoupper($chair['full_name'] ?? 'N/A') }}
             </div>
             <div class="flex justify-center">
                 Chairperson, {{$syll->department_name}}
@@ -455,15 +455,15 @@
         </div>
         <div>
             <div class="flex justify-center">
-                @if($syll->dean_approved_at != null && $dean->signature)
-                    <img src="{{ asset('assets/signatures/' . $dean->signature) }}" alt="Dean Signature" class="h-16 object-contain">
+                @if($syll->dean_approved_at != null && !empty($dean['signature']))
+                    <img src="{{ asset('assets/signatures/' . $dean['signature']) }}" alt="Dean Signature" class="h-16 object-contain">
                 @endif
             </div>
             <div class="flex justify-center">
                 Approved by:
             </div>
             <div class="flex justify-center font-semibold underline mt-20 text-center">
-                {{ strtoupper($syll->syll_dean) }}
+                {{ strtoupper($chair['full_name'] ?? 'N/A') }}
             </div>
             <div class="flex justify-center">
                 Dean, {{$syll->college_code}}

@@ -516,23 +516,26 @@ class PDFController extends Controller
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
 
-        // Get chairperson of the department
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->department_id)
-            ->where('entity_type', 'Department')
-            ->where('role_id', $chairRoleId)
-            ->select('users.*')
-            ->first();
+        $chair = $syll->chair;
+        $dean = $syll->dean;
 
-        // Get dean of the college
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->college_id)
-            ->where('entity_type', 'College')
-            ->where('role_id', $deanRoleId)
-            ->select('users.*')
-            ->first();
+        // // Get chairperson of the department
+        // $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        // $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->department_id)
+        //     ->where('entity_type', 'Department')
+        //     ->where('role_id', $chairRoleId)
+        //     ->select('users.*')
+        //     ->first();
+
+        // // Get dean of the college
+        // $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        // $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->college_id)
+        //     ->where('entity_type', 'College')
+        //     ->where('role_id', $deanRoleId)
+        //     ->select('users.*')
+        //     ->first();
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -629,6 +632,7 @@ class PDFController extends Controller
             'reviewForm' => $reviewForm,
             'syllabusVersions' => $syllabusVersions,
         ];
+
         setlocale(LC_TIME, 'es');
         $date = date('Y-m-d');
         $document = new TemplateProcessor('doc/Syllabus-Template.docx');
@@ -818,29 +822,34 @@ class PDFController extends Controller
             $document->setValue('ins_lastname#' . ($index + 1), $ins_lastname);
         }
 
-        $chairSignaturePath = public_path('assets/signatures/' . $data['chair']->signature);
-        $deanSignaturePath = public_path('assets/signatures/' . $data['dean']->signature);
+        $document->setValue('syll_chair', strtoupper($chair['full_name'] ?? 'N/A'));
 
-        $document->setValue('syll_chair', $data['syll']->syll_chair);
-        if (!empty($data['chair']->signature) && file_exists($chairSignaturePath)) {
-            $document->setImageValue('syll_chair_signature', [
-                'path' => $chairSignaturePath,
-                'width' => 120,
-                'height' => 50,
-                'ratio' => true,
-            ]);
+        if (!empty($chair['signature'])) {
+            $chairSignaturePath = public_path('assets/signatures/' . $chair['signature']);
+            if (file_exists($chairSignaturePath)) {
+                $document->setImageValue('syll_chair_signature', [
+                    'path' => $chairSignaturePath,
+                    'width' => 120,
+                    'height' => 50,
+                    'ratio' => true,
+                ]);
+            }
         }
 
-        $document->setValue('syll_dean', $data['syll']->syll_dean);
-        if (!empty($data['dean']->signature) && file_exists($deanSignaturePath)) {
-            $document->setImageValue('syll_dean_signature', [
-                'path' => $deanSignaturePath,
-                'width' => 120,
-                'height' => 50,
-                'ratio' => true,
-            ]);
-        }
+        $document->setValue('syll_dean', strtoupper($dean['full_name'] ?? 'N/A'));
 
+        if (!empty($dean['signature'])) {
+            $deanSignaturePath = public_path('assets/signatures/' . $dean['signature']);
+            if (file_exists($deanSignaturePath)) {
+                $document->setImageValue('syll_dean_signature', [
+                    'path' => $deanSignaturePath,
+                    'width' => 120,
+                    'height' => 50,
+                    'ratio' => true,
+                ]);
+            }
+        }
+        
         function flushTextRun($document, &$currentContent, &$placeholderIndex) {
             if (!empty(trim($currentContent))) {
                 $textRun = new TextRun();

@@ -502,22 +502,22 @@
                 </div>
             </div>
             @endforeach
-
-            <!-- <div>
-                <div class="flex justify-center font-semibold underline mt-20">
-                    JOHN-REY JAMAGO
-                </div>
-                <div class="flex justify-center">
-                    Instructor
-                </div>
-            </div> -->
         </div>
         <div>
             <div class="flex justify-center">
                 Checked and Recommended for Approval:
             </div>
+            @if($syll->dean_submitted_at != null && !empty($chair['signature']))
+                <div class="flex justify-center mt-5">
+                    <img src="{{ asset('assets/signatures/' . $chair['signature']) }}" alt="Chair Signature" class="h-16 object-contain">
+                </div>
+            @else
+                <div class="flex justify-center mt-20">
+
+                </div>
+            @endif
             <div class="flex justify-center font-semibold underline mt-20">
-                {{ strtoupper($syll->syll_chair) }}
+                {{ strtoupper($chair['full_name'] ?? 'N/A') }}
             </div>
             <div class="flex justify-center">
                 Chairperson, {{$syll->department_name}}
@@ -527,8 +527,17 @@
             <div class="flex justify-center">
                 Approved by:
             </div>
+            @if($syll->dean_approved_at != null && !empty($dean['signature']))
+            <div class="flex justify-center mt-5">
+                <img src="{{ asset('assets/signatures/' . $dean['signature']) }}" alt="Dean Signature" class="h-16 object-contain">
+            </div>
+            @else
+            <div class="flex justify-center mt-20">
+
+            </div>
+            @endif
             <div class="flex justify-center font-semibold underline mt-20">
-                {{ strtoupper($syll->syll_dean) }}
+                {{ strtoupper($dean['full_name'] ?? 'N/A') }}
             </div>
             <div class="flex justify-center">
                 Dean, {{$syll->college_code}}

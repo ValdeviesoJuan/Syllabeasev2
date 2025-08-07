@@ -104,30 +104,34 @@ class DeanSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
+            
+        $dean = $syll->dean; 
+        $chair = $syll->chair;
 
-        // Get chairperson of the department
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->department_id)
-            ->where('entity_type', 'Department')
-            ->where('role_id', $chairRoleId)
-            ->select('users.*')
-            ->first();
+        // // Get chairperson of the department
+        // $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        // $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->department_id)
+        //     ->where('entity_type', 'Department')
+        //     ->where('role_id', $chairRoleId)
+        //     ->select('users.*')
+        //     ->first();
 
-        // Get dean of the college
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->college_id)
-            ->where('entity_type', 'College')
-            ->where('role_id', $deanRoleId)
-            ->select('users.*')
-            ->first();
+        // // Get dean of the college
+        // $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        // $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->college_id)
+        //     ->where('entity_type', 'College')
+        //     ->where('role_id', $deanRoleId)
+        //     ->select('users.*')
+        //     ->first();
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('program_outcomes.*')
             ->get();
+            
         $courseOutcomes = SyllabusCourseOutcome::where('syll_id', '=', $syll_id)
             ->get();
 

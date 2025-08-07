@@ -76,8 +76,10 @@ class ChairSyllabusController extends Controller
             ->select('users.*', 'syllabus_instructors.*')
             ->get()
             ->groupBy('syll_id');
+
         $user = Auth::user();
         $notifications = $user->notifications;
+
         return view('Chairperson.Syllabus.syllList', compact('notifications', 'syllabus', 'instructors'));
     }
     public function viewSyllabus($syll_id)
@@ -90,22 +92,25 @@ class ChairSyllabusController extends Controller
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.*')
             ->first();
+            
+        $dean = $syll->dean; 
+        $chair = $syll->chair;
 
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->department_id)
-            ->where('entity_type', 'Department')
-            ->where('role_id', $chairRoleId)
-            ->select('users.*')
-            ->first();
+        // $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        // $chair = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->department_id)
+        //     ->where('entity_type', 'Department')
+        //     ->where('role_id', $chairRoleId)
+        //     ->select('users.*')
+        //     ->first();
 
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('entity_id', $syll->college_id)
-            ->where('entity_type', 'College')
-            ->where('role_id', $deanRoleId)
-            ->select('users.*')
-            ->first();
+        // $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        // $dean = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
+        //     ->where('entity_id', $syll->college_id)
+        //     ->where('entity_type', 'College')
+        //     ->where('role_id', $deanRoleId)
+        //     ->select('users.*')
+        //     ->first();
         
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -641,15 +646,17 @@ class ChairSyllabusController extends Controller
     
     public function commentSyllabus($syll_id)
     {
-
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
-            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') // Corrected
+            ->join('departments', 'departments.department_id', '=', 'syllabi.department_id') 
             ->join('curricula', 'curricula.curr_id', '=', 'syllabi.curr_id')
             ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
             ->where('syllabi.syll_id', '=', $syll_id)
             ->select('courses.*', 'bayanihan_groups.*', 'syllabi.*', 'departments.*', 'curricula.*', 'colleges.college_description', 'colleges.college_code')
             ->first();
+            
+        $dean = $syll->dean; 
+        $chair = $syll->chair;
 
         $programOutcomes = ProgramOutcome::join('departments', 'departments.department_id', '=', 'program_outcomes.department_id')
             ->join('syllabi', 'syllabi.department_id', '=', 'departments.department_id')
@@ -712,6 +719,8 @@ class ChairSyllabusController extends Controller
             'notifications',
             'syll',
             'instructors',
+            'dean',
+            'chair',
             'syll_id',
             'instructors',
             'courseOutcomes',
