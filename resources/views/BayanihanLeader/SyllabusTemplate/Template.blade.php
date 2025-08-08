@@ -182,6 +182,10 @@
             Undo
         </button>
 
+        <button id="resizeModeToggle" class="bg-gray-100 hover:scale-105 transition ease-in-out text-black px-4 py-2 rounded-lg shadow h-[44px]">
+        Resize Mode: Cell
+        </button>
+
         <form action="{{ route('syllabus.template') }}" method="GET">
             @csrf
             <button id="doneBtn" type="button" class="bg-yellow hover:scale-105 transition ease-in-out text-white px-4 py-2 rounded-lg shadow">
@@ -286,12 +290,82 @@
 
 
 
+        <!-- Save Modal -->
+    <div id="saveModal"
+        class="fixed inset-0 flex items-center justify-center bg-white/10 backdrop-blur-sm hidden z-50">
+      <div class="bg-white w-80 p-6 rounded-lg shadow-lg">
+        <h2 class="text-lg font-bold mb-4">Save Template</h2>
+        <label class="block text-sm font-medium">Template Name:</label>
+        <input id="tplName"
+              type="text"
+              class="w-full border rounded p-2 mb-3"
+              placeholder="e.g. Midterm Syllabus">
+
+        <div class="flex justify-end gap-2">
+          <button id="modCancel"
+                  class="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400">
+            Cancel
+          </button>
+          <button id="modSave"
+                  class="px-3 py-1 rounded bg-yellow text-white hover:brightness-110">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
    <script>
 document.addEventListener("DOMContentLoaded", () => {
   const dropZone = document.getElementById('drop-zone');
   const highlight = document.getElementById('hover-highlight');
+  const undoBtn = document.getElementById('undoBtn');
   let dragClone = null;
   let isFromDropZone = false;
+
+  const undoStack = [];
+
+  function saveUndoState() {
+    const layout = {};
+    [...dropZone.querySelectorAll('.section')].forEach(sec => {
+      const style = window.getComputedStyle(sec);
+      layout[sec.id] = {
+        col: parseInt(style.gridColumnStart) || 1,
+        row: parseInt(style.gridRowStart) || 1,
+        colSpan: parseInt(style.gridColumnEnd) - parseInt(style.gridColumnStart) || 1,
+        rowSpan: parseInt(style.gridRowEnd) - parseInt(style.gridRowStart) || 1,
+        html: sec.outerHTML
+      };
+    });
+    undoStack.push(JSON.stringify(layout));
+  }
+
+  if (undoBtn) {
+    undoBtn.addEventListener('click', () => {
+      if (undoStack.length === 0) return;
+      const prevState = JSON.parse(undoStack.pop());
+      [...dropZone.querySelectorAll('.section')].forEach(sec => sec.remove());
+
+      for (const id in prevState) {
+        const data = prevState[id];
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = data.html;
+        const restored = tempDiv.firstElementChild;
+
+        restored.style.gridColumn = `${data.col} / span ${data.colSpan}`;
+        restored.style.gridRow = `${data.row} / span ${data.rowSpan}`;
+
+        dropZone.appendChild(restored);
+
+        // Re-apply resizing and dragging after restore
+        interact(restored).draggable(draggableOptions);
+        interact(restored).resizable(resizeOptions);
+      }
+    });
+  }
 
   function getGridPosition(x, y, container) {
     const rect = container.getBoundingClientRect();
@@ -302,13 +376,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return { col, row, colWidth, rowHeight };
   }
 
-  interact('.draggable, #drop-zone .section').draggable({
+  const draggableOptions = {
     listeners: {
       start(event) {
         const original = event.target;
         isFromDropZone = original.closest('#drop-zone') !== null;
 
         if (isFromDropZone) {
+          saveUndoState();
           dragClone = original;
           dragClone.style.zIndex = 1000;
         } else {
@@ -462,98 +537,71 @@ document.addEventListener("DOMContentLoaded", () => {
         isFromDropZone = false;
       }
     }
-  });
+  };
+
+  interact('.draggable, #drop-zone .section').draggable(draggableOptions);
 
   dropZone.addEventListener('click', function(e) {
     const section = e.target.closest('.section');
     if (!section) return;
-
     [...dropZone.querySelectorAll('.section.selected')].forEach(s => s.classList.remove('selected'));
     section.classList.add('selected');
   });
+
+  // (Save/Template logic here — unchanged)
 });
 
-// RESIZING LOGIC
-interact('#drop-zone .section').resizable({
+// RESIZING
+const resizeOptions = {
   edges: { left: true, right: true, bottom: true, top: true },
   listeners: {
     move(event) {
-      if (!event.target.classList.contains('selected')) return;
-
       const target = event.target;
       const dropZone = document.getElementById('drop-zone');
       const dzRect = dropZone.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
 
-      let w = parseFloat(target.style.width) || target.offsetWidth;
-      let h = parseFloat(target.style.height) || target.offsetHeight;
-      let newW = Math.round((w + event.deltaRect.width) / 20) * 20;
-      let newH = Math.round((h + event.deltaRect.height) / 20) * 20;
+      const colCount = 3;
+      const rowCount = 4;
 
-      // ✅ Enforce both left and right boundaries
-      const leftEdge = targetRect.left + event.deltaRect.left;
-      const rightEdge = targetRect.right + event.deltaRect.right;
+      const colWidth = dzRect.width / colCount;
+      const rowHeight = dzRect.height / rowCount;
 
-      if (leftEdge < dzRect.left) {
-        const overflow = dzRect.left - leftEdge;
-        newW -= overflow;
-      }
+      const newWidth = event.rect.width;
+      const newHeight = event.rect.height;
 
-      if (rightEdge > dzRect.right) {
-        const overflow = rightEdge - dzRect.right;
-        newW -= overflow;
-      }
+      const colSpan = Math.max(1, Math.round(newWidth / colWidth));
+      const rowSpan = Math.max(1, Math.round(newHeight / rowHeight));
 
-      // ✅ Enforce bottom boundary
-      const bottomEdge = targetRect.bottom + event.deltaRect.bottom;
-      if (bottomEdge > dzRect.bottom) {
-        const overflow = bottomEdge - dzRect.bottom;
-        newH -= overflow;
-      }
+      target.style.width = '';
+      target.style.height = '';
 
-      newW = Math.max(50, newW);
-      newH = Math.max(50, newH);
+      const style = window.getComputedStyle(target);
+      const currentCol = parseInt(style.gridColumnStart) || 1;
+      const currentRow = parseInt(style.gridRowStart) || 1;
 
-      target.style.width = newW + 'px';
-      target.style.height = newH + 'px';
+      const maxCol = colCount - colSpan + 1;
+      const maxRow = rowCount - rowSpan + 1;
 
-      const tRect = target.getBoundingClientRect();
-      const sections = [...dropZone.querySelectorAll('.section')].filter(s => s !== target);
+      const clampedCol = Math.min(currentCol, maxCol);
+      const clampedRow = Math.min(currentRow, maxRow);
 
-      sections.forEach(section => {
-        const sRect = section.getBoundingClientRect();
-        const overlapX = tRect.left < sRect.right && tRect.right > sRect.left;
-        const overlapY = tRect.top < sRect.bottom && tRect.bottom > sRect.top;
-        if (overlapX && overlapY) {
-          const sTop = parseFloat(section.style.top) || section.offsetTop;
-          const sLeft = parseFloat(section.style.left) || section.offsetLeft;
-
-          const shiftY = (tRect.bottom - sRect.top) + 10;
-          const maxShiftY = dzRect.bottom - sRect.bottom;
-          if (shiftY <= maxShiftY) {
-            section.style.top = (sTop + shiftY) + 'px';
-          } else {
-            section.style.height = Math.max(50, sRect.height - (shiftY - maxShiftY)) + 'px';
-          }
-
-          const shiftX = (tRect.right - sRect.left) + 10;
-          const maxShiftX = dzRect.right - sRect.right;
-          if (shiftX <= maxShiftX) {
-            section.style.left = (sLeft + shiftX) + 'px';
-          } else {
-            section.style.width = Math.max(50, sRect.width - (shiftX - maxShiftX)) + 'px';
-          }
-        }
-      });
+      target.style.gridColumn = `${clampedCol} / span ${colSpan}`;
+      target.style.gridRow = `${clampedRow} / span ${rowSpan}`;
     }
   },
   modifiers: [
     interact.modifiers.restrictEdges({ outer: 'parent' }),
-    interact.modifiers.restrictSize({ min: { width: 50, height: 50 }, max: { width: 1024, height: 768 } })
+    interact.modifiers.restrictSize({
+      min: { width: 100, height: 60 },
+      max: { width: 1024, height: 768 }
+    })
   ],
   inertia: true
-});
+};
+
+interact('#drop-zone .section').resizable(resizeOptions);
 </script>
+
 
 
 

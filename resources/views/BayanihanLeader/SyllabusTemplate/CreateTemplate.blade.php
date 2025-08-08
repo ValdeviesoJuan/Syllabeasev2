@@ -46,7 +46,7 @@
       </div>
 
       <!-- 🔒 hidden default layout for html2canvas -->
-      <div id="default-layout" class="absolute -z-10 -left-[2000px] top-0 pointer-events-none select-none w-[1024px]">
+      <div id="default-layout" class="absolute -z-10 -left-[2000px] top-0 pointer-events-none select-none w-[1024px] h-[924px]">
           <div class="syllabus-grid">
               <!-- Row 1 -->    
               <div class="syllabus-cell two-col" id="college-name">
