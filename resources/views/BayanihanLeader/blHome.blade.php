@@ -30,46 +30,93 @@
 </head>
 
 <body class="">
-    @if($missingSignature || (auth()->user() && auth()->user()->unreadNotifications->where('type', \App\Notifications\DeadlineSetNotification::class)->first()))
-        <div class="absolute z-50 top-10 left-1/2 transform -translate-x-1/2 w-[500px] p-4 rounded-lg shadow-lg border border-[#facc15] bg-[#fefce8] text-[#16a34a]">
-            <div class="space-y-3 text-sm font-semibold">
-                {{-- Missing Signature Message --}}
-                @if($missingSignature)
-                    <div class="flex justify-between items-center">
-                        <span><strong>Missing Signature:</strong> You haven't uploaded your signature yet.</span>
-                        <a href="{{ route('profile.edit') }}" 
-                        class="ml-4 bg-[#facc15] hover:bg-[#eab308] text-white font-semibold py-1 px-4 rounded-lg transition-all">
-                            Go to Profile
-                        </a>
-                    </div>
-                @endif
-
-                {{-- Deadline Notification Message --}}
-                @php
-                    $notif = auth()->user()?->unreadNotifications
-                        ->where('type', \App\Notifications\DeadlineSetNotification::class)
-                        ->first();
-                @endphp
-
-                @if($notif)
-                    <div class="flex justify-between items-center">
-                        <span>
-                            <strong>Notice:</strong> {{ $notif->data['message'] ?? 'You have a new deadline notification.' }}
-                        </span>
-                        <button onclick="dismissNotif('{{ route('notifications.markRead', ['id' => $notif->id]) }}')"
-                            class="ml-4 bg-[#facc15] hover:bg-[#eab308] text-white font-semibold py-1 px-4 rounded-lg transition-all">
-                            Dismiss
-                        </button>
-                    </div>
-                @endif
+    {{-- Missing Signature Alert --}}
+    @if($missingSignature)
+        <div id="alert-box" class="absolute z-50 top-10 left-1/2 transform -translate-x-1/2 w-[700px] p-4 rounded-lg shadow-lg border border-red bg-white text-gray-800">
+            <!-- Close button (top-right) -->
+            <button onclick="document.getElementById('alert-box').style.display='none'" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 11-1.414 1.414L10 11.414l-4.95 4.95a1 1 0 11-1.414-1.414L8.586 10l-4.95-4.95A1 1 0 115.05 3.636L10 8.586z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <!-- Alert content -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pr-6">
+                <div class="text-sm font-semibold">
+                    <strong class="text-red">Missing Signature:</strong> You haven't uploaded your signature yet.
+                </div>
+                <a href="{{ route('profile.edit') }}" 
+                class="ml-4 w-[150px] bg-[#ff8192] hover:bg-[#eb93a8] text-black font-semibold py-1 px-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                    <!-- User icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4
+                        v1h16v-1c0-2.66-5.33-4-8-4z" />
+                    </svg>
+                    Go to Profile
+                </a>
             </div>
         </div>
+    @endif
 
+    {{-- Deadline Notification Message --}}
+    @php
+        $notif = auth()->user()?->unreadNotifications
+            ->where('type', \App\Notifications\DeadlineSetNotification::class)
+            ->first();
+        $alertColor = 'border-green-400';
+        $iconColor = 'text-green-600';
+        $btnColor = 'bg-green-400 hover:bg-green-500';
+        $labelColor = 'text-green-600';
+        $daysLeft = null;
+        if ($notif && isset($notif->data['dl_syll'])) {
+            $dueDate = \Carbon\Carbon::parse($notif->data['dl_syll']);
+            $now = \Carbon\Carbon::now();
+            $daysLeft = $now->diffInDays($dueDate, false);
+            if ($daysLeft <= 1) {
+                $alertColor = 'border-red-400';
+                $iconColor = 'text-red-600';
+                $btnColor = 'bg-red-400 hover:bg-red-500';
+                $labelColor = 'text-red-600';
+            } elseif ($daysLeft <= 3) {
+                $alertColor = 'border-yellow-400';
+                $iconColor = 'text-yellow-600';
+                $btnColor = 'bg-yellow-400 hover:bg-yellow-500';
+                $labelColor = 'text-yellow-600';
+            }
+        }
+    @endphp
+
+    @if($notif)
+        <div id="floating-alert" class="absolute z-50 top-28 left-1/2 transform -translate-x-1/2 w-[700px] p-4 rounded-lg shadow-lg border {{ $alertColor }} bg-white text-gray-800">
+            <!-- Close button (top-right) -->
+            <button onclick="document.getElementById('floating-alert').style.display='none'" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 11-1.414 1.414L10 11.414l-4.95 4.95a1 1 0 11-1.414-1.414L8.586 10l-4.95-4.95A1 1 0 115.05 3.636L10 8.586z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <!-- Alert content -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pr-6">
+                <div class="text-sm font-semibold">
+                    <strong class="{{ $labelColor }}">Notice:</strong> {{ $notif->data['message'] ?? 'You have a new deadline notification.' }}
+                    @if($daysLeft !== null)
+                        <span class="ml-2 {{ $labelColor }}">({{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }} left)</span>
+                    @endif
+                </div>
+                <button onclick="dismissNotif('{{ route('notifications.markRead', ['id' => $notif->id]) }}')"
+                    class="ml-4 w-[150px] {{ $btnColor }} text-black font-semibold py-1 px-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                    <!-- Bell icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $iconColor }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 7.165 6 9.388 6 12v2.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    Dismiss
+                </button>
+            </div>
+        </div>
         <script>
             function dismissNotif(url) {
                 fetch(url)
                     .then(() => {
-                        document.querySelector('#floating-alert')?.remove();
+                        document.getElementById('floating-alert').style.display = 'none';
                         location.reload(); // optional: refresh to hide if combined
                     });
             }
