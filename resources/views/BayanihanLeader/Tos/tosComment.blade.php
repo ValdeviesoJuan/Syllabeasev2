@@ -311,13 +311,13 @@
 
             <div class="">
                 <div class="flex justify-center items-center mt-10">
-                    @if($tos->chair_approved_at != null && $chair->signature)
-                        <img src="{{ asset('assets/signatures/' . $chair->signature) }}" alt="Chairperson Signature" class="h-16 object-contain">
+                    @if($tos->chair_approved_at != null && !empty($chair['signature']))
+                        <img src="{{ asset('assets/signatures/' . $chair['signature']) }}" alt="Chairperson Signature" class="h-16 object-contain">
                     @endif
                 </div>
 
-                <div class="flex justify-center font-semibold underline">
-                    {{ strtoupper($chair->prefix) }} {{ strtoupper($chair->firstname) }} {{ strtoupper($chair->lastname) }} {{ strtoupper($chair->suffix) }}
+                <div class="flex justify-center font-semibold underline text-center">
+                    {{ strtoupper($chair['full_name'] ?? 'N/A') }}
                 </div>
 
                 <div class="flex justify-center">

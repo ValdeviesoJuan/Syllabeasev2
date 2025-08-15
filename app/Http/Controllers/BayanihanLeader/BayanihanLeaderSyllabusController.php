@@ -771,42 +771,6 @@ class BayanihanLeaderSyllabusController extends Controller
         $oldSyllabusCourseOutcome = SyllabusCourseOutcome::where('syll_id', $syll_id)->get();
         $oldSyllabusCourseOutlineM = SyllabusCourseOutlineMidterm::where('syll_id', $syll_id)->get();
         $oldSyllabusCourseOutlineF = SyllabusCourseOutlinesFinal::where('syll_id', $syll_id)->get();
-        
-        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $newDean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-            ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.entity_type', 'College')
-            ->where('user_roles.role_id', $deanRoleId)
-            ->where('colleges.college_id', '=', $oldSyllabus->college_id)
-            ->where('user_roles.start_validity', '<=', Carbon::now())
-            ->where(function ($query): void {
-                $query->whereNull('user_roles.end_validity')
-                    ->orWhere('user_roles.end_validity', '>=', Carbon::now());
-            })
-            ->select('users.*')
-            ->first();
-
-        if (empty($dean?->signature)) {
-            return back()->withErrors(['dean_signature' => 'The assigned Dean must upload their signature before proceeding.']);
-        }
-
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
-        $newChair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->where('departments.department_id', '=', $oldSyllabus->department_id)
-            ->where('user_roles.start_validity', '<=', Carbon::now())
-            ->where(function ($query): void {
-                $query->whereNull('user_roles.end_validity')
-                    ->orWhere('user_roles.end_validity', '>=', Carbon::now());
-            })
-            ->select('users.*')
-            ->first();
-
-        if (empty($chair?->signature)) {
-            return back()->withErrors(['chair_signature' => 'The assigned Chairperson must upload their signature before proceeding.']);
-        }
 
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
@@ -817,37 +781,7 @@ class BayanihanLeaderSyllabusController extends Controller
             } else if ($oldSyllabus->status == "Returned by Dean") {
                 $newSyllabus->status = "Requires Revision (Dean)";
 
-            } else {
-                $newSyllabus->status = null;
             }
-
-            $newSyllabus->dean = [
-                'user_id'   => $newDean->id,
-                'full_name' => trim(
-                    collect([
-                        $newDean->prefix,
-                        $newDean->firstname,
-                        $newDean->lastname,
-                        $newDean->suffix,
-                    ])->filter()->implode(' ')
-                ),
-                'signature' => $newDean->signature,
-                'timestamp' => now()->toIso8601String(),
-            ];
-
-            $newSyllabus->chair = [
-                'user_id'   => $newChair->id,
-                'full_name' => trim(
-                    collect([
-                        $newChair->prefix,
-                        $newChair->firstname,
-                        $newChair->lastname,
-                        $newChair->suffix,
-                    ])->filter()->implode(' ')
-                ),
-                'signature' => $newChair->signature,
-                'timestamp' => now()->toIso8601String(),
-            ];
 
             $newSyllabus->chair_submitted_at = null;
             $newSyllabus->dean_submitted_at = null;
@@ -916,15 +850,81 @@ class BayanihanLeaderSyllabusController extends Controller
         $oldSyllabusCourseOutcome = SyllabusCourseOutcome::where('syll_id', $syll_id)->get();
         $oldSyllabusCourseOutlineM = SyllabusCourseOutlineMidterm::where('syll_id', $syll_id)->get();
         $oldSyllabusCourseOutlineF = SyllabusCourseOutlinesFinal::where('syll_id', $syll_id)->get();
+
+        $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
+        $newDean = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('colleges', 'colleges.college_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'College')
+            ->where('user_roles.role_id', $deanRoleId)
+            ->where('colleges.college_id', '=', $oldSyllabus->college_id)
+            ->where('user_roles.start_validity', '<=', Carbon::now())
+            ->where(function ($query): void {
+                $query->whereNull('user_roles.end_validity')
+                    ->orWhere('user_roles.end_validity', '>=', Carbon::now());
+            })
+            ->select('users.*')
+            ->first();
+
+        if (empty($dean?->signature)) {
+            return back()->withErrors(['dean_signature' => 'The assigned Dean must upload their signature before proceeding.']);
+        }
+
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $newChair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('departments.department_id', '=', $oldSyllabus->department_id)
+            ->where('user_roles.start_validity', '<=', Carbon::now())
+            ->where(function ($query): void {
+                $query->whereNull('user_roles.end_validity')
+                    ->orWhere('user_roles.end_validity', '>=', Carbon::now());
+            })
+            ->select('users.*')
+            ->first();
+
+        if (empty($chair?->signature)) {
+            return back()->withErrors(['chair_signature' => 'The assigned Chairperson must upload their signature before proceeding.']);
+        }
         
         if ($oldSyllabus) {
             $newSyllabus = $oldSyllabus->replicate();
             $newSyllabus->status = "Draft";
+
+            $newSyllabus->dean = [
+                'user_id'   => $newDean->id,
+                'full_name' => trim(
+                    collect([
+                        $newDean->prefix,
+                        $newDean->firstname,
+                        $newDean->lastname,
+                        $newDean->suffix,
+                    ])->filter()->implode(' ')
+                ),
+                'signature' => $newDean->signature,
+                'timestamp' => now()->toIso8601String(),
+            ];
+
+            $newSyllabus->chair = [
+                'user_id'   => $newChair->id,
+                'full_name' => trim(
+                    collect([
+                        $newChair->prefix,
+                        $newChair->firstname,
+                        $newChair->lastname,
+                        $newChair->suffix,
+                    ])->filter()->implode(' ')
+                ),
+                'signature' => $newChair->signature,
+                'timestamp' => now()->toIso8601String(),
+            ];
+
             $newSyllabus->chair_submitted_at = null;
             $newSyllabus->dean_submitted_at = null;
             $newSyllabus->chair_rejected_at = null;
             $newSyllabus->dean_rejected_at = null;  
             $newSyllabus->dean_approved_at = null;
+
             $newSyllabus->version = 1;
             $newSyllabus->bg_id = $target_bg_id;
             $newSyllabus->save();

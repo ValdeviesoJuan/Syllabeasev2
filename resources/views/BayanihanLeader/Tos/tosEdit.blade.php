@@ -1,9 +1,6 @@
 @extends('layouts.blNav')
 @section('content')
 @include('layouts.modal')
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +23,6 @@
             <div>
                 <img class="edit_user_img text-center mt-4 mb-6 w-[200px] m-auto mb-2" src="/assets/Edit TOS.png" alt="SyllabEase Logo">
             </div>
-
             <div class="pl-4 mt-4 ml-4">
                 <span style="font-family: 'Roboto', sans-serif; font-weight: bold">Course Code: </span>
                 <span>{{ $syllabus->course_code }}</span>

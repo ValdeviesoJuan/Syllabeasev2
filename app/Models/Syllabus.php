@@ -54,7 +54,7 @@ class Syllabus extends Model implements Auditable
     }
 
     public function course()
-{
-    return $this->belongsTo(Course::class, 'course_id', 'course_id');
-}
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'course_id');
+    }
 }

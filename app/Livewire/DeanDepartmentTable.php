@@ -23,13 +23,15 @@ class DeanDepartmentTable extends Component
     public function render()
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $college_id = UserRole::where('user_id', Auth::id())
+        $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->select('user_roles.entity_id')
-            ->first();
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
+            ->firstorfail();
 
-        if($college_id) {
+        if($dean) {
+            $college_id = $dean->entity_id;
             $departments = College::join('departments', 'colleges.college_id', '=', 'departments.college_id')
             ->where('colleges.college_id', $college_id)
             ->where(function ($query){

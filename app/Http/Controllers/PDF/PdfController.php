@@ -346,6 +346,8 @@ class PDFController extends Controller
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
             ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
+        
+        $chair = $tos->chair;
 
         $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)
             ->select('syllabus_course_outcomes.*')
@@ -375,14 +377,6 @@ class PDFController extends Controller
             ->select('tos.*')
             ->get();
 
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->first();
-
         $data = [
             'title' => 'W',
             'date' => date('m/d/Y'),
@@ -394,6 +388,7 @@ class PDFController extends Controller
             'tosVersions' => $tosVersions,
             'chair' => $chair,
         ];
+
         setlocale(LC_TIME, 'es');
         $document = new TemplateProcessor('doc/Tos-Template.docx');
 
@@ -467,28 +462,36 @@ class PDFController extends Controller
 
         $document->cloneRow('firstname', $btCount);
         foreach ($bLeaders as $index => $bLeader) {
-
-
             $prefix = $bLeader['prefix'];
             $firstname = $bLeader['firstname'];
             $lastname = $bLeader['lastname'];
             $suffix = $bLeader['suffix'];
 
-            $document->setValue('prefix#' . ($index + 1), $prefix);
-            $document->setValue('firstname#' . ($index + 1), $firstname);
-            $document->setValue('lastname#' . ($index + 1), $lastname);
-            $document->setValue('suffix#' . ($index + 1), $suffix);
+            $document->setValue('prefix#' . ($index + 1), strtoupper($prefix));
+            $document->setValue('firstname#' . ($index + 1), strtoupper($firstname));
+            $document->setValue('lastname#' . ($index + 1), strtoupper($lastname));
+            $document->setValue('suffix#' . ($index + 1), strtoupper($suffix));
         }
 
+        //Insert Chair Info to TOS
+        $document->setValue('chair', strtoupper($chair['full_name'] ?? 'N/A'));
 
-        $document->setValue('chairFirstname', $data['chair']->firstname);
-        $document->setValue('chairLastname', $data['chair']->lastname);
-        $document->setValue('chairPrefix', $data['chair']->prefix);
-        $document->setValue('chairSuffix', $data['chair']->suffix);
+        if (!empty($chair['signature'])) {
+            $chairSignaturePath = public_path('assets/signatures/' . $chair['signature']);
+            if (file_exists($chairSignaturePath)) {
+                $document->setImageValue('chair_signature', [
+                    'path' => $chairSignaturePath,
+                    'width' => 120,
+                    'height' => 50,
+                    'ratio' => true,
+                ]);
+            }
+        }
 
         if ($data['tos']->tos_term == 'Midterm') {
             $document->setValue('tos_midterm', "/");
             $document->setValue('tos_final', "");
+            
         } else if ($data['tos']->tos_term == 'Final') {
             $document->setValue('tos_midterm', "");
             $document->setValue('tos_final', "/");

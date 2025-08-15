@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,36 +14,47 @@ class collegeSeeder extends Seeder
      */
     public function run(): void
     {
+        $now = Carbon::now();
         DB::table('colleges')->insert([
             [
                 'college_id' => '1',
                 'college_code' => 'CEA',
                 'college_description' => 'College of Engineering and Architecture',
-                'college_status' => 'Active'
+                'college_status' => 'Active',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'college_id' => '2',
                 'college_code' => 'CITC',
                 'college_description' => 'College of Information Technology and Computing',
-                'college_status' => 'Active'
+                'college_status' => 'Active',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'college_id' => '3',
                 'college_code' => 'CSM',
                 'college_description' => 'College of Science and Mathematics',
-                'college_status' => 'Active'
+                'college_status' => 'Active',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'college_id' => '4',
                 'college_code' => 'CSTE',
                 'college_description' => 'College of Science and Technology Education',
-                'college_status' => 'Active'
+                'college_status' => 'Active',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'college_id' => '5',
                 'college_code' => 'CoT',
                 'college_description' => 'College of Technology',
-                'college_status' => 'Active'
+                'college_status' => 'Active',
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
         ]);
     }

@@ -22,6 +22,8 @@ class DeanController extends Controller
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id');
         $hasDeanRole = UserRole::where('user_id', $user->id)
             ->where('role_id', $deanRoleId)
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->exists();
 
         $missingSignature = false;
@@ -33,8 +35,9 @@ class DeanController extends Controller
         $dean = UserRole::where('user_id', $user->id)
             ->where('entity_type', 'College')
             ->where('role_id', $deanRoleId)
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->first();
-
         $college_id = $dean->entity_id ?? null;
 
         if ($college_id) {
@@ -71,7 +74,9 @@ class DeanController extends Controller
                 $join->on('user_roles.entity_id', '=', 'colleges.college_id')
                     ->where('user_roles.entity_type', 'College')
                     ->where('user_roles.role_id', $deanRoleId)
-                    ->where('user_roles.user_id', $user->id);
+                    ->where('user_roles.user_id', $user->id)
+                    ->whereNotNull('user_roles.entity_id')
+                    ->orderByDesc('user_roles.updated_at');
             })
             ->select('colleges.*')
             ->firstOrFail();
@@ -80,7 +85,6 @@ class DeanController extends Controller
             ->paginate(10);
         
         $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-
         $chairs = Department::join('user_roles', function ($join) use ($chairRoleId) {  
                 $join->on('user_roles.entity_id', '=', 'departments.department_id')
                     ->where('user_roles.entity_type', 'Department')
@@ -105,7 +109,9 @@ class DeanController extends Controller
                 $join->on('user_roles.entity_id', '=', 'colleges.college_id')
                     ->where('user_roles.entity_type', 'College')
                     ->where('user_roles.role_id', $deanRoleId)
-                    ->where('user_roles.user_id', $user->id);
+                    ->where('user_roles.user_id', $user->id)
+                    ->whereNotNull('user_roles.entity_id')
+                    ->orderByDesc('user_roles.updated_at');
             })
             ->select('colleges.*')
             ->firstOrFail();
@@ -144,7 +150,9 @@ class DeanController extends Controller
                 $join->on('user_roles.entity_id', '=', 'colleges.college_id')
                     ->where('user_roles.entity_type', 'College')
                     ->where('user_roles.role_id', $deanRoleId)
-                    ->where('user_roles.user_id', $user->id);
+                    ->where('user_roles.user_id', $user->id)
+                    ->whereNotNull('user_roles.entity_id')
+                    ->orderByDesc('user_roles.updated_at');
             })
             ->select('colleges.*')
             ->firstOrFail();
@@ -214,7 +222,9 @@ class DeanController extends Controller
                 $join->on('user_roles.entity_id', '=', 'colleges.college_id')
                     ->where('user_roles.entity_type', 'College')
                     ->where('user_roles.role_id', $deanRoleId)
-                    ->where('user_roles.user_id', $user->id);
+                    ->where('user_roles.user_id', $user->id)
+                    ->whereNotNull('user_roles.entity_id')
+                    ->orderByDesc('user_roles.updated_at');
             })
             ->select('colleges.*')
             ->firstOrFail();

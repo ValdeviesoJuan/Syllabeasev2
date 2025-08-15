@@ -46,6 +46,8 @@ class DeanSyllabusController extends Controller
         $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->first();
         $college_id = $dean->entity_id;
         

@@ -41,6 +41,8 @@ class ChairController extends Controller
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', $chairRoleId)
             ->select('user_roles.entity_id')
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->first();
 
         $bgroups = BayanihanGroup::with('members', 'leaders')
@@ -75,6 +77,8 @@ class ChairController extends Controller
         $chair = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
         $department_id = $chair->entity_id;
@@ -109,8 +113,9 @@ class ChairController extends Controller
             $chair = UserRole::where('user_id', Auth::id())
                 ->where('entity_type', '=', 'Department')
                 ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                ->whereNotNull('entity_id')
+                ->orderByDesc('updated_at')
                 ->firstOrFail();
-
             $department_id = $chair->entity_id;
 
             // Retrieve users and courses based on the department ID
@@ -119,11 +124,13 @@ class ChairController extends Controller
                 ->get();
             
             $users = User::all();
+
             $user = Auth::user(); 
             $notifications = $user->notifications;
 
             // Return the view with the necessary data
             return view('Chairperson.Bayanihan.btCreate', compact('notifications','users', 'courses'));
+
         } catch (\Exception $e) {
             // Handle exceptions (e.g., user not found, department not found)
             return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
@@ -139,6 +146,8 @@ class ChairController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
         $department_id = $chairperson->entity_id;
 
@@ -165,7 +174,7 @@ class ChairController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $chairperson, $department_id) {
+            DB::transaction(function () use ($request, $chairperson) {
                 // Create the group
                 $bGroup = BayanihanGroup::create([
                     'bg_school_year' => $request->input('bg_school_year'),
@@ -177,6 +186,7 @@ class ChairController extends Controller
                     ->where('user_roles.entity_type', '=', 'Department')
                     ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
                     ->where('user_roles.user_id', '=', Auth::id())
+                    ->orderByDesc('user_roles.updated_at')
                     ->select('departments.*')
                     ->first();
 
@@ -247,6 +257,8 @@ class ChairController extends Controller
         $chair = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
         $department_id = $chair->entity_id;
 

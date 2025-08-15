@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\College;
-use App\Models\Course;
+use App\Models\College; 
 use App\Models\User;
-use App\Models\Roles;
-use App\Models\Curriculum;
+use App\Models\Roles; 
 use App\Models\Department;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Auth;

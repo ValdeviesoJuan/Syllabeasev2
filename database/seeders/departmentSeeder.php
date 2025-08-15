@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -12,6 +13,7 @@ class DepartmentSeeder extends Seeder
      */
     public function run()
     {
+        $now = Carbon::now();
         $data = [
             [
                 'department_id' => '11', 
@@ -21,6 +23,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Architecture',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '12', 
@@ -30,6 +34,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Civil Engineering',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '13', 
@@ -39,6 +45,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Mechanical Engineering',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '14', 
@@ -48,6 +56,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Computer Engineering',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '15', 
@@ -57,6 +67,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Geodetic Engineering',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '16', 
@@ -66,6 +78,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Electrical Engineering',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '17', 
@@ -75,6 +89,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Electronics Engineering',
                 'department_status' => 'Active',
                 'college_id' => '1',//CEA
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '21', 
@@ -84,6 +100,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Information Technology',
                 'department_status' => 'Active',
                 'college_id' => '2', // CITC
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '22', 
@@ -93,6 +111,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Technology Communication Management',
                 'department_status' => 'Active',
                 'college_id' => '2', // CITC
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '23', 
@@ -102,6 +122,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Data Science',
                 'department_status' => 'Active',
                 'college_id' => '2', // CITC
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '24', 
@@ -111,6 +133,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Computer Science',
                 'department_status' => 'Active',
                 'college_id' => '2', // CITC
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '31', 
@@ -120,6 +144,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Applied Mathematics',
                 'department_status' => 'Active',
                 'college_id' => '3', // CSM
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '32', 
@@ -129,6 +155,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Applied Physics',
                 'department_status' => 'Active',
                 'college_id' => '3', // CSM
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '33', 
@@ -138,6 +166,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Chemistry',
                 'department_status' => 'Active',
                 'college_id' => '3', // CSM
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '34', 
@@ -147,6 +177,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Environmental Science',
                 'department_status' => 'Active',
                 'college_id' => '3', // CSM
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '35', 
@@ -156,6 +188,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Food Technology',
                 'department_status' => 'Active',
                 'college_id' => '3', // CSM
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '41', 
@@ -165,6 +199,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor in Secondary Education Major in Science',
                 'department_status' => 'Active',
                 'college_id' => '4', // CSTE
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '42', 
@@ -174,6 +210,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor in Secondary Education Major in Mathematics',
                 'department_status' => 'Active',
                 'college_id' => '4', // CSTE
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '43', 
@@ -183,6 +221,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor in Technology and Livelihood Education',
                 'department_status' => 'Active',
                 'college_id' => '4', // CSTE
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '44', 
@@ -192,6 +232,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor in Technical-Vocational Teacher Education',
                 'department_status' => 'Active',
                 'college_id' => '4', // CSTE
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '51', 
@@ -201,6 +243,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Electronics Technology',
                 'department_status' => 'Active',
                 'college_id' => '5', // CoT
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '52', 
@@ -210,6 +254,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science Autotronics',
                 'department_status' => 'Active',
                 'college_id' => '5', // CoT
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '53', 
@@ -219,6 +265,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Energy Systems and Management',
                 'department_status' => 'Active',
                 'college_id' => '5', // CoT
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
             [
                 'department_id' => '54', 
@@ -228,6 +276,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Electro-Mechanical Technology',
                 'department_status' => 'Active',
                 'college_id' => '5', // CoT
+                'created_at' => $now,
+                'updated_at' => $now,
             ], 
             [
                 'department_id' => '55', 
@@ -237,6 +287,8 @@ class DepartmentSeeder extends Seeder
 		        'program_name' => 'Bachelor of Science in Manufacturing Engineering Technology',
                 'department_status' => 'Active',
                 'college_id' => '5', // CoT
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
         ];
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Roles;
 use App\Models\UserRole;
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,20 +20,21 @@ class DeanMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        if ($user){
+        if ($user) {
             $user_role = UserRole::join('users', 'user_roles.user_id', '=', 'users.id')
-            ->where('user_roles.user_id', '=', $user->id)
-            ->select('user_roles.role_id')
-            ->get('user_roles.role_id');
+                ->where('user_roles.user_id', '=', $user->id)
+                ->select('user_roles.role_id')
+                ->get('user_roles.role_id');
 
-            $roleIds = $user_role->pluck('role_id')->toArray(); 
-            if (in_array(2, $roleIds)) { 
+            $roleIds = $user_role->pluck('role_id')->toArray();
+            if (in_array(2, $roleIds)) {
                 return $next($request);
             } else {
                 return redirect('/home')->with('message', 'Access Denied');
             }
+
         } else {
             return redirect('/login')->with('message', 'Login');
         }
-      }
+    }
 }

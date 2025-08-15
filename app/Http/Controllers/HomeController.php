@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -26,11 +27,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $myRoles = UserRole::join('users', 'users.id', '=', 'user_roles.user_id')
-            ->join('roles', 'roles.role_id', '=', 'user_roles.role_id')
-            ->where('user_roles.user_id', '=', Auth::id())
-            ->select('roles.*')
-            ->distinct()
+        $latestRoles = UserRole::where('user_id', Auth::id())
+            ->orderByDesc('updated_at')
+            ->get()
+            ->unique('role_id') // keep only one entry per role_id
+            ->values();         // reset keys after unique()
+
+        $myRoles = DB::table('roles')
+            ->whereIn('role_id', $latestRoles->pluck('role_id'))
             ->get();
 
         return view('home', compact('myRoles'));

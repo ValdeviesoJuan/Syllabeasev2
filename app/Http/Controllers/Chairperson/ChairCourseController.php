@@ -19,22 +19,31 @@ class ChairCourseController extends Controller
 {
     public function index()
     {
+        $colleges = College::all();
+
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
+        
+        if ($chairperson) {
+            $department_id = $chairperson->entity_id;
+            
+            $courses = Course::join('curricula', 'courses.curr_id', '=', 'curricula.curr_id')
+                ->join('departments', 'curricula.department_id', '=', 'departments.department_id')
+                ->join('colleges', 'departments.college_id', '=', 'colleges.college_id')
+                ->select('colleges.*', 'departments.*', 'colleges.*', 'courses.*', 'curricula.*')
+                ->where('departments.department_id', '=', $department_id)
+                ->paginate(10);
 
-        $department_id = $chairperson->entity_id;
+        } else {
+            $courses = [];
+        }
 
-        $colleges = College::all();
-        $courses = Course::join('curricula', 'courses.curr_id', '=', 'curricula.curr_id')
-            ->join('departments', 'curricula.department_id', '=', 'departments.department_id')
-            ->join('colleges', 'departments.college_id', '=', 'colleges.college_id')
-            ->select('colleges.*', 'departments.*', 'colleges.*', 'courses.*', 'curricula.*')
-            ->where('departments.department_id', '=', $department_id)
-            ->paginate(10);
-            $user = Auth::user(); 
-            $notifications = $user->notifications;
+        $user = Auth::user(); 
+        $notifications = $user->notifications;
 
         return view('Chairperson.Courses.courseList', compact('notifications', 'courses', 'colleges'));
     }
@@ -45,36 +54,49 @@ class ChairCourseController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
-        $department_id = $chairperson->entity_id;
+        if ($chairperson) {
+            $department_id = $chairperson->entity_id;
 
-        $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
-            ->where('departments.department_id', '=', $department_id)
-            ->get();
+            $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
+                ->where('departments.department_id', '=', $department_id)
+                ->get();
+
+        } else {
+            $curricula = [];
+        }
 
         $user = Auth::user(); 
         $notifications = $user->notifications;
         
-        return view('Chairperson.Courses.courseView', [
-            'course' => Course::where('course_id', $course_id)->first()
-        ], compact('notifications','curricula'));
+        return view('Chairperson.Courses.courseView', compact('notifications','curricula', 'course'));
     }
     public function createCourse()
     {
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
+        
+        if ($chairperson) {
+            $department_id = $chairperson->entity_id;
 
-        $department_id = $chairperson->entity_id;
+            $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
+                ->where('curricula.department_id', '=', $department_id)
+                ->get();
 
-        $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
-            ->where('departments.department_id', '=', $department_id)
-            ->get();
+        } else {
+            $curricula = [];
+        }
 
         $user = Auth::user(); 
         $notifications = $user->notifications;
+        
         return view('Chairperson.Courses.courseCreate', compact('notifications','curricula'));
     }
     public function storeCourse(Request $request)
@@ -103,20 +125,25 @@ class ChairCourseController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
+        
+        if ($chairperson) { 
+            $department_id = $chairperson->entity_id;
 
-        $department_id = $chairperson->entity_id;
-
-        $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
-            ->where('departments.department_id', '=', $department_id)
-            ->get();
+            $curricula = Curriculum::join('departments', 'departments.department_id', '=', 'curricula.department_id')
+                ->where('departments.department_id', '=', $department_id)
+                ->get();
+            
+        } else {
+            $curricula = [];
+        }
 
         $user = Auth::user(); 
         $notifications = $user->notifications;
 
-        return view('Chairperson.Courses.courseEdit', [
-            'course' => Course::where('course_id', $course_id)->first()
-        ], compact('notifications','curricula'));
+        return view('Chairperson.Courses.courseEdit', compact('notifications','curricula', 'course'));
     }
     public function updateCourse(Request $request, string $course_id)
     {

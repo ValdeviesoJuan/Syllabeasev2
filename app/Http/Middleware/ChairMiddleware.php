@@ -3,10 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Models\UserRole;
+use App\Models\Roles;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Carbon\Carbon;
 
 class ChairMiddleware
 {
@@ -30,6 +32,7 @@ class ChairMiddleware
             } else {
                 return redirect('/home')->with('message', 'Access Denied');
             }
+
         } else {
             return redirect('/login')->with('message', 'Login');
         }

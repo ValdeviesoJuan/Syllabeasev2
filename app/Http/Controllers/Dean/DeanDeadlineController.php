@@ -20,12 +20,15 @@ class DeanDeadlineController extends Controller
     public function deadline()
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $college_id = UserRole::where('user_id', Auth::id())
+        $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->value('entity_id'); //
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
+            ->firstOrFail();
 
-        if ($college_id) {
+        if ($dean) {
+            $college_id = $dean->entity_id;
             $deadlines = Deadline::where('college_id', $college_id)->get();
         } else {
             $deadlines = collect(); // Return empty collection instead of array (avoids errors in Blade)
@@ -56,12 +59,12 @@ class DeanDeadlineController extends Controller
         ]);
 
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-
         $dean = UserRole::where('user_id', $user_id)
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
-
         $college_id = $dean->entity_id;
 
         $request->merge(['user_id' => $user_id]);
@@ -118,8 +121,9 @@ class DeanDeadlineController extends Controller
         $dean = UserRole::where('user_id', $user_id)
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
-
         $college_id = $dean->entity_id;
 
         $request->merge(['user_id' => $user_id]);

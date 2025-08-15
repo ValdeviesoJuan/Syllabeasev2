@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
         body {
+            font-family: 'Times New Roman', Times, serif;
             background-image: url("{{ asset('assets/Wave.png') }}");
             background-repeat: no-repeat;
             background-position: top;
@@ -22,8 +23,17 @@
         th{
             border: 1px solid black;
         }
+        body, table, th, td, p, input, button {
+            font-family: 'Times New Roman', Times, sans-serif !important;
+        }
+        .disabled-input {
+            background-color: #f0f0f0ff;
+            color: #888;
+            cursor: not-allowed;
+            outline: none;
+            border: none;
+        }
     </style>
-
 </head>
 
 <body>
@@ -44,15 +54,15 @@
                     @csrf
                     @method('PUT')
                     <!-- TOS Table -->
-                    <table id="tosTable" class="mt-4 w-full table-fixed border border-black bg-white text-sm font-serif">
+                    <table id="tosTable" class="mt-4 w-full table-fixed border border-black bg-white text-base font-serif">
                         <thead>
                             <tr>
-                                <th class="w-[25%] px-2 py-1 border" rowspan="3">Topics</th>
-                                <th class="w-[5%] px-2 py-1 border" rowspan="3">No. of<br>Hours</th>
-                                <th class="w-[5%] px-2 py-1 border" rowspan="3">%</th>
-                                <th class="w-[5%] px-2 py-1 border" rowspan="3">No. of<br>Test Items</th>
-                                <th colspan="4" class="w-[45%] px-2 py-1 border text-center">Cognitive Level</th>
-                                <th rowspan="2" class="w-[10%] px-2 py-1 border"></th>
+                                <th class="w-[30%] px-2 py-1 border" rowspan="3">Topics</th>
+                                <th class="w-[7%] px-2 py-1 border" rowspan="3">No. of<br>Hours</th>
+                                <th class="w-[7%] px-2 py-1 border" rowspan="3">%</th>
+                                <th class="w-[7%] px-2 py-1 border" rowspan="3">No. of<br>Test Items</th>
+                                <th colspan="4" class="w-[40%] px-2 py-1 border text-center">Cognitive Level</th> 
+                                <th rowspan="3" class="w-[10%] px-2 py-1 border text-center">Actual No. of <br> Test Items</th>
                             </tr>
                             <tr> 
                                 <th class="border">Knowledge</th>
@@ -61,11 +71,10 @@
                                 <th class="border">Synthesis /<br>Evaluation</th>
                             </tr>
                             <tr> 
-                                <th class="border">{{$tos->col_1_per}}%</th>
-                                <th class="border">{{$tos->col_2_per}}%</th>
-                                <th class="border">{{$tos->col_3_per}}%</th>
-                                <th class="border">{{$tos->col_4_per}}%</th>
-                                <th class="border">Actual Total</th>
+                                <th id="col_1_per"  class="border">{{$tos->col_1_per}}%</th>
+                                <th id="col_2_per"  class="border">{{$tos->col_2_per}}%</th>
+                                <th id="col_3_per"  class="border">{{$tos->col_3_per}}%</th>
+                                <th id="col_4_per"  class="border">{{$tos->col_4_per}}%</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -222,10 +231,40 @@
         return actualRowTotal === expectedItems && totalItems === expectedItems;
     }
 
+    function disableColsIfZero() {
+        const colPercents = {
+            1: parseFloat(document.getElementById('col_1_per').textContent) || 0,
+            2: parseFloat(document.getElementById('col_2_per').textContent) || 0,
+            3: parseFloat(document.getElementById('col_3_per').textContent) || 0,
+            4: parseFloat(document.getElementById('col_4_per').textContent) || 0,
+        };
+
+        for (let i = 1; i <= 4; i++) {
+            const inputs = document.querySelectorAll(`input[name="tos_r_col_${i}[]"]`);
+
+            if (colPercents[i] === 0) {
+                inputs.forEach(inp => {
+                    inp.value = 0; 
+                    inp.disabled = true;  
+                    inp.classList.add('disabled-input');
+                    inp.title = 'Disabled because column percentage is 0%';
+                });
+                
+            } else {
+                inputs.forEach(inp => {
+                    inp.disabled = false;
+                    inp.classList.remove('disabled-input');
+                    inp.title = '';
+                });
+            }
+        }
+    }
+
     // On DOM load (Page Load)
     document.addEventListener('DOMContentLoaded', function () {
         roundInputs();      // ⬅️ Automatically round values on page load
         calculateTotals();  // ⬅️ Then calculate totals
+        disableColsIfZero(); 
 
         // Recalculate on input change
         document.querySelectorAll('#tosTable input[type="number"]').forEach(input => {
@@ -236,6 +275,7 @@
         document.getElementById('roundButton').addEventListener('click', function () {
             roundInputs();
             calculateTotals();
+            disableColsIfZero(); 
         });
 
         // ✅ Form submit prevention (NOW inside DOMContentLoaded)

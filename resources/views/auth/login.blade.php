@@ -7,6 +7,7 @@
     <title>SyllabEase Login</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/login_page.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/Sample/se.png') }}">
 </head>
 
 <body class="bg-white font-sans overflow-hidden">

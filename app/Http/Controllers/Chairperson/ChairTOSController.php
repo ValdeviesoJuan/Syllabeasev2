@@ -32,16 +32,15 @@ class ChairTOSController extends Controller
     }
     public function viewTos($tos_id)
     {
-        // $toss = Tos::leftJoin('syllabus_course_outcomes', 'tos.syll_id', '=', 'syllabus_course_outcomes.syll_id')
-        // ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-        // ->join('courses', 'courses.course_id', '=', 'syllabi.course_id')
-        // ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        // ->select('tos.*', 'syllabus_course_outcomes.*', 'courses.*', 'bayanihan_groups.*')
-        // ->get();
-        $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+        $tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')
+            ->first();
+
+        $chair = $tos->chair;
+
         $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
@@ -66,14 +65,6 @@ class ChairTOSController extends Controller
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
-
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->select('syllabi.*', 'users.*')
-            ->where('user_roles.entity_type', '=', 'Department')
-            ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
-            ->first();
 
         $user = Auth::user();
         $notifications = $user->notifications;
@@ -164,6 +155,9 @@ class ChairTOSController extends Controller
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
             ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
+            
+        $chair = $tos->chair;
+
         $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
@@ -192,6 +186,6 @@ class ChairTOSController extends Controller
         $user = Auth::user();
         $notifications = $user->notifications;
 
-        return view('Chairperson.Tos.tosComment', compact('notifications', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
+        return view('Chairperson.Tos.tosComment', compact('notifications', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
     }
 }

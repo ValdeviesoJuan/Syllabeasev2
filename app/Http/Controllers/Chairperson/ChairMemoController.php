@@ -12,7 +12,7 @@ class ChairMemoController extends Controller
     {
         $search = $request->input('search');
 
-         $memos = Memo::when($search, function ($query, $search) {
+        $memos = Memo::when($search, function ($query, $search) {
             return $query->where('title', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%");
         })->latest()->get();

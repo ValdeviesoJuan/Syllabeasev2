@@ -27,6 +27,8 @@ class ChairTos extends Component
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
         if ($chairperson) {

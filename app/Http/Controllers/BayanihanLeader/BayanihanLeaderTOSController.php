@@ -63,6 +63,8 @@ class BayanihanLeaderTOSController extends Controller
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
             ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first(); 
+
+        $chair = $tos->chair;
             
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
@@ -89,15 +91,6 @@ class BayanihanLeaderTOSController extends Controller
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
-
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->select('syllabi.*', 'tos.*', 'users.*')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->first();
 
         return view('bayanihanleader.tos.tosView', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'chair'));
     }
@@ -156,12 +149,34 @@ class BayanihanLeaderTOSController extends Controller
         } elseif ($existingMTos && $existingFTos) {
             return redirect()->route('bayanihanleader.tos')->with('error', 'Midterm and Final TOS already exist for this Syllabus.');
         }
+        
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id'); 
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('departments', 'departments.department_id', '=', 'user_roles.entity_id')
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('departments.department_id', '=', $syllabus->department_id)
+            ->where('user_roles.start_validity', '<=', Carbon::now())
+            ->where(function ($query): void {
+                $query->whereNull('user_roles.end_validity')
+                    ->orWhere('user_roles.end_validity', '>=', Carbon::now());
+            })
+            ->select('users.*')
+            ->first();
+
+        if (empty($chair?->signature)) {
+            return back()->withErrors(['chair_signature' => 'The assigned Chairperson must upload their signature before proceeding.']);
+        }
 
         $tos = new Tos();
         $tos->syll_id = $syll_id;
-        $tos->user_id = Auth::user()->id;
-        $tos->tos_status = "Draft";
+        $tos->user_id = Auth::id();
+        $tos->course_id = $syllabus->course_id;
+        $tos->bg_id = $syllabus->bg_id;
+        $tos->department_id = $syllabus->department_id;
         $tos->effectivity_date = $syllabus->effectivity_date;
+
+        $tos->tos_status = "Draft";
         $tos->tos_term = $request->tos_term;
         $tos->tos_no_items = $request->tos_no_items;
         $tos->col_1_per = $request->col_1_per;
@@ -169,10 +184,19 @@ class BayanihanLeaderTOSController extends Controller
         $tos->col_3_per = $request->col_3_per;
         $tos->col_4_per = $request->col_4_per;
         $tos->tos_cpys = $request->tos_cpys;
-
-        $tos->course_id = $syllabus->course_id;
-        $tos->department_id = $syllabus->department_id;
-        $tos->bg_id = $syllabus->bg_id;
+        $tos->chair = [
+            'user_id'   => $chair->id,
+            'full_name' => trim(
+                collect([
+                    $chair->prefix,
+                    $chair->firstname,
+                    $chair->lastname,
+                    $chair->suffix,
+                ])->filter()->implode(' ')
+            ),
+            'signature' => $chair->signature,
+            'timestamp' => now()->toIso8601String(),
+        ];
         $tos->save(); 
 
         $selectedTopics = $request->input('selected_topics', []);
@@ -217,141 +241,107 @@ class BayanihanLeaderTOSController extends Controller
             return redirect()->route('bayanihanleader.tos')->with('error', 'Something went wrong when Creating the TOS.');
         }
 
-        $totalNoHours = 0;
+        /**
+         * Helper to convert proportional values to whole numbers
+         * while ensuring the total matches exactly.
+         *
+         * @param array $rawValues Array of proportional values
+         * @param int   $total     Expected sum after rounding
+         * @return array           Whole-number distribution
+         */
+        function distributeWholeNumbers(array $rawValues, int $total): array
+        {
+            $floored = array_map('floor', $rawValues);
+            $remainders = array_map(fn($v) => $v - floor($v), $rawValues);
 
-        if ($syllabus) {
-            // Calculate the total syll_allotted_time
+            $remaining = $total - array_sum($floored);
+
+            while ($remaining > 0) {
+                $maxIndex = array_keys($remainders, max($remainders))[0];
+                $floored[$maxIndex]++;
+                $remainders[$maxIndex] = 0; // Avoid giving twice
+                $remaining--;
+            }
+
+            return $floored;
+        }
+
+        if ($tos) {
+            // 1️⃣ Insert selected topics into TosRows
             $totalNoHours = $selectedEntries->sum('syll_allotted_hour');
-
             foreach ($selectedEntries as $co) {
-                $tos_row = new TosRows();
-                $tos_row->tos_id = $tos->tos_id;
-                $tos_row->tos_r_topic = $co->syll_topics;
-                $tos_row->tos_r_no_hours = $co->syll_allotted_hour ?? 0;
-                $tos_row->save();
+                TosRows::create([
+                    'tos_id'        => $tos->tos_id,
+                    'tos_r_topic'   => $co->syll_topics,
+                    'tos_r_no_hours'=> $co->syll_allotted_hour ?? 0,
+                ]);
             }
 
+            // 2️⃣ Retrieve rows for processing
             $tosRows = TosRows::where('tos_id', $tos->tos_id)->get();
+
+            // 3️⃣ Process each row (percent, items, and columns in one pass)
             $totalRoundedPercent = 0;
-            $decimalRows = [];
+            $rowsWithDecimalPercent = [];
 
-            // Iterate through the rows
             foreach ($tosRows as $row) {
+                // --- TOS Row Percentages ---
                 $percent = ($row->tos_r_no_hours / $totalNoHours) * 100;
-
-                // Check if decimal
-                if ($percent != floor($percent)) {
-                    $decimalRows[] = $row;
-                }
-
-                // round ang percent
                 $roundedPercent = round($percent);
-
-                // Update the total rounded percentage
-                $totalRoundedPercent += $roundedPercent;
-
-                // Update the row with the rounded percentage
                 $row->tos_r_percent = $roundedPercent;
-                $row->save();
+                $totalRoundedPercent += $roundedPercent;
+                if ($percent != floor($percent)) {
+                    $rowsWithDecimalPercent[] = $row;
+                }
+
+                // --- TOS Row No of Test Items ---
+                $itemDistribution = distributeWholeNumbers(
+                    [$tos->tos_no_items * ($roundedPercent / 100)],
+                    (int) round($tos->tos_no_items * ($roundedPercent / 100))
+                );
+                $row->tos_r_no_items = $itemDistribution[0];
             }
 
-            // Adjust the last row with decimals to make the total exactly 100
-            if (!empty($decimalRows)) {
-                $lastDecimalRow = end($decimalRows);
+            // 4️⃣ Adjust percentages so total = 100
+            if (!empty($rowsWithDecimalPercent)) {
                 $adjustment = 100 - $totalRoundedPercent;
-                $lastDecimalRow->tos_r_percent += $adjustment;
-                $lastDecimalRow->save();
+                $lastRow = end($rowsWithDecimalPercent);
+                $lastRow->tos_r_percent += $adjustment;
             }
 
-            // ADJUST THE NO OF ITEMS PARA EQUAL SA TOTAL ITEMS HEHE 
-            $totalRoundedItems = 0;
-            $counter = 0;
-            $totalRows = count($tosRows);
-
-            $decimalRowsItem = [];
-
-            // Iterate through the rows
+            // 5️⃣ Assign 4-column distribution
             foreach ($tosRows as $row) {
-                $counter++;
-                $rowPercent = $row->tos_r_percent;
-
-                // Computation to get the number of items rounded off
-                $roundedItem = ($tos->tos_no_items * ($rowPercent / 100));
-
-                // Check if the number has decimals
-                if ($roundedItem != floor($roundedItem)) {
-                    $decimalRowsItem[] = $row;
-                }
-
-                // Update the row with the rounded number of items and save
-                $row->tos_r_no_items = floor($roundedItem);
-                $row->save();
-
-                $totalRoundedItems += floor($roundedItem);
-            }
-
-            // Distribute the remainder
-            $remainder = $tos->tos_no_items - $totalRoundedItems;
-            foreach ($decimalRowsItem as $row) {
-                if ($remainder > 0) {
-                    $row->tos_r_no_items += 1;
-                    $row->save();
-                    $remainder--;
-                } else {
-                    break;
-                }
-            }
-
-            $expectedCol1 = round($tos->tos_no_items * ($tos->col_1_per / 100));
-            $totalCol1 = 0;
-
-            $expectedCol2 = round($tos->tos_no_items * ($tos->col_2_per / 100));
-            $totalCol2 = 0;
-
-            $expectedCol3 = round($tos->tos_no_items * ($tos->col_3_per / 100));
-            $totalCol3 = 0;
-
-            // $expectedCol4 = round($tos->tos_no_items * ($tos->col_4_per / 100));
-            $expectedCol4 = $tos->tos_no_items - ($expectedCol1 + $expectedCol2 + $expectedCol3);
-
-            $totalCol4 = 0;
-
-            $expectedCol4 = max(0, $expectedCol4);
-
-            foreach ($tosRows as $index => $row) {
-                // Calculate the rounded value for $row->tos_r_col_1
-                $Data1 = $row->tos_r_no_items * ($tos->col_1_per / 100);
-                $Data2 = $row->tos_r_no_items * ($tos->col_2_per / 100);
-                $Data3 = $row->tos_r_no_items * ($tos->col_3_per / 100);
-                $Data4 = $row->tos_r_no_items * ($tos->col_4_per / 100);
-
-                $row->tos_r_col_1 = $Data1;
-                $row->tos_r_col_2 = $Data2;
-                $row->tos_r_col_3 = $Data3;
-                $row->tos_r_col_4 = $Data4;
+                $colValues = [
+                    $row->tos_r_no_items * ($tos->col_1_per / 100),
+                    $row->tos_r_no_items * ($tos->col_2_per / 100),
+                    $row->tos_r_no_items * ($tos->col_3_per / 100),
+                    $row->tos_r_no_items * ($tos->col_4_per / 100),
+                ];
+                [$row->tos_r_col_1, $row->tos_r_col_2, $row->tos_r_col_3, $row->tos_r_col_4] =
+                    distributeWholeNumbers($colValues, $row->tos_r_no_items);
 
                 $row->save();
-
-                $totalCol1 += $Data1;
-                $totalCol2 += $Data2;
-                $totalCol3 += $Data3;
-                $totalCol4 += $Data4;
             }
         }
 
-        // Send email to Chairperson(s)
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chairpersons = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->where('user_roles.entity_id', $tos->department_id)
-            ->select('users.*')
-            ->get();
+        // Send Email to Chairperson
+        $now = Carbon::now();
 
-        foreach ($chairpersons as $chair) {
-            if (filter_var($chair->email, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($chair->email)->send(new TosCreatedNotification($tos));
-            }
+        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
+        $chair = User::join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->where('user_roles.role_id', $chairRoleId)
+            ->where('user_roles.entity_type', 'Department')
+            ->where('user_roles.entity_id', $tos->department_id)
+            ->where('user_roles.start_validity', '<=', $now)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('user_roles.end_validity')
+                ->orWhere('user_roles.end_validity', '>', $now);
+            })
+            ->select('users.*')
+            ->first();
+
+        if ($chair && filter_var($chair->email, FILTER_VALIDATE_EMAIL)) {
+            Mail::to($chair->email)->send(new TosCreatedNotification($tos));
         }
 
         return redirect()->route('bayanihanleader.viewTos', $tos->tos_id);
@@ -679,6 +669,8 @@ class BayanihanLeaderTOSController extends Controller
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
             ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
 
+        $chair = $tos->chair;
+
         $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
 
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
@@ -704,15 +696,6 @@ class BayanihanLeaderTOSController extends Controller
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
             ->select('tos.*')
             ->get();
-            
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->select('users.*', 'tos.*')
-            ->first();
 
         return view('bayanihanleader.tos.tosComment', compact('chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
     }
@@ -739,9 +722,32 @@ class BayanihanLeaderTOSController extends Controller
                 ->with('success', 'Tos replicated successfully');
         }
     }
+
+    public function duplicateTos($tos_id)
+    {
+        $oldTos = Tos::where('tos_id', $tos_id)->first();
+        $oldTosRows = TosRows::where('tos_id', $tos_id)->get();
+
+        if ($oldTos) {
+            $newTos = $oldTos->replicate();
+            $newTos->chair_submitted_at = null;
+            $newTos->chair_returned_at = null;
+            $newTos->chair_approved_at = null;
+            $newTos->tos_status = "Requires Revision";
+            $newTos->tos_version = $oldTos->tos_version + 1;
+            $newTos->save();
+
+            foreach ($oldTosRows as $oldTosRow) {
+                $newTosRow = $oldTosRow->replicate();
+                $newTosRow->tos_id = $newTos->tos_id;
+                $newTosRow->save();
+            }
+            return redirect()->route('bayanihanleader.viewTos', $newTos->tos_id)
+                ->with('success', 'Tos replicated successfully');
+        }
+    }
     public function destroyTos(Tos $tos_id)
     {
-        
         $tos = Syllabus::where('syll_id', $tos_id)->firstorfail();
 
         $hasApprovedTOSDocument = Tos::where('bg_id', operator: $tos->bg_id)

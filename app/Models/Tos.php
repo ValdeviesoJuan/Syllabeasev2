@@ -26,6 +26,7 @@ class Tos extends Model implements Auditable
         'course_id',
         'department_id',
         'tos_cpys',
+        'chair',
         'chair_submitted_at',
         'chair_returned_at',
         'chair_approved_at',
@@ -37,5 +38,26 @@ class Tos extends Model implements Auditable
         'chair_submitted_at' => 'datetime',
         'chair_returned_at' => 'datetime',
         'chair_approved_at' => 'datetime',
+        'chair' => 'array',
     ];
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'course_id');
+    }
+    public function bayanihanGroup()
+    {
+        return $this->belongsTo(BayanihanGroup::class, 'bg_id', 'bg_id');
+    }
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'department_id');
+    }
+    public function syllabus()
+    {
+        return $this->belongsTo(Syllabus::class, 'syll_id', 'syll_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

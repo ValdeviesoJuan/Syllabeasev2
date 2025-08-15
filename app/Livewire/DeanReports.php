@@ -21,26 +21,27 @@ class DeanReports extends Component
         'status' => null,
         'bg_school_year' => null,
         'department_code' => null,
-
     ];
     public function render()
     {
         $deanRoleId = Roles::where('role_name', 'Dean')->value('role_id'); 
-        $college_id = UserRole::where('user_id', Auth::id())
+        $dean = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'College')
             ->where('role_id', '=', $deanRoleId)
-            ->select('user_roles.entity_id')
-            ->first();
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
+            ->firstorfail();
 
-        if ($college_id) {
+        if ($dean) {
+            $college_id = $dean->entity_id;
             $departments = Department::where('departments.college_id', $college_id)
                 ->select('departments.*')
                 ->get();
 
             $syllabi = BayanihanGroup::join('syllabi', function ($join) {
-                $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
-                    ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND dean_submitted_at IS NOT NULL)'));
-            })
+                    $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
+                        ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND dean_submitted_at IS NOT NULL)'));
+                })
                 ->where('syllabi.college_id', '=', $college_id)
                 ->whereNotNull('syllabi.dean_submitted_at')
                 ->leftJoin('courses', 'courses.course_id', '=', 'bayanihan_groups.course_id')

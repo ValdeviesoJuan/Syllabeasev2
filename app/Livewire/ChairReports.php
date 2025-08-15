@@ -30,15 +30,12 @@ class ChairReports extends Component
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
-        $department_id = $chairperson->entity_id;
-
-        // $syllabi = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
-        // ->leftJoin('courses', 'courses.course_id', '=',  'bayanihan_groups.course_id')
-        // ->where('syllabi.department_id', '=', $department_id)
-        // ->whereNotNull('syllabi.chair_submitted_at')
-        if ($department_id) {
+        if ($chairperson) {
+            $department_id = $chairperson->entity_id;
             $syllabi = BayanihanGroup::join('syllabi', function ($join) {
                 $join->on('syllabi.bg_id', '=', 'bayanihan_groups.bg_id')
                     ->where('syllabi.version', '=', DB::raw('(SELECT MAX(version) FROM syllabi WHERE bg_id = bayanihan_groups.bg_id AND chair_submitted_at IS NOT NULL)'));
@@ -109,11 +106,15 @@ class ChairReports extends Component
 
                 $midtermTosCount = $toss->where('tos_term', 'Midterm')->count();
                 $finalTosCount = $toss->where('tos_term', 'Final')->count();
-            } else {
+        } else {
             $syllabi = [];
             $toss = [];
+            $syllabiCount = 0;
+            $distinctBayanihanTeams = 0;
+            $midtermTosCount = 0;
+            $finalTosCount = 0;
         }
-        return view('livewire.chair-reports', ['syllabi' => $syllabi, 'toss' => $toss, 'syllabiCount'=>$syllabiCount, 'distinctBayanihanTeams'=>$distinctBayanihanTeams, 'midtermTosCount'=>$midtermTosCount, 'finalTosCount'=>$finalTosCount]);
+        return view('livewire.chair-reports', ['syllabi' => $syllabi, 'toss' => $toss, 'syllabiCount' => $syllabiCount, 'distinctBayanihanTeams'=>$distinctBayanihanTeams, 'midtermTosCount'=>$midtermTosCount, 'finalTosCount'=>$finalTosCount]);
     }
     public function applyFilters()
     {

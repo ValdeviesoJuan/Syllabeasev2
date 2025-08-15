@@ -19,14 +19,17 @@ class ChairPOController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
         if ($chairperson) {
             $department_id = $chairperson->entity_id;
-            $department_name = UserRole::where('user_roles.user_id', '=', Auth::id())
-                ->join('departments', 'user_roles.entity_id', '=', 'departments.department_id')
-                ->where('entity_type', '=', 'Department')
-                ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            $department_name = UserRole::join('departments', 'user_roles.entity_id', '=', 'departments.department_id')
+                ->where('user_roles.user_id', '=', Auth::id())
+                ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                ->where('user_roles.entity_type', '=', 'Department')
+                ->where('user_roles.entity_id', '=', $department_id)
                 ->select('departments.department_name')
                 ->first();
 
@@ -34,15 +37,17 @@ class ChairPOController extends Controller
 
             $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
                 ->join('user_roles', 'departments.department_id', '=', 'user_roles.entity_id')
-                ->where('user_roles.entity_type', '=', 'Department')
+                ->where('user_roles.user_id', Auth::id())
                 ->where('user_roles.role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+                ->where('user_roles.entity_type', '=', 'Department')
+                ->where('user_roles.entity_id', '=', $department_id)
                 // ->where('user_roles.start_validity', '<=', $today)
                 // ->where('user_roles.end_validity', '>=', $today)
-                ->where('user_roles.user_id', Auth::id())
                 ->orderBy('program_outcomes.po_letter', 'asc')
                 ->select('departments.*', 'program_outcomes.*')
                 ->get();
         } else {
+            $department_id = '';
             $department_name = "";
             $programOutcomes = [];
         }
@@ -57,9 +62,11 @@ class ChairPOController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
-        $department_id = $chairperson->entity_id;
+        $department_id = $chairperson->entity_id ?? '';
 
         $user = Auth::user(); 
         $notifications = $user->notifications;
@@ -72,6 +79,7 @@ class ChairPOController extends Controller
             'po_letter.*' => 'required',
             'po_description.*' => 'required',
         ]);
+
         foreach ($validatedData['po_letter'] as $key => $poLetter) {
             $outcome = new ProgramOutcome();
             $outcome->department_id = $department_id;
@@ -88,14 +96,21 @@ class ChairPOController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
-        $department_id = $chairperson->entity_id;
+        if ($chairperson) { 
+            $department_id = $chairperson->entity_id;
+            $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
+                ->where('program_outcomes.department_id', '=', $department_id)
+                ->select('departments.*', 'program_outcomes.*')
+                ->get();
 
-        $programOutcomes = ProgramOutcome::join('departments', 'program_outcomes.department_id', '=', 'departments.department_id')
-            ->where('program_outcomes.department_id', '=', $department_id)
-            ->select('departments.*', 'program_outcomes.*')
-            ->get();
+        } else {
+            $department_id = '';
+            $programOutcomes = [];
+        }
             
         $user = Auth::user(); 
         $notifications = $user->notifications;

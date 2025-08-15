@@ -18,6 +18,8 @@ class ChairCurrController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
 
         $department_id = $chairperson->entity_id;
@@ -26,8 +28,9 @@ class ChairCurrController extends Controller
             ->select('departments.*', 'curricula.*')
             ->where('departments.department_id', '=', $department_id)
             ->paginate(10);
-            $user = Auth::user(); 
-            $notifications = $user->notifications;
+
+        $user = Auth::user(); 
+        $notifications = $user->notifications;
 
         return view('Chairperson.Curricula.currList', compact('notifications', 'curricula', 'department_id'));
     }
@@ -36,11 +39,13 @@ class ChairCurrController extends Controller
         $chairperson = UserRole::where('user_id', Auth::id())
             ->where('entity_type', '=', 'Department')
             ->where('role_id', '=', Roles::where('role_name', 'Chairperson')->value('role_id'))
+            ->whereNotNull('entity_id')
+            ->orderByDesc('updated_at')
             ->firstOrFail();
-
-        $department_id = $chairperson->entity_id;
+        $department_id = $chairperson->entity_id ?? '';
 
         $departments = Department::all();
+
         $user = Auth::user(); 
         $notifications = $user->notifications;
 
@@ -77,14 +82,17 @@ class ChairCurrController extends Controller
     public function updateCurr(Request $request, string $curr_id)
     {
         $curriculum = Curriculum::findorFail($curr_id);
+
         $request->validate([
             'curr_code' => 'required|string',
             'effectivity' => 'required|string',
         ]);
+        
         $curriculum->update([
             'curr_code' =>  $request->input('curr_code'),
             'effectivity' =>  $request->input('effectivity'),
         ]);
+
         return redirect()->route('chairperson.curr')
             ->with('success', 'Curriculum Information Updated');
     }

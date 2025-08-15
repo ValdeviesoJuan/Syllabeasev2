@@ -10,7 +10,6 @@
     <script src="{{ asset('js/loading.js') }}" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/Sample/se.png') }}">
 </head>
 
