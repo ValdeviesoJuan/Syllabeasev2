@@ -28,11 +28,15 @@ class AuditorTos extends Component
             ->select('tos.*', 'courses.*', 'bayanihan_groups.*')
             ->whereNotNull('tos.chair_approved_at')
             ->whereIn('tos.tos_term', ['Midterm', 'Final'])
-            ->whereIn('tos.tos_version', function ($query) {
-                $query->select(DB::raw('MAX(tos_version)'))
-                    ->from('tos')
-                    ->groupBy('syll_id', 'tos_term');
-            })
+            ->whereRaw("
+                tos.tos_version = (
+                    SELECT MAX(t2.tos_version) 
+                    FROM tos t2 
+                    WHERE t2.syll_id = tos.syll_id 
+                    AND t2.tos_term = tos.tos_term
+                    AND t2.chair_approved_at IS NOT NULL
+                )
+            ") 
             ->where(function ($query) {
                 $query->where('courses.course_year_level', 'like', '%' . $this->search . '%')
                     ->orWhere('courses.course_semester', 'like', '%' . $this->search . '%')

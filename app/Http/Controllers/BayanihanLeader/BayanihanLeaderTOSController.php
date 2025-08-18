@@ -62,7 +62,8 @@ class BayanihanLeaderTOSController extends Controller
             ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first(); 
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')
+            ->first(); 
 
         $chair = $tos->chair;
             
@@ -89,6 +90,7 @@ class BayanihanLeaderTOSController extends Controller
             ->get();
             
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->where('tos.tos_term', $tos->tos_term)
             ->select('tos.*')
             ->get();
 
@@ -137,6 +139,7 @@ class BayanihanLeaderTOSController extends Controller
             'col_3_per' => 'required|numeric',
             'col_4_per' => 'required|numeric',
             'tos_cpys' => 'required',
+            'selected_topics' => 'required|array|min:1',
         ]);
 
         $existingMTos = Tos::where('syll_id',  $syll_id)->where('tos_term', 'Midterm')->first();
@@ -237,33 +240,9 @@ class BayanihanLeaderTOSController extends Controller
             $tosColExpUpdate->col_3_exp = $col3Exp;
             $tosColExpUpdate->col_4_exp = $col4Exp;
             $tosColExpUpdate->save();
+            
         } else {
             return redirect()->route('bayanihanleader.tos')->with('error', 'Something went wrong when Creating the TOS.');
-        }
-
-        /**
-         * Helper to convert proportional values to whole numbers
-         * while ensuring the total matches exactly.
-         *
-         * @param array $rawValues Array of proportional values
-         * @param int   $total     Expected sum after rounding
-         * @return array           Whole-number distribution
-         */
-        function distributeWholeNumbers(array $rawValues, int $total): array
-        {
-            $floored = array_map('floor', $rawValues);
-            $remainders = array_map(fn($v) => $v - floor($v), $rawValues);
-
-            $remaining = $total - array_sum($floored);
-
-            while ($remaining > 0) {
-                $maxIndex = array_keys($remainders, max($remainders))[0];
-                $floored[$maxIndex]++;
-                $remainders[$maxIndex] = 0; // Avoid giving twice
-                $remaining--;
-            }
-
-            return $floored;
         }
 
         if ($tos) {
@@ -280,45 +259,36 @@ class BayanihanLeaderTOSController extends Controller
             // 2️⃣ Retrieve rows for processing
             $tosRows = TosRows::where('tos_id', $tos->tos_id)->get();
 
-            // 3️⃣ Process each row (percent, items, and columns in one pass)
-            $totalRoundedPercent = 0;
-            $rowsWithDecimalPercent = [];
+            // 3️⃣ Collect raw percents + raw items
+            $rawPercents   = [];
+            $rawItemValues = [];
 
             foreach ($tosRows as $row) {
-                // --- TOS Row Percentages ---
                 $percent = ($row->tos_r_no_hours / $totalNoHours) * 100;
-                $roundedPercent = round($percent);
-                $row->tos_r_percent = $roundedPercent;
-                $totalRoundedPercent += $roundedPercent;
-                if ($percent != floor($percent)) {
-                    $rowsWithDecimalPercent[] = $row;
-                }
-
-                // --- TOS Row No of Test Items ---
-                $itemDistribution = distributeWholeNumbers(
-                    [$tos->tos_no_items * ($roundedPercent / 100)],
-                    (int) round($tos->tos_no_items * ($roundedPercent / 100))
-                );
-                $row->tos_r_no_items = $itemDistribution[0];
+                $rawPercents[] = $percent;
+                $rawItemValues[] = $tos->tos_no_items * ($percent / 100);
             }
 
-            // 4️⃣ Adjust percentages so total = 100
-            if (!empty($rowsWithDecimalPercent)) {
-                $adjustment = 100 - $totalRoundedPercent;
-                $lastRow = end($rowsWithDecimalPercent);
-                $lastRow->tos_r_percent += $adjustment;
-            }
+            // 4️⃣ Distribute percentages so total = 100
+            $distributedPercents = $this->distributeWholeNumbers($rawPercents, 100);
 
-            // 5️⃣ Assign 4-column distribution
-            foreach ($tosRows as $row) {
+            // --- Step 2: Distribute across all rows ---
+            $distributedItems = $this->distributeWholeNumbers($rawItemValues, $tos->tos_no_items);
+
+            // --- Step 3: Assign back ---
+            foreach ($tosRows as $index => $row) {
+                $row->tos_r_percent   = $distributedPercents[$index];
+                $row->tos_r_no_items  = $distributedItems[$index];
+
                 $colValues = [
                     $row->tos_r_no_items * ($tos->col_1_per / 100),
                     $row->tos_r_no_items * ($tos->col_2_per / 100),
                     $row->tos_r_no_items * ($tos->col_3_per / 100),
                     $row->tos_r_no_items * ($tos->col_4_per / 100),
                 ];
+
                 [$row->tos_r_col_1, $row->tos_r_col_2, $row->tos_r_col_3, $row->tos_r_col_4] =
-                    distributeWholeNumbers($colValues, $row->tos_r_no_items);
+                    $this->distributeWholeNumbers($colValues, $row->tos_r_no_items);
 
                 $row->save();
             }
@@ -473,7 +443,31 @@ class BayanihanLeaderTOSController extends Controller
             'selected_topics' => 'required|array|min:1', // ✅ Validate selected topics
         ]);
 
+        // ✅ Ensure percentages total to 100
+        $percentSum = $request->col_1_per + $request->col_2_per + $request->col_3_per + $request->col_4_per;
+        if ($percentSum !== 100) {
+            return redirect()->back()->with('error', "The total percentage must equal 100%. Current total: {$percentSum}%");
+        }
+
+        $existingMTos = Tos::where('syll_id',  $syll_id)
+            ->where('tos_term', 'Midterm')
+            ->where('tos_id', '!=', $tos_id) // Not including the current edited TOS
+            ->first();
+        $existingFTos = Tos::where('syll_id',  $syll_id)
+            ->where('tos_term', 'Final')
+            ->where('tos_id', '!=', $tos_id)
+            ->first();
+
+        if ($existingMTos && $request->tos_term === 'Midterm') {
+            return redirect()->route('bayanihanleader.tos')->with('error', 'Midterm TOS already exists for this Syllabus.');
+        } elseif ($existingFTos && $request->tos_term === 'Final') {
+            return redirect()->route('bayanihanleader.tos')->with('error', 'Final TOS already exists for this Syllabus.');
+        } elseif ($existingMTos && $existingFTos) {
+            return redirect()->route('bayanihanleader.tos')->with('error', 'Midterm and Final TOS already exist for this Syllabus.');
+        }
+
         $tos = Tos::findOrFail($tos_id);
+
         $tos->user_id = Auth::user()->id;
         $tos->tos_term = $request->tos_term;
         $tos->tos_no_items = $request->tos_no_items;
@@ -481,63 +475,52 @@ class BayanihanLeaderTOSController extends Controller
         $tos->col_2_per = $request->col_2_per;
         $tos->col_3_per = $request->col_3_per;
         $tos->col_4_per = $request->col_4_per;
-        $tos->tos_cpys = $request->tos_cpys;
-        $tos->course_id = $syllabus->course_id;
-        $tos->bg_id = $syllabus->bg_id;
-        $tos->save();
+        $tos->tos_cpys = $request->tos_cpys;  
 
         // ✅ Determine correct table and fetch selected entries
-        $tableName = $request->tos_term === 'Final' ? 'syllabus_course_outlines_finals' : 'syllabus_course_outlines_midterms';
-        $selectedTopics = $request->input('selected_topics');
-
-        $selectedEntries = DB::table($tableName)
-            ->where('syll_id', $syll_id)
+        $selectedTopics = $request->input('selected_topics', []);
+        $outlineModel = $request->tos_term === 'Final'
+            ? SyllabusCourseOutlinesFinal::class
+            : SyllabusCourseOutlineMidterm::class;
+        $selectedEntries = $outlineModel::where('syll_id', $syll_id)
             ->whereIn('syll_topics', $selectedTopics)
             ->get();
 
         // ✅ Clear previous TOS rows
         TosRows::where('tos_id', $tos_id)->delete();
 
-        // ✅ Handle expected column distribution
-        $col1Exp = $tos->tos_no_items * ($tos->col_1_per / 100);
-        $col2Exp = $tos->tos_no_items * ($tos->col_2_per / 100);
-        $col3Exp = $tos->tos_no_items * ($tos->col_3_per / 100);
-        $col4Exp = $tos->tos_no_items * ($tos->col_4_per / 100);
-
-        $sumOfFloored = floor($col1Exp) + floor($col2Exp) + floor($col3Exp) + floor($col4Exp);
-        $remaining = $tos->tos_no_items - $sumOfFloored;
-        $decimals = [
-            'col_1' => $col1Exp - floor($col1Exp),
-            'col_2' => $col2Exp - floor($col2Exp),
-            'col_3' => $col3Exp - floor($col3Exp),
-            'col_4' => $col4Exp - floor($col4Exp),
+        // --- Percentages to expected values ---
+        $colExp = [
+            1 => $tos->tos_no_items * ($tos->col_1_per / 100),
+            2 => $tos->tos_no_items * ($tos->col_2_per / 100),
+            3 => $tos->tos_no_items * ($tos->col_3_per / 100),
+            4 => $tos->tos_no_items * ($tos->col_4_per / 100),
         ];
+
+        // Floor values
+        $floored = array_map('floor', $colExp);
+        $sumFloored = array_sum($floored);
+        $remaining  = $tos->tos_no_items - $sumFloored;
+        
+        // Distribute remaining based on decimal parts
+        $decimals = [];
+        foreach ($colExp as $i => $val) {
+            $decimals[$i] = $val - floor($val);
+        }
         arsort($decimals);
 
-        $col1Exp = floor($col1Exp);
-        $col2Exp = floor($col2Exp);
-        $col3Exp = floor($col3Exp);
-        $col4Exp = floor($col4Exp);
-
-        $columnMap = [
-            'col_1' => &$col1Exp,
-            'col_2' => &$col2Exp,
-            'col_3' => &$col3Exp,
-            'col_4' => &$col4Exp,
-        ];
-
-        foreach (array_keys($decimals) as $col) {
+        foreach (array_keys($decimals) as $i) {
             if ($remaining > 0) {
-                $columnMap[$col]++;
+                $floored[$i]++;
                 $remaining--;
             }
         }
 
         // ✅ Update Tos with adjusted expected values
-        $tos->col_1_exp = $col1Exp;
-        $tos->col_2_exp = $col2Exp;
-        $tos->col_3_exp = $col3Exp;
-        $tos->col_4_exp = $col4Exp;
+        $tos->col_1_exp = $floored[1];
+        $tos->col_2_exp = $floored[2];
+        $tos->col_3_exp = $floored[3];
+        $tos->col_4_exp = $floored[4];
         $tos->save();
 
         // ✅ Total hours for percent calculation
@@ -553,50 +536,37 @@ class BayanihanLeaderTOSController extends Controller
 
         $tosRows = TosRows::where('tos_id', $tos->tos_id)->get();
 
-        // ✅ Percent rounding and balancing
-        $totalRoundedPercent = 0;
-        $decimalRows = [];
+        // 3️⃣ Collect raw percents + raw items
+        $rawPercents   = [];
+        $rawItemValues = [];
+
         foreach ($tosRows as $row) {
             $percent = ($row->tos_r_no_hours / $totalNoHours) * 100;
-            $roundedPercent = round($percent);
-            if ($percent != floor($percent)) $decimalRows[] = $row;
-            $row->tos_r_percent = $roundedPercent;
-            $row->save();
-            $totalRoundedPercent += $roundedPercent;
+            $rawPercents[] = $percent;
+            $rawItemValues[] = $tos->tos_no_items * ($percent / 100);
         }
 
-        if (!empty($decimalRows)) {
-            $adjustment = 100 - $totalRoundedPercent;
-            $lastDecimalRow = end($decimalRows);
-            $lastDecimalRow->tos_r_percent += $adjustment;
-            $lastDecimalRow->save();
-        }
+        // 4️⃣ Distribute percentages so total = 100
+        $distributedPercents = $this->distributeWholeNumbers($rawPercents, 100);
 
-        // ✅ Item distribution
-        $totalRoundedItems = 0;
-        $decimalRowsItem = [];
-        foreach ($tosRows as $row) {
-            $roundedItem = ($tos->tos_no_items * ($row->tos_r_percent / 100));
-            if ($roundedItem != floor($roundedItem)) $decimalRowsItem[] = $row;
-            $row->tos_r_no_items = floor($roundedItem);
-            $row->save();
-            $totalRoundedItems += floor($roundedItem);
-        }
+        // --- Step 2: Distribute across all rows ---
+        $distributedItems = $this->distributeWholeNumbers($rawItemValues, $tos->tos_no_items);
 
-        $remainder = $tos->tos_no_items - $totalRoundedItems;
-        foreach ($decimalRowsItem as $row) {
-            if ($remainder-- > 0) {
-                $row->tos_r_no_items += 1;
-                $row->save();
-            }
-        }
+        // --- Step 3: Assign back ---
+        foreach ($tosRows as $index => $row) {
+            $row->tos_r_percent   = $distributedPercents[$index];
+            $row->tos_r_no_items  = $distributedItems[$index];
 
-        // ✅ Update column distributions
-        foreach ($tosRows as $row) {
-            $row->tos_r_col_1 = $row->tos_r_no_items * ($tos->col_1_per / 100);
-            $row->tos_r_col_2 = $row->tos_r_no_items * ($tos->col_2_per / 100);
-            $row->tos_r_col_3 = $row->tos_r_no_items * ($tos->col_3_per / 100);
-            $row->tos_r_col_4 = $row->tos_r_no_items * ($tos->col_4_per / 100);
+            $colValues = [
+                $row->tos_r_no_items * ($tos->col_1_per / 100),
+                $row->tos_r_no_items * ($tos->col_2_per / 100),
+                $row->tos_r_no_items * ($tos->col_3_per / 100),
+                $row->tos_r_no_items * ($tos->col_4_per / 100),
+            ];
+
+            [$row->tos_r_col_1, $row->tos_r_col_2, $row->tos_r_col_3, $row->tos_r_col_4] =
+                $this->distributeWholeNumbers($colValues, $row->tos_r_no_items);
+
             $row->save();
         }
 
@@ -694,6 +664,7 @@ class BayanihanLeaderTOSController extends Controller
             ->get();
 
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->where('tos.tos_term', $tos->tos_term)
             ->select('tos.*')
             ->get();
 
@@ -763,5 +734,26 @@ class BayanihanLeaderTOSController extends Controller
         $tos_id->delete();
     
         return redirect()->route('bayanihanleader.tos')->with('success', 'Tos deleted successfully.');
+    }
+
+    /**
+     * Convert proportional values to whole numbers
+     * while ensuring the total matches exactly.
+     */
+    private function distributeWholeNumbers(array $rawValues, int $total): array
+    {
+        $floored = array_map('floor', $rawValues);
+        $remainders = array_map(fn($v) => $v - floor($v), $rawValues);
+
+        $remaining = $total - array_sum($floored);
+
+        while ($remaining > 0) {
+            $maxIndex = array_keys($remainders, max($remainders))[0];
+            $floored[$maxIndex]++;
+            $remainders[$maxIndex] = 0; // Avoid giving twice
+            $remaining--;
+        }
+
+        return $floored;
     }
 }

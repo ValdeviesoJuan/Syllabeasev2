@@ -34,13 +34,15 @@ class AdminTosTable extends Component
                 ->join('departments', 'departments.department_id', '=', 'tos.department_id')
                 ->join('colleges', 'colleges.college_id', '=', 'departments.college_id')
                 ->select('tos.*', 'courses.*', 'bayanihan_groups.*')
-                ->whereIn('tos.tos_term', ['Midterm', 'Final'])
-                ->whereRaw('tos.tos_version = (SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id)')
-                // ->whereIn('tos.tos_version', function ($query) {
-                //     $query->select(DB::raw('MAX(tos_version)'))
-                //         ->from('tos')
-                //         ->groupBy('syll_id', 'tos_term');
-                // })
+                ->whereIn('tos.tos_term', ['Midterm', 'Final']) 
+                ->whereRaw("
+                    tos.tos_version = (
+                        SELECT MAX(t2.tos_version) 
+                        FROM tos t2 
+                        WHERE t2.syll_id = tos.syll_id 
+                        AND t2.tos_term = tos.tos_term
+                    )
+                ")
                 ->where(function ($query) {
                     $query->where('courses.course_year_level', 'like', '%' . $this->search . '%')
                         ->orWhere('courses.course_semester', 'like', '%' . $this->search . '%')

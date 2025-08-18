@@ -14,6 +14,7 @@ class TosRows extends Model implements Auditable
     protected $table = 'tos_rows';
     protected $primaryKey = 'tos_r_id';
     protected $fillable = [
+        'tos_id',
         'tos_r_topic',
         'tos_r_no_hours',
         'tos_r_percent',

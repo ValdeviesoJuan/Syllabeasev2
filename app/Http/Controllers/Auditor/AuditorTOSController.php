@@ -14,7 +14,7 @@ class AuditorTOSController extends Controller
     }
 
     public function viewTos($tos_id)
-    {
+    {   
         return view('auditor.TOS.tosView');
     }
 }

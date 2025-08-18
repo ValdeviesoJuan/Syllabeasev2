@@ -25,25 +25,33 @@ class BLTos extends Component
     public function render()
     {
         $myGroup = BayanihanGroupUsers::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'bayanihan_group_users.bg_id')
-            ->where('bayanihan_group_users.user_id', '=', Auth::user()->id)
+            ->where('bayanihan_group_users.user_id', '=', Auth::id())
             ->where('bayanihan_group_users.bg_role', '=', 'leader')
             ->select('bayanihan_groups.bg_id')
             ->get();
             
         if ($myGroup) {
             $myGroupBgIds = $myGroup->pluck('bg_id')->toArray();
+
             $toss = Tos::join('bayanihan_groups', 'tos.bg_id', '=', 'bayanihan_groups.bg_id')
                 ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
                 ->join('courses', 'courses.course_id', '=', 'tos.course_id')
                 ->select('tos.*', 'courses.*', 'bayanihan_groups.*')
-                ->whereRaw('tos.tos_version = (SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id)')
-                ->whereIn('tos.tos_term', ['Midterm', 'Final'])
                 ->whereIn('tos.bg_id', $myGroupBgIds)
-                ->whereIn('tos.tos_version', function ($query) {
-                    $query->select(DB::raw('MAX(tos_version)'))
-                        ->from('tos')
-                        ->groupBy('syll_id', 'tos_term');
-                })
+                ->whereIn('tos.tos_term', ['Midterm', 'Final'])
+                ->whereRaw("
+                    tos.tos_version = (
+                        SELECT MAX(t2.tos_version) 
+                        FROM tos t2 
+                        WHERE t2.syll_id = tos.syll_id 
+                        AND t2.tos_term = tos.tos_term
+                    )
+                ")
+                // ->whereIn('tos.tos_version', function ($query) {
+                //     $query->select(DB::raw('MAX(tos_version)'))
+                //         ->from('tos')
+                //         ->groupBy('syll_id', 'tos_term');
+                // })
                 // ->where('tos.bg_id', $myGroup->bg_id)
                 // ->whereNotNull('tos.chair_submitted_at')
                 ->where(function ($query) {

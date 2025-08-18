@@ -71,6 +71,7 @@ class AdminTOSController extends Controller
             ->get();
             
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->where('tos.tos_term', $tos->tos_term)
             ->select('tos.*')
             ->get(); 
 
@@ -108,16 +109,9 @@ class AdminTOSController extends Controller
             ->get();
 
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->where('tos.tos_term', $tos->tos_term)
             ->select('tos.*')
             ->get();
-
-        $chairRoleId = Roles::where('role_name', 'Chairperson')->value('role_id');
-        $chair = Syllabus::join('tos', 'tos.syll_id', '=', 'syllabi.syll_id')
-            ->join('user_roles', 'syllabi.department_id', '=', 'user_roles.entity_id')
-            ->join('users', 'users.id', '=', 'user_roles.user_id')
-            ->where('user_roles.entity_type', 'Department')
-            ->where('user_roles.role_id', $chairRoleId)
-            ->first();
             
         return view('admin.tos.tosComment', compact('chair', 'tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes'));
     }

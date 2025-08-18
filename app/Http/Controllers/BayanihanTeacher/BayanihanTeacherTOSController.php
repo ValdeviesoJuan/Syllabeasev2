@@ -74,6 +74,7 @@ class BayanihanTeacherTOSController extends Controller
             ->get();
             
         $tosVersions = Tos::where('tos.bg_id', $tos->bg_id)
+            ->where('tos.tos_term', $tos->tos_term)
             ->select('tos.*')
             ->get();
             

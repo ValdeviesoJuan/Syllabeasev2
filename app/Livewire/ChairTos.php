@@ -33,13 +33,21 @@ class ChairTos extends Component
 
         if ($chairperson) {
             $department_id = $chairperson->entity_id;
+            
             $toss = BayanihanGroup::join('tos', function ($join) {
                     $join->on('tos.bg_id', '=', 'bayanihan_groups.bg_id')
-                    ->where('tos.tos_version', '=', DB::raw('(SELECT MAX(tos_version) FROM tos WHERE bg_id = bayanihan_groups.bg_id AND chair_submitted_at IS NOT NULL)'));
+                        ->whereRaw("
+                            tos.tos_version = (
+                                SELECT MAX(t2.tos_version)
+                                FROM tos t2
+                                WHERE t2.syll_id = tos.syll_id
+                                AND t2.tos_term = tos.tos_term
+                                AND t2.chair_submitted_at IS NOT NULL
+                            )
+                        ");
                 })
                 ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
                 ->join('courses', 'courses.course_id', '=', 'tos.course_id')
-                ->select('tos.*', 'courses.*', 'bayanihan_groups.*')
                 ->where('tos.department_id', '=', $department_id)
                 ->whereIn('tos.tos_term', ['Midterm', 'Final'])
                 ->where(function ($query) {
@@ -65,12 +73,12 @@ class ChairTos extends Component
                 ->select('syllabi.*', 'bayanihan_groups.*', 'courses.*', 'tos.*', 'tos.chair_submitted_at as tos_chair_submitted_at')
                 ->paginate(10);
         } else {
-            $toss = [];
+            $toss = collect();
         }
 
         return view('livewire.chair-tos', ['toss' => $toss, 'filters' => $this->filters]);
     }
-    public function applyFilters()
+    public function applyFilters()  
     {
         $this->resetPage();
     }
