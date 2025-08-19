@@ -301,8 +301,13 @@ document.addEventListener("DOMContentLoaded", () => {
           dragClone.style.pointerEvents = 'none';
           dragClone.style.zIndex = 9999;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           dragClone.style.width = `${original.offsetWidth}px`;
           dragClone.style.height = `${original.offsetHeight}px`;
+=======
+          dragClone.style.width = ${original.offsetWidth}px;
+          dragClone.style.height = ${original.offsetHeight}px;
+>>>>>>> Stashed changes
 =======
           dragClone.style.width = ${original.offsetWidth}px;
           dragClone.style.height = ${original.offsetHeight}px;
@@ -313,6 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       move(event) {
         if (!dragClone) return;
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         const dropRect = dropZone.getBoundingClientRect();
 
@@ -346,11 +352,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const { col, row, colWidth, rowHeight } = getGridPosition(event.client.x, event.client.y, dropZone);
 
+=======
+        const x = event.client.x - dragClone.offsetWidth / 2;
+        const y = event.client.y - dragClone.offsetHeight / 2;
+
+        if (!isFromDropZone) {
+          dragClone.style.left = ${x}px;
+          dragClone.style.top = ${y}px;
+        }
+
+        const { col, row, colWidth, rowHeight } = getGridPosition(event.client.x, event.client.y, dropZone);
+
+>>>>>>> Stashed changes
         if (col > 0 && row > 0 && col <= 3 && row <= 4) {
           highlight.style.left = ${(col - 1) * colWidth}px;
           highlight.style.top = ${(row - 1) * rowHeight}px;
           highlight.style.width = ${colWidth}px;
           highlight.style.height = ${rowHeight}px;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
           highlight.style.display = 'block';
         } else {
@@ -391,15 +412,21 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           dragClone.style.gridColumn = `${col} / span 1`;
           dragClone.style.gridRow = `${row} / span 1`;
         } else if (!isFromDropZone) {
           dragClone.remove();
 =======
+=======
+>>>>>>> Stashed changes
           dragClone.style.gridColumn = ${col} / span 1;
           dragClone.style.gridRow = ${row} / span 1;
         } else if (!isFromDropZone) {
           dragClone.remove(); // Cancel drop if outside and not from container
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
 
@@ -409,6 +436,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 });
 
 // RESIZING LOGIC
@@ -417,6 +447,7 @@ interact('#drop-zone .section').resizable({
   listeners: {
     move(event) {
       const target = event.target;
+<<<<<<< Updated upstream
       const dropZone = document.getElementById('drop-zone');
       const dzRect = dropZone.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
@@ -479,6 +510,8 @@ interact('#drop-zone .section').resizable({
   listeners: {
     move(event) {
       const target = event.target;
+=======
+>>>>>>> Stashed changes
 
       // Get current size from style or fallback to offset
       let width = parseFloat(target.style.width) || target.offsetWidth;
