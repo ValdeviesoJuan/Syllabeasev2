@@ -1,6 +1,3 @@
-Latest base v2
-
-
 @extends('layouts.blNav')
 
 @section('content')
@@ -303,14 +300,20 @@ document.addEventListener("DOMContentLoaded", () => {
           dragClone.style.position = 'fixed';
           dragClone.style.pointerEvents = 'none';
           dragClone.style.zIndex = 9999;
+<<<<<<< Updated upstream
           dragClone.style.width = `${original.offsetWidth}px`;
           dragClone.style.height = `${original.offsetHeight}px`;
+=======
+          dragClone.style.width = ${original.offsetWidth}px;
+          dragClone.style.height = ${original.offsetHeight}px;
+>>>>>>> Stashed changes
           document.body.appendChild(dragClone);
         }
       },
 
       move(event) {
         if (!dragClone) return;
+<<<<<<< Updated upstream
         const dropRect = dropZone.getBoundingClientRect();
 
         let x = event.client.x - dragClone.offsetWidth / 2;
@@ -332,6 +335,23 @@ document.addEventListener("DOMContentLoaded", () => {
           highlight.style.top = `${(row - 1) * rowHeight}px`;
           highlight.style.width = `${colWidth}px`;
           highlight.style.height = `${rowHeight}px`;
+=======
+        const x = event.client.x - dragClone.offsetWidth / 2;
+        const y = event.client.y - dragClone.offsetHeight / 2;
+
+        if (!isFromDropZone) {
+          dragClone.style.left = ${x}px;
+          dragClone.style.top = ${y}px;
+        }
+
+        const { col, row, colWidth, rowHeight } = getGridPosition(event.client.x, event.client.y, dropZone);
+
+        if (col > 0 && row > 0 && col <= 3 && row <= 4) {
+          highlight.style.left = ${(col - 1) * colWidth}px;
+          highlight.style.top = ${(row - 1) * rowHeight}px;
+          highlight.style.width = ${colWidth}px;
+          highlight.style.height = ${rowHeight}px;
+>>>>>>> Stashed changes
           highlight.style.display = 'block';
         } else {
           highlight.style.display = 'none';
@@ -370,10 +390,17 @@ document.addEventListener("DOMContentLoaded", () => {
             dropZone.appendChild(dragClone);
           }
 
+<<<<<<< Updated upstream
           dragClone.style.gridColumn = `${col} / span 1`;
           dragClone.style.gridRow = `${row} / span 1`;
         } else if (!isFromDropZone) {
           dragClone.remove();
+=======
+          dragClone.style.gridColumn = ${col} / span 1;
+          dragClone.style.gridRow = ${row} / span 1;
+        } else if (!isFromDropZone) {
+          dragClone.remove(); // Cancel drop if outside and not from container
+>>>>>>> Stashed changes
         }
 
         dragClone = null;
@@ -381,6 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+<<<<<<< Updated upstream
 });
 
 // RESIZING LOGIC
@@ -441,7 +469,60 @@ interact('#drop-zone .section').resizable({
     interact.modifiers.restrictSize({ min: { width: 50, height: 50 }, max: { width: 1024, height: 768 } })
   ],
   inertia: true
+=======
+>>>>>>> Stashed changes
 });
+
+// RESIZING LOGIC
+interact('#drop-zone .section').resizable({
+  edges: { left: true, right: true, bottom: true, top: true },
+  listeners: {
+    move(event) {
+      const target = event.target;
+
+      // Get current size from style or fallback to offset
+      let width = parseFloat(target.style.width) || target.offsetWidth;
+      let height = parseFloat(target.style.height) || target.offsetHeight;
+
+      // Add deltas from resize movement
+      let newWidth = width + event.deltaRect.width;
+      let newHeight = height + event.deltaRect.height;
+
+      // Snap to nearest 25px
+      newWidth = Math.round(newWidth / 20) * 20;
+      newHeight = Math.round(newHeight / 20) * 20;
+
+      // Get container bounds
+      const dropZone = document.getElementById('drop-zone');
+      const dzRect = dropZone.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+
+      // Compute max size based on current position
+      const maxWidth = dzRect.right - targetRect.left;
+      const maxHeight = dzRect.bottom - targetRect.top;
+
+      // Clamp to container limits
+      newWidth = Math.max(50, Math.min(newWidth, maxWidth));
+      newHeight = Math.max(50, Math.min(newHeight, maxHeight));
+
+      // Apply style updates
+      target.style.width = ${newWidth}px;
+      target.style.height = ${newHeight}px;
+    }
+  },
+  modifiers: [
+    interact.modifiers.restrictEdges({
+      outer: 'parent',
+    }),
+    interact.modifiers.restrictSize({
+      min: { width: 50, height: 50 },
+      max: { width: 1024, height: 768 },
+    }),
+  ],
+  inertia: true
+});
+
+
 </script>
 
 
