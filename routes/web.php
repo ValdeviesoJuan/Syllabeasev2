@@ -68,6 +68,7 @@ use App\Http\Controllers\Admin\AdminPOEController;
 use App\Http\Controllers\Admin\AdminAuditController;
 use App\Http\Controllers\Admin\AdminBayanihanController;
 use App\Http\Controllers\Admin\AdminDateOverriderController;
+use App\Http\Controllers\Auditor\AuditorAuditController;
 use App\Http\Controllers\Auth\EditProfileController;
 use App\Http\Controllers\BayanihanLeader\BayanihanLeaderAuditController;
 
@@ -540,6 +541,11 @@ Route::group(['prefix' => 'auditor', 'middleware' => ['auth', 'isAuditor']], fun
 
     //Auditor: TOS Controller
     Route::get('/tos', [AuditorTOSController::class, 'index'])->name('auditor.tos');
+    Route::get('/tos/viewTOS/{tos_id}', [AuditorTOSController::class, 'viewTos'])->name('auditor.viewTos');
+
+    //Auditor: Audit Trail 
+    Route::get('/syllabus/auditTrail/{syll_id}', [AuditorAuditController::class, 'viewSyllabusAudit'])->name('auditor.viewSyllabusAudit');
+    Route::get('/tos/auditTrail/{tos_id}', [AuditorAuditController::class, 'viewTosAudit'])->name('auditor.viewTosAudit');
 });
 
 // Resourceful routes

@@ -127,7 +127,7 @@
                         <!-- Version Dropdown -->
                         <div id="dropdownVersion" class="hidden pt-2 px-3 pb-7 transition duration-300 md:absolute top-full right-0 md:w-[350px] bg-white bg-opacity-90 md:shadow-lg md:rounded">
                             <div class="text-gray">
-                                Tos Versions
+                                TOS Versions
                             </div>
 
                             @foreach($tosVersions as $tosVersion)

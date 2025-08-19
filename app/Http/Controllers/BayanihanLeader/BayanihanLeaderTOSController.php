@@ -431,6 +431,7 @@ class BayanihanLeaderTOSController extends Controller
     public function updateTos(Request $request, $syll_id, $tos_id)
     {
         $syllabus = Syllabus::where('syll_id', $syll_id)->first();
+        $currentTos = Tos::where('tos_id', $tos_id)->first();
 
         $request->validate([
             'tos_term' => 'required',
@@ -445,17 +446,17 @@ class BayanihanLeaderTOSController extends Controller
 
         // ✅ Ensure percentages total to 100
         $percentSum = $request->col_1_per + $request->col_2_per + $request->col_3_per + $request->col_4_per;
-        if ($percentSum !== 100) {
+        if (abs($percentSum - 100) > 0.001) {
             return redirect()->back()->with('error', "The total percentage must equal 100%. Current total: {$percentSum}%");
         }
 
         $existingMTos = Tos::where('syll_id',  $syll_id)
             ->where('tos_term', 'Midterm')
-            ->where('tos_id', '!=', $tos_id) // Not including the current edited TOS
+            ->where('bg_id', '!=', $currentTos->bg_id) 
             ->first();
         $existingFTos = Tos::where('syll_id',  $syll_id)
             ->where('tos_term', 'Final')
-            ->where('tos_id', '!=', $tos_id)
+            ->where('bg_id', '!=', $currentTos->bg_id)
             ->first();
 
         if ($existingMTos && $request->tos_term === 'Midterm') {
@@ -596,18 +597,18 @@ class BayanihanLeaderTOSController extends Controller
         
         $validatedData = $request->validate([
             'tos_r_id.*' => 'required',
-            'tos_r_no_items.*' => 'required',   
-            'tos_r_col_1.*' => 'required',
-            'tos_r_col_2.*' => 'required',
-            'tos_r_col_3.*' => 'required',
-            'tos_r_col_4.*' => 'required',
+            'tos_r_no_items.*'  => 'required|integer',
+            'tos_r_col_1.*'     => 'nullable|integer',
+            'tos_r_col_2.*'     => 'nullable|integer',
+            'tos_r_col_3.*'     => 'nullable|integer',
+            'tos_r_col_4.*'     => 'nullable|integer',
         ]);
 
-        $totalItems = collect($validatedData['tos_r_no_items'])->sum();
-        $totalCognitive = collect($validatedData['tos_r_col_1'])->sum()
-                     + collect($validatedData['tos_r_col_2'])->sum()
-                     + collect($validatedData['tos_r_col_3'])->sum()
-                     + collect($validatedData['tos_r_col_4'])->sum();
+        $totalItems = collect($validatedData['tos_r_no_items'] ?? [])->sum();
+        $totalCognitive = collect($validatedData['tos_r_col_1'] ?? [])->sum()
+                        + collect($validatedData['tos_r_col_2'] ?? [])->sum()
+                        + collect($validatedData['tos_r_col_3'] ?? [])->sum()
+                        + collect($validatedData['tos_r_col_4'] ?? [])->sum();
 
         // ❌ If mismatch, reject update
         if ($totalItems !== $tos->tos_no_items || $totalCognitive !== $tos->tos_no_items) {
@@ -620,11 +621,11 @@ class BayanihanLeaderTOSController extends Controller
             $tosRow = TosRows::find($tos_r_id);
 
             if ($tosRow) {
-                $tosRow->tos_r_no_items = $validatedData['tos_r_no_items'][$key];
-                $tosRow->tos_r_col_1 = $validatedData['tos_r_col_1'][$key];
-                $tosRow->tos_r_col_2 = $validatedData['tos_r_col_2'][$key];
-                $tosRow->tos_r_col_3 = $validatedData['tos_r_col_3'][$key];
-                $tosRow->tos_r_col_4 = $validatedData['tos_r_col_4'][$key];
+                $tosRow->tos_r_no_items = $validatedData['tos_r_no_items'][$key] ?? 0;
+                $tosRow->tos_r_col_1    = $validatedData['tos_r_col_1'][$key] ?? 0;
+                $tosRow->tos_r_col_2    = $validatedData['tos_r_col_2'][$key] ?? 0;
+                $tosRow->tos_r_col_3    = $validatedData['tos_r_col_3'][$key] ?? 0;
+                $tosRow->tos_r_col_4    = $validatedData['tos_r_col_4'][$key] ?? 0;
                 $tosRow->save();
             }
         }

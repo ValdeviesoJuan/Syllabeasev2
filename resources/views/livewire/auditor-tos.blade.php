@@ -112,7 +112,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 flex">
-                        <form action="" method="GET">
+                        <form action="{{ route('auditor.viewTos', $tos->tos_id) }}" method="GET">
                             @csrf
                             <div class="p-4">
                                 <button class="hover:text-yellow hover:underline" type="submit">View</button>

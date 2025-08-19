@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\BayanihanLeader;
+namespace App\Http\Controllers\Auditor;
 
 use App\Http\Controllers\Controller;
 use App\Models\BayanihanGroupUsers;
@@ -18,9 +18,9 @@ use App\Models\TosRows;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
 
-class BayanihanLeaderAuditController extends Controller
+class AuditorAuditController extends Controller
 {
-    public function viewAudit($syll_id)
+    public function viewSyllabusAudit($syll_id)
     {
         $syll = Syllabus::join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'syllabi.bg_id')
             ->join('colleges', 'colleges.college_id', '=', 'syllabi.college_id')
@@ -106,15 +106,19 @@ class BayanihanLeaderAuditController extends Controller
 
         $audits = $audits->sortByDesc('created_at');
 
-        return view('bayanihanleader.audit.blAudit', compact('syll_id', 'syllabusVersions', 'syll', 'bLeaders', 'bMembers', 'audits'));
+        return view('auditor.audit.syllabusAudit', compact('syll_id', 'syllabusVersions', 'syll', 'bLeaders', 'bMembers', 'audits'));
     }
     public function viewTosAudit($tos_id)
     {
-        $tos = Tos::where('tos_id', $tos_id)->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
+        $tos = Tos::where('tos_id', $tos_id)
+            ->join('bayanihan_groups', 'bayanihan_groups.bg_id', '=', 'tos.bg_id')
             ->join('courses', 'courses.course_id', '=', 'tos.course_id')
             ->join('syllabi', 'syllabi.syll_id', '=', 'tos.syll_id')
-            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')->first();
+            ->select('tos.*', 'bayanihan_groups.*', 'courses.*')
+            ->first();
+
         $course_outcomes = SyllabusCourseOutcome::where('syll_id', '=', $tos->syll_id)->select('syllabus_course_outcomes.*')->get();
+        
         $tos_rows = TosRows::where('tos_rows.tos_id', '=', $tos_id)
             ->leftJoin('tos', 'tos.tos_id', '=', 'tos_rows.tos_id')
             ->select('tos.*', 'tos_rows.*')
@@ -150,13 +154,15 @@ class BayanihanLeaderAuditController extends Controller
             ->whereIn('auditable_id', $tosIds)
             ->orderBy('created_at', 'desc')
             ->get();
-            $tosRowsAudit = Audit::where('auditable_type', TosRows::class)
+            
+        $tosRowsAudit = Audit::where('auditable_type', TosRows::class)
             ->whereIn('auditable_id', $tosRowsIds)
             ->orderBy('created_at', 'desc')
             ->get();
 
         $audits = $tosAudit->merge($tosRowsAudit);
         $audits = $audits->sortByDesc('created_at');
-        return view('BayanihanLeader.Audit.blTosAudit', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'audits'));
+
+        return view('auditor.audit.tosAudit', compact('tos_rows', 'tos', 'tos_id', 'bMembers', 'bLeaders', 'tosVersions', 'course_outcomes', 'audits'));
     }
 }
